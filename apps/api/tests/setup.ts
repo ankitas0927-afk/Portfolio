@@ -1,0 +1,48 @@
+import { afterAll, afterEach, beforeAll } from "vitest";
+import { MongoMemoryServer } from "mongodb-memory-server";
+import mongoose from "mongoose";
+
+let mongo: MongoMemoryServer;
+let disconnectDatabase: () => Promise<void>;
+
+beforeAll(async () => {
+  mongo = await MongoMemoryServer.create();
+  process.env.NODE_ENV = "test";
+  process.env.PORT = "5000";
+  process.env.MONGODB_URI = mongo.getUri();
+  process.env.FRONTEND_URL = "http://localhost:3000";
+  process.env.API_PUBLIC_URL = "http://localhost:5000";
+  process.env.JWT_ACCESS_SECRET = "test_access_secret_test_access_secret_123";
+  process.env.JWT_REFRESH_SECRET = "test_refresh_secret_test_refresh_secret_123";
+  process.env.JWT_ACCESS_EXPIRES_IN = "15m";
+  process.env.JWT_REFRESH_EXPIRES_IN = "7d";
+  process.env.COOKIE_SECURE = "false";
+  process.env.COOKIE_SAME_SITE = "lax";
+  process.env.ADMIN_NAME = "Test Administrator";
+  process.env.ADMIN_EMAIL = "admin@example.com";
+  process.env.ADMIN_INITIAL_PASSWORD = "StrongPassword123!";
+  process.env.MAX_PROFILE_IMAGE_MB = "5";
+  process.env.MAX_CONTENT_IMAGE_MB = "8";
+  process.env.MAX_RESUME_MB = "10";
+  process.env.MAX_CERTIFICATE_MB = "10";
+  process.env.MAX_DOCUMENT_MB = "15";
+  const envModule = await import("../src/config/env");
+  envModule.resetEnvForTests();
+  const connection = await import("../src/database/connection");
+  disconnectDatabase = connection.disconnectDatabase;
+  await connection.connectDatabase(mongo.getUri());
+});
+
+afterEach(async () => {
+  const collections = Object.values(mongoose.connection.collections);
+  await Promise.all(collections.map((collection) => collection.deleteMany({})));
+});
+
+afterAll(async () => {
+  if (disconnectDatabase) {
+    await disconnectDatabase();
+  }
+  if (mongo) {
+    await mongo.stop();
+  }
+});

@@ -1,0 +1,35 @@
+{
+  "name": "ankita-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.14.0",
+  "scripts": {
+    "dev": "corepack pnpm -r --parallel --filter @ankita-portfolio/api --filter @ankita-portfolio/web dev",
+    "build": "corepack pnpm -r build",
+    "typecheck": "corepack pnpm -r typecheck",
+    "lint": "corepack pnpm -r lint",
+    "test": "corepack pnpm -r test",
+    "test:e2e": "corepack pnpm --filter @ankita-portfolio/web test:e2e",
+    "format": "prettier --write .",
+    "seed": "corepack pnpm --filter @ankita-portfolio/api seed",
+    "backup": "powershell -ExecutionPolicy Bypass -File ./scripts/backup.ps1",
+    "restore": "powershell -ExecutionPolicy Bypass -File ./scripts/restore.ps1",
+    "prepare": "husky || true"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,md,css}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.6.2",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  }
+}

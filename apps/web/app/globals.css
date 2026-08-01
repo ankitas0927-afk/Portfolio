@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background: #f5f7fb;
+  color: #172033;
+}
+
+button,
+[type="button"],
+[type="submit"],
+[type="reset"],
+a[href],
+summary {
+  transition-property: color, background-color, border-color, opacity, box-shadow, transform, filter;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button:hover,
+[type="button"]:hover,
+[type="submit"]:hover,
+[type="reset"]:hover,
+a[href]:hover,
+summary:hover {
+  transform: translateY(-1px);
+}
+
+button:active,
+[type="button"]:active,
+[type="submit"]:active,
+[type="reset"]:active,
+a[href]:active,
+summary:active {
+  transform: translateY(0);
+}
+
+button:disabled,
+[type="button"]:disabled,
+[type="submit"]:disabled,
+[type="reset"]:disabled {
+  transform: none;
+}
+
+::selection {
+  background: rgba(15, 159, 154, 0.22);
+}
+
+:focus-visible {
+  outline: 3px solid #0f9f9a;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}
