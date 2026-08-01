@@ -4,10 +4,17 @@ import { logger } from "./config/logger";
 import { createApp } from "./app";
 import { connectDatabase, disconnectDatabase } from "./database/connection";
 
-async function main(): Promise<void> {
+const app = createApp();
+
+async function bootstrap(): Promise<void> {
   const env = getEnv();
   await connectDatabase();
-  const app = createApp();
+
+  if (process.env.VERCEL) {
+    logger.info("API initialized for Vercel runtime");
+    return;
+  }
+
   const server = http.createServer(app);
 
   server.listen(env.PORT, () => {
@@ -26,7 +33,9 @@ async function main(): Promise<void> {
   process.on("SIGTERM", () => void shutdown("SIGTERM"));
 }
 
-void main().catch((error) => {
+void bootstrap().catch((error) => {
   logger.fatal({ err: error }, "API startup failed");
   process.exit(1);
 });
+
+export default app;

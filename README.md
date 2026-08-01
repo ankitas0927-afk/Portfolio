@@ -232,6 +232,8 @@ Backups must include normal collections and all GridFS `.files` and `.chunks` co
 
 - Deploy the API to a persistent Node.js runtime with HTTPS.
 - Deploy the frontend to a Next.js-compatible host.
+- For the public portfolio site on Vercel, set the project root to `apps/web`.
+- Do not use `apps/api` as the public portfolio root unless you intentionally want the backend service exposed there.
 - For Vercel, set the project root to `apps/web` and point `NEXT_PUBLIC_API_BASE_URL` at the API host.
 - Set `NEXT_PUBLIC_SITE_URL` to the Vercel production URL or custom domain so metadata and sitemaps stay canonical.
 - Use MongoDB Atlas or a managed MongoDB service with backups enabled.

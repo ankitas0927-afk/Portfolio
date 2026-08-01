@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const portfolio = await fetchPortfolio();
   const profile = portfolio?.profile;
   return {
-    title: profile ? `${profile.name} | ${profile.rotatingTitles[0] || "Research Analyst"}` : "Ankita Singh",
+    title: profile ? `${profile.name} | ${profile.rotatingTitles?.[0] || "Research Analyst"}` : "Ankita Singh",
     description: profile?.professionalSummary ?? null
   };
 }
@@ -32,7 +32,7 @@ export default async function HomePage() {
     "@context": "https://schema.org",
     "@type": "Person",
     name: portfolio.profile.name,
-    jobTitle: portfolio.profile.heading || portfolio.profile.rotatingTitles[0] || "Research Analyst",
+    jobTitle: portfolio.profile.heading || portfolio.profile.rotatingTitles?.[0] || "Research Analyst",
     description: portfolio.profile.professionalSummary,
     address:
       portfolio.profile.city || portfolio.profile.state || portfolio.profile.country

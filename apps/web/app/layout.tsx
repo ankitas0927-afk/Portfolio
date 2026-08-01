@@ -10,7 +10,7 @@ import { mediaStreamUrl } from "@/lib/media";
 export async function generateMetadata(): Promise<Metadata> {
   const portfolio = await fetchPortfolio();
   const profile = portfolio?.profile;
-  const siteTitle = profile ? `${profile.name} | ${profile.rotatingTitles[0] || "Research Analyst"}` : "Ankita Singh";
+  const siteTitle = profile ? `${profile.name} | ${profile.rotatingTitles?.[0] || "Research Analyst"}` : "Ankita Singh";
   const description =
     profile?.professionalSummary ||
     "Professional portfolio for Ankita Singh, a pharmacy graduate and Research Analyst focused on pharmaceutical research and quality work.";
