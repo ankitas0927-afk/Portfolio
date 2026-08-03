@@ -1,10 +1,8 @@
 import http from "node:http";
 import { getEnv } from "./config/env.js";
 import { logger } from "./config/logger.js";
-import { createApp } from "./app.js";
+import app from "./app.js";
 import { connectDatabase, disconnectDatabase } from "./database/connection.js";
-
-const app = createApp();
 const isVercel = Boolean(process.env.VERCEL);
 
 async function bootstrap(): Promise<void> {
