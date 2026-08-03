@@ -6,6 +6,10 @@ describe("sanitize utilities", () => {
     expect(sanitizeText("  <p>Hello</p><script>alert(1)</script> world  ")).toBe("Hello world");
   });
 
+  it("removes control characters from text inputs", () => {
+    expect(sanitizeText("Hello\u0007 world")).toBe("Hello world");
+  });
+
   it("sanitizes strings inside records and arrays", () => {
     expect(
       sanitizeRecord({

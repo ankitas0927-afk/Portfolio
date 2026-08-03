@@ -3,15 +3,28 @@ import path from "node:path";
 const HTML_TAG_REGEX = /<\/?[A-Za-z][^>]*>/g;
 const HTML_BLOCK_REGEX = /<(script|style|iframe|object|embed|noscript)\b[^>]*>[\s\S]*?<\/\1\s*>/gi;
 const HTML_COMMENT_REGEX = /<!--[\s\S]*?-->/g;
-const CONTROL_CHAR_REGEX = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
+
+function stripControlCharacters(value: string): string {
+  let output = "";
+  for (const character of value) {
+    const codePoint = character.codePointAt(0);
+    if (codePoint === undefined) {
+      continue;
+    }
+    if (codePoint === 0x09 || codePoint === 0x0a || codePoint === 0x0d || codePoint >= 0x20) {
+      output += character;
+    }
+  }
+  return output;
+}
 
 export function sanitizeText(value: string): string {
-  return value
+  return stripControlCharacters(
+    value
     .replace(HTML_COMMENT_REGEX, "")
     .replace(HTML_BLOCK_REGEX, "")
     .replace(HTML_TAG_REGEX, "")
-    .replace(CONTROL_CHAR_REGEX, "")
-    .trim();
+  ).trim();
 }
 
 export function sanitizeRecord<T extends Record<string, unknown>>(input: T): T {
