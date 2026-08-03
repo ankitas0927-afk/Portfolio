@@ -264,6 +264,7 @@ For production:
 - set `COOKIE_SECURE=true`
 - use strong random JWT secrets
 - update `FRONTEND_URL`, `NEXT_PUBLIC_SITE_URL`, and `API_PUBLIC_URL`
+- do not set `NODE_ENV` manually on Vercel or other Next.js hosts; let the platform/build command control it
 - run `pnpm seed` once after provisioning
 
 ## Troubleshooting
