@@ -255,13 +255,15 @@ Recommended production shape:
 1. Host MongoDB on Atlas or another managed MongoDB service.
 2. Deploy the API behind HTTPS with secure cookies enabled.
 3. Deploy the web app from the `apps/web` root directory with the `Next.js` framework preset and both `NEXT_PUBLIC_API_BASE_URL` and `INTERNAL_API_BASE_URL` configured.
-4. Set `FRONTEND_URL` in the API to the final public frontend origin.
-5. Ensure reverse-proxy headers and CORS are aligned.
-6. Keep persistent uploads in MongoDB GridFS only.
+4. If deploying the API separately, use the `apps/api` root directory, the `Express` framework preset, and set the build command to `pnpm --dir ../.. build:packages && pnpm run build`.
+5. Set `FRONTEND_URL` in the API to the final public frontend origin.
+6. Ensure reverse-proxy headers and CORS are aligned.
+7. Keep persistent uploads in MongoDB GridFS only.
 
 For production:
 
 - set `COOKIE_SECURE=true`
+- set `COOKIE_SAME_SITE=none` when the frontend and API are on different domains
 - use strong random JWT secrets
 - update `FRONTEND_URL`, `NEXT_PUBLIC_SITE_URL`, and `API_PUBLIC_URL`
 - do not set `NODE_ENV` manually on Vercel or other Next.js hosts; let the platform/build command control it
