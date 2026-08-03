@@ -273,5 +273,5 @@ For production:
 
 - If `sharp` or `bcrypt` fail after install, run `pnpm rebuild bcrypt sharp esbuild mongodb-memory-server`.
 - If the web app cannot reach the API in Docker, verify `INTERNAL_API_BASE_URL=http://api:5000/api/v1`.
-- If the seed script cannot find the resume PDF, confirm `RESUME_PDF_PATH` is correct relative to `apps/api`.
+- If the seed script cannot find the resume PDF, confirm `RESUME_PDF_PATH` is correct relative to `apps/api`. The bundled default is `seed-assets/ankita-resume.pdf`.
 - If uploads are rejected, check the configured file-size limits and category-specific MIME restrictions.
