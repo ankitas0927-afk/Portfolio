@@ -17,6 +17,7 @@ import type {
 } from '@ankita-portfolio/shared-types';
 
 import { webEnv } from '../lib/env';
+import { resolvePrimaryNavigation } from '../lib/public-navigation';
 
 type ApiEnvelope<T> = {
   success: boolean;
@@ -83,7 +84,7 @@ export async function getSiteContext() {
 }
 
 export async function getNavigation() {
-  return (await fetchPublic<NavigationItem[]>('/navigation')) ?? [];
+  return resolvePrimaryNavigation((await fetchPublic<NavigationItem[]>('/navigation')) ?? []);
 }
 
 export async function getPublicProfile() {
