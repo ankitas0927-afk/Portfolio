@@ -254,7 +254,7 @@ Recommended production shape:
 
 1. Host MongoDB on Atlas or another managed MongoDB service.
 2. Deploy the API behind HTTPS with secure cookies enabled.
-3. Deploy the web app with both `NEXT_PUBLIC_API_BASE_URL` and `INTERNAL_API_BASE_URL` configured.
+3. Deploy the web app from the `apps/web` root directory with the `Next.js` framework preset and both `NEXT_PUBLIC_API_BASE_URL` and `INTERNAL_API_BASE_URL` configured.
 4. Set `FRONTEND_URL` in the API to the final public frontend origin.
 5. Ensure reverse-proxy headers and CORS are aligned.
 6. Keep persistent uploads in MongoDB GridFS only.
