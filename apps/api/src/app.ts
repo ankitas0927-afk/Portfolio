@@ -1,5 +1,5 @@
 import express from "express";
-import type { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, RequestHandler, Response } from "express";
 import { requestId } from "./middleware/requestId.js";
 import { applySecurity } from "./middleware/security.js";
 import { notFound } from "./middleware/notFound.js";
@@ -53,6 +53,10 @@ export function createApp() {
   return app;
 }
 
-const app = createApp();
+const vercelApp = createApp();
 
-export default app;
+const handler: RequestHandler = (req, res, next) => {
+  return vercelApp(req, res, next);
+};
+
+export default handler;
