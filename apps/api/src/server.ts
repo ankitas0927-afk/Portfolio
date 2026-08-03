@@ -4,9 +4,16 @@ import { createApp } from './app.js';
 import { env } from './config/env.js';
 import { logger } from './config/logger.js';
 import { connectToDatabase, disconnectFromDatabase } from './database/mongoose.js';
+import { ensureInitialPortfolioData } from './services/bootstrap.service.js';
 
 async function bootstrap() {
   await connectToDatabase();
+  try {
+    const bootstrapResult = await ensureInitialPortfolioData();
+    logger.info(bootstrapResult, 'Application bootstrap check completed');
+  } catch (error) {
+    logger.error({ error }, 'Application bootstrap check failed');
+  }
 
   const app = createApp();
   const server = createServer(app);

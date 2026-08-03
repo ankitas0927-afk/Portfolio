@@ -11,6 +11,7 @@ import {
   type AdminDocument,
 } from '../models/index.js';
 import { createAuditLog } from './audit.service.js';
+import { ensureAdminAccount } from './bootstrap.service.js';
 import {
   generateOpaqueToken,
   getRefreshTokenMaxAgeMs,
@@ -105,6 +106,7 @@ export async function authenticateAdmin(
   password: string,
   client: AuthClientDetails,
 ) {
+  await ensureAdminAccount();
   const admin = await AdminModel.findOne({ email: email.toLowerCase() });
 
   if (!admin || !(await bcrypt.compare(password, admin.passwordHash))) {

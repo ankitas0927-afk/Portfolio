@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
 import { LoaderCircle, LockKeyhole } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -28,8 +29,21 @@ export function LoginForm() {
     try {
       await login(values.email, values.password);
       router.replace('/admin');
-    } catch {
-      toast.error('Invalid administrator credentials');
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const apiMessage = error.response?.data?.error?.message;
+        if (typeof apiMessage === 'string' && apiMessage.trim()) {
+          toast.error(apiMessage);
+          return;
+        }
+
+        if (error.code === 'ERR_NETWORK') {
+          toast.error('Unable to reach the administrator service right now.');
+          return;
+        }
+      }
+
+      toast.error('Unable to sign in right now.');
     }
   });
 
