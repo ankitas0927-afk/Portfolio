@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
-import { AppError } from "../errors/appError";
-import { logger } from "../config/logger";
+import { AppError } from "../errors/appError.js";
+import { logger } from "../config/logger.js";
 
 export function errorHandler(
   error: Error,

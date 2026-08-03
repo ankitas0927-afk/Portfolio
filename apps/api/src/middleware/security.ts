@@ -6,7 +6,7 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import pinoHttp from "pino-http";
-import { logger } from "../config/logger";
+import { logger } from "../config/logger.js";
 
 function resolveFrontendUrl(): string | undefined {
   const frontendUrl = process.env.FRONTEND_URL?.trim();

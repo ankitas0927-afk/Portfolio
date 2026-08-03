@@ -2,10 +2,10 @@ import { Router } from "express";
 import { z } from "zod";
 import { Types } from "mongoose";
 import { paginationSchema, publicationStatusSchema } from "@ankita-portfolio/validation";
-import { AppError } from "../errors/appError";
-import { asyncHandler } from "../middleware/asyncHandler";
-import { authenticate } from "../middleware/authenticate";
-import { validateQuery } from "../middleware/validate";
+import { AppError } from "../errors/appError.js";
+import { asyncHandler } from "../middleware/asyncHandler.js";
+import { authenticate } from "../middleware/authenticate.js";
+import { validateQuery } from "../middleware/validate.js";
 import {
   ContactMessage,
   Education,
@@ -14,8 +14,8 @@ import {
   Resume,
   Skill,
   Training
-} from "../models/content";
-import { MediaAsset } from "../models/mediaAsset";
+} from "../models/content.js";
+import { MediaAsset } from "../models/mediaAsset.js";
 import {
   createContent,
   deleteContent,
@@ -25,8 +25,8 @@ import {
   type ContentResource,
   updateContent,
   upsertSingletonProfile
-} from "../services/content.service";
-import { getFooterSettings, upsertFooterSettings } from "../services/footerSettings.service";
+} from "../services/content.service.js";
+import { getFooterSettings, upsertFooterSettings } from "../services/footerSettings.service.js";
 import {
   deleteAssetAndVariants,
   listMediaAssets,
@@ -36,15 +36,15 @@ import {
   toMediaDto,
   replaceMediaReferences,
   upload
-} from "../services/media.service";
+} from "../services/media.service.js";
 import {
   deleteContactMessage,
   exportContactMessagesCsv,
   listContactMessages,
   updateContactStatus
-} from "../services/portfolio.service";
-import { listAuditLogs } from "../services/auditLog.service";
-import { recordAuditLog } from "../services/auditLog.service";
+} from "../services/portfolio.service.js";
+import { listAuditLogs } from "../services/auditLog.service.js";
+import { recordAuditLog } from "../services/auditLog.service.js";
 
 export const adminRouter = Router();
 

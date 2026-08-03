@@ -4,9 +4,9 @@ import { pathToFileURL } from "node:url";
 import { Types } from "mongoose";
 import slugify from "slugify";
 import { footerSettingsSchema } from "@ankita-portfolio/validation";
-import { getEnv } from "../config/env";
-import { logger } from "../config/logger";
-import { connectDatabase, disconnectDatabase } from "../database/connection";
+import { getEnv } from "../config/env.js";
+import { logger } from "../config/logger.js";
+import { connectDatabase, disconnectDatabase } from "../database/connection.js";
 import {
   Education,
   Experience,
@@ -20,9 +20,9 @@ import {
   Skill,
   SkillCategory,
   Training
-} from "../models/content";
-import { createInitialAdmin } from "../services/auth.service";
-import { storeBufferInGridFs } from "../services/media.service";
+} from "../models/content.js";
+import { createInitialAdmin } from "../services/auth.service.js";
+import { storeBufferInGridFs } from "../services/media.service.js";
 
 type SkillSeed = {
   category: string;

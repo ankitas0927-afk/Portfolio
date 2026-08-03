@@ -1,9 +1,9 @@
 import "./testEnv";
 import request from "supertest";
 import { describe, expect, it } from "vitest";
-import { createApp } from "../src/app";
-import { Profile, Project } from "../src/models/content";
-import { createInitialAdmin } from "../src/services/auth.service";
+import { createApp } from "../src/app.js";
+import { Profile, Project } from "../src/models/content.js";
+import { createInitialAdmin } from "../src/services/auth.service.js";
 
 const app = createApp();
 

@@ -14,7 +14,7 @@ import {
   skillSchema,
   trainingSchema
 } from "@ankita-portfolio/validation";
-import { AppError } from "../errors/appError";
+import { AppError } from "../errors/appError.js";
 import {
   Education,
   Experience,
@@ -27,9 +27,9 @@ import {
   SkillCategory,
   Training,
   type ContentDocument
-} from "../models/content";
-import { sanitizeRecord } from "../utils/sanitize";
-import { recordAuditLog } from "./auditLog.service";
+} from "../models/content.js";
+import { sanitizeRecord } from "../utils/sanitize.js";
+import { recordAuditLog } from "./auditLog.service.js";
 
 export type ContentResource =
   | "profile"

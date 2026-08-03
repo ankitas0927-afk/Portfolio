@@ -26,9 +26,9 @@ beforeAll(async () => {
   process.env.MAX_RESUME_MB = "10";
   process.env.MAX_CERTIFICATE_MB = "10";
   process.env.MAX_DOCUMENT_MB = "15";
-  const envModule = await import("../src/config/env");
+  const envModule = await import("../src/config/env.js");
   envModule.resetEnvForTests();
-  const connection = await import("../src/database/connection");
+  const connection = await import("../src/database/connection.js");
   disconnectDatabase = connection.disconnectDatabase;
   await connection.connectDatabase(mongo.getUri());
 });

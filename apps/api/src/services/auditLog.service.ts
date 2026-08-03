@@ -1,5 +1,5 @@
 import type { Types } from "mongoose";
-import { AuditLog } from "../models/auditLog";
+import { AuditLog } from "../models/auditLog.js";
 
 type AuditInput = {
   adminId?: Types.ObjectId | undefined;

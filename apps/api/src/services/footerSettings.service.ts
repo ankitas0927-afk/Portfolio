@@ -1,10 +1,10 @@
 import { Types } from "mongoose";
 import type { FooterSettingsDto } from "@ankita-portfolio/shared-types";
 import { footerSettingsSchema } from "@ankita-portfolio/validation";
-import { AppError } from "../errors/appError";
-import { SiteSetting } from "../models/content";
-import { recordAuditLog } from "./auditLog.service";
-import { sanitizeRecord } from "../utils/sanitize";
+import { AppError } from "../errors/appError.js";
+import { SiteSetting } from "../models/content.js";
+import { recordAuditLog } from "./auditLog.service.js";
+import { sanitizeRecord } from "../utils/sanitize.js";
 
 const FOOTER_SETTINGS_KEY = "footer";
 

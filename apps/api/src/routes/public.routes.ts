@@ -1,16 +1,16 @@
 import { Router } from "express";
 import { Types } from "mongoose";
 import { slugSchema } from "@ankita-portfolio/validation";
-import { asyncHandler } from "../middleware/asyncHandler";
-import { contactRateLimit } from "../middleware/security";
-import { streamMedia } from "../services/media.service";
+import { asyncHandler } from "../middleware/asyncHandler.js";
+import { contactRateLimit } from "../middleware/security.js";
+import { streamMedia } from "../services/media.service.js";
 import {
   getActiveResume,
   getPublicPortfolio,
   getPublicProject,
   submitContactMessage
-} from "../services/portfolio.service";
-import { AppError } from "../errors/appError";
+} from "../services/portfolio.service.js";
+import { AppError } from "../errors/appError.js";
 
 export const publicRouter = Router();
 

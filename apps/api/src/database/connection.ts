@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { getEnv } from "../config/env";
-import { logger } from "../config/logger";
+import { getEnv } from "../config/env.js";
+import { logger } from "../config/logger.js";
 
 let connectionPromise: Promise<typeof mongoose> | null = null;
 

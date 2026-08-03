@@ -14,7 +14,7 @@ import type {
 } from "@ankita-portfolio/shared-types";
 import { Types } from "mongoose";
 import { contactMessageSchema } from "@ankita-portfolio/validation";
-import { AppError } from "../errors/appError";
+import { AppError } from "../errors/appError.js";
 import {
   ContactMessage,
   Education,
@@ -28,11 +28,11 @@ import {
   Skill,
   SkillCategory,
   Training
-} from "../models/content";
-import { sha256 } from "../utils/crypto";
-import { sanitizeRecord } from "../utils/sanitize";
-import { getFooterSettings } from "./footerSettings.service";
-import { toMediaDto } from "./media.service";
+} from "../models/content.js";
+import { sha256 } from "../utils/crypto.js";
+import { sanitizeRecord } from "../utils/sanitize.js";
+import { getFooterSettings } from "./footerSettings.service.js";
+import { toMediaDto } from "./media.service.js";
 
 type LeanRecord = Record<string, unknown> & { _id: Types.ObjectId | string };
 

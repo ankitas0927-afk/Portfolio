@@ -7,9 +7,9 @@ import mongoose, { Types } from "mongoose";
 import multer from "multer";
 import sharp from "sharp";
 import type { MediaAssetDto, MediaBucket } from "@ankita-portfolio/shared-types";
-import { getEnv } from "../config/env";
-import { AppError } from "../errors/appError";
-import { MediaAsset, type ImageVariant, type MediaAssetDocument } from "../models/mediaAsset";
+import { getEnv } from "../config/env.js";
+import { AppError } from "../errors/appError.js";
+import { MediaAsset, type ImageVariant, type MediaAssetDocument } from "../models/mediaAsset.js";
 import {
   Education,
   Experience,
@@ -19,9 +19,9 @@ import {
   Resume,
   Skill,
   Training
-} from "../models/content";
-import { recordAuditLog } from "./auditLog.service";
-import { safeFilename } from "../utils/sanitize";
+} from "../models/content.js";
+import { recordAuditLog } from "./auditLog.service.js";
+import { safeFilename } from "../utils/sanitize.js";
 
 const imageMimes = ["image/jpeg", "image/png", "image/webp", "image/avif"] as const;
 const pdfMimes = ["application/pdf"] as const;

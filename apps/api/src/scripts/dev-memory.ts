@@ -32,13 +32,13 @@ async function main(): Promise<void> {
   const mongo = await MongoMemoryServer.create();
   applyDevDefaults(mongo.getUri());
 
-  const envModule = await import("../config/env");
+  const envModule = await import("../config/env.js");
   envModule.resetEnvForTests();
   const { getEnv } = envModule;
-  const { logger } = await import("../config/logger");
-  const { seed } = await import("./seed");
-  const { createApp } = await import("../app");
-  const { disconnectDatabase } = await import("../database/connection");
+  const { logger } = await import("../config/logger.js");
+  const { seed } = await import("./seed.js");
+  const { createApp } = await import("../app.js");
+  const { disconnectDatabase } = await import("../database/connection.js");
 
   await seed();
   const app = createApp();

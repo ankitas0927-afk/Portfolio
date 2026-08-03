@@ -2,12 +2,12 @@ import bcrypt from "bcryptjs";
 import jwt, { type SignOptions } from "jsonwebtoken";
 import type { Request, Response } from "express";
 import type { Types } from "mongoose";
-import { getEnv } from "../config/env";
-import { AppError } from "../errors/appError";
-import { Admin, type AdminDocument } from "../models/admin";
-import { Session } from "../models/session";
-import { createOpaqueToken, sha256 } from "../utils/crypto";
-import { recordAuditLog } from "./auditLog.service";
+import { getEnv } from "../config/env.js";
+import { AppError } from "../errors/appError.js";
+import { Admin, type AdminDocument } from "../models/admin.js";
+import { Session } from "../models/session.js";
+import { createOpaqueToken, sha256 } from "../utils/crypto.js";
+import { recordAuditLog } from "./auditLog.service.js";
 
 type AuthTokens = {
   accessToken: string;

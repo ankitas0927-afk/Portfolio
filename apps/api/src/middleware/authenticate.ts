@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { Types } from "mongoose";
-import { AppError } from "../errors/appError";
-import { verifyAccessToken } from "../services/auth.service";
+import { AppError } from "../errors/appError.js";
+import { verifyAccessToken } from "../services/auth.service.js";
 
 export function authenticate(req: Request, _res: Response, next: NextFunction): void {
   const header = req.header("authorization");

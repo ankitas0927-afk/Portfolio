@@ -1,19 +1,19 @@
 import { Router } from "express";
 import { loginSchema, passwordChangeSchema } from "@ankita-portfolio/validation";
-import { Admin } from "../models/admin";
-import { Session } from "../models/session";
-import { asyncHandler } from "../middleware/asyncHandler";
-import { authenticate, requireOwner } from "../middleware/authenticate";
-import { authRateLimit } from "../middleware/security";
-import { validateBody } from "../middleware/validate";
+import { Admin } from "../models/admin.js";
+import { Session } from "../models/session.js";
+import { asyncHandler } from "../middleware/asyncHandler.js";
+import { authenticate, requireOwner } from "../middleware/authenticate.js";
+import { authRateLimit } from "../middleware/security.js";
+import { validateBody } from "../middleware/validate.js";
 import {
   changePassword,
   clearRefreshCookie,
   loginAdmin,
   logoutAdmin,
   refreshAdminSession
-} from "../services/auth.service";
-import { AppError } from "../errors/appError";
+} from "../services/auth.service.js";
+import { AppError } from "../errors/appError.js";
 
 export const authRouter = Router();
 
