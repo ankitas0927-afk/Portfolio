@@ -67,15 +67,15 @@ export function ContactForm() {
         <div className="flex flex-wrap items-center gap-3">
           <span className="premium-pill inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-[0.26em] text-accent/82">
             <Sparkles className="h-4 w-4" />
-            Message Brief
+            Professional Enquiry
           </span>
           <span className="premium-pill inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-[0.26em] text-foreground/62">
             <ShieldCheck className="h-4 w-4 text-accent/80" />
-            Stored securely in the dashboard
+            Confidential Handling
           </span>
         </div>
         <p className="mt-4">
-          A concise subject line, your name, and enough project or role context will make follow-up much easier.
+          Please include enough detail to support a thoughtful and relevant response.
         </p>
       </div>
 
@@ -84,11 +84,11 @@ export function ContactForm() {
           id="fullName"
           label="Full name"
           error={form.formState.errors.fullName?.message}
-          hint="Use the name you want to be addressed by."
+          hint="Enter the name you would like used in reply."
         >
           <input
             id="fullName"
-            placeholder="Ankita Singh"
+            placeholder="Your full name"
             className={inputClassName}
             aria-invalid={Boolean(form.formState.errors.fullName)}
             {...form.register('fullName')}
@@ -99,7 +99,7 @@ export function ContactForm() {
           id="email"
           label="Email"
           error={form.formState.errors.email?.message}
-          hint="Replies will usually go to this email address."
+          hint="A response will be sent to this address."
         >
           <input
             id="email"
@@ -113,7 +113,7 @@ export function ContactForm() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <FieldBlock id="company" label="Company" hint="Optional, but helpful for opportunity-related outreach.">
+        <FieldBlock id="company" label="Company" hint="Optional.">
           <input
             id="company"
             placeholder="Organization or institute"
@@ -122,7 +122,7 @@ export function ContactForm() {
           />
         </FieldBlock>
 
-        <FieldBlock id="phone" label="Phone" error={form.formState.errors.phone?.message} hint="Optional for callback coordination.">
+        <FieldBlock id="phone" label="Phone" error={form.formState.errors.phone?.message} hint="Optional.">
           <input
             id="phone"
             placeholder="+91 ..."
@@ -137,7 +137,7 @@ export function ContactForm() {
         id="subject"
         label="Subject"
         error={form.formState.errors.subject?.message}
-        hint="Example: Research role, project discussion, interview scheduling."
+        hint="Keep the subject short and specific."
       >
         <input
           id="subject"
@@ -152,7 +152,7 @@ export function ContactForm() {
         id="message"
         label="Message"
         error={form.formState.errors.message?.message}
-        hint="Share useful context, timeline, and the best next step."
+        hint="Include the purpose of your message and any helpful context."
         trailing={`${messageLength} characters`}
       >
         <textarea
@@ -167,8 +167,7 @@ export function ContactForm() {
 
       <div className="flex flex-col gap-4 border-t border-border/50 pt-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm leading-7 text-foreground/66">
-          Messages submitted here are intended for professional communication and are reviewed from the private admin
-          dashboard.
+          Professional enquiries are reviewed carefully and answered as appropriate.
         </div>
 
         <button

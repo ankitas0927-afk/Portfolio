@@ -15,6 +15,7 @@ import type {
 import type { PublicResumeBundle, PublicSkillsBundle } from '@/services/public';
 import { PortfolioImage } from '@/components/common/portfolio-image';
 import { SectionHeading } from '@/components/common/section-heading';
+import { getResumeDownloadLabel } from '@/lib/media';
 
 type HomePageProps = {
   profile: PublicProfile | null;
@@ -81,10 +82,12 @@ export function HomePage({
             variants={reveal}
             className="max-w-4xl font-display text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl"
           >
-            {hero?.heading ?? profile?.professionalTitle ?? 'Pharmaceutical portfolio'}
+            {hero?.heading ?? profile?.professionalTitle ?? 'Professional portfolio'}
           </motion.h1>
           <motion.p variants={reveal} className="max-w-2xl text-lg leading-9 text-foreground/72">
-            {hero?.subheading ?? profile?.professionalSummary ?? 'Portfolio content is loading.'}
+            {hero?.subheading ??
+              profile?.professionalSummary ??
+              'A refined portfolio of experience, skills, and professional highlights.'}
           </motion.p>
           <motion.div variants={reveal} className="flex flex-wrap gap-3">
             {(hero?.highlights ?? []).map((item) => (
@@ -118,8 +121,8 @@ export function HomePage({
           transition={{ duration: 0.55, delay: 0.12 }}
           className="relative min-h-[420px] rounded-[2rem] border border-border/60 bg-[radial-gradient(circle_at_top,_rgba(13,148,136,0.18),_transparent_52%),linear-gradient(145deg,_rgba(255,255,255,0.92),_rgba(240,249,255,0.85))] p-5 shadow-soft dark:bg-[radial-gradient(circle_at_top,_rgba(13,148,136,0.25),_transparent_52%),linear-gradient(145deg,_rgba(12,18,31,0.95),_rgba(14,25,40,0.9))]">
           <div className="absolute inset-x-7 top-6 flex items-center justify-between rounded-full border border-border/60 bg-background/90 px-4 py-3 text-xs uppercase tracking-[0.24em] text-foreground/55">
-            <span>{profile?.fullName ?? 'Ankita Singh'}</span>
-            <span>{profile?.generalLocation ?? 'Lucknow, India'}</span>
+            <span>{profile?.fullName ?? 'Published Profile'}</span>
+            <span>{profile?.generalLocation ?? 'Location available on request'}</span>
           </div>
           <div className="pt-16">
             <PortfolioImage
@@ -138,7 +141,7 @@ export function HomePage({
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="About"
-          title="A profile shaped by research discipline, quality focus, and readiness to learn."
+          title="Professional background, strengths, and direction."
           description={about?.fullBiography}
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
@@ -147,25 +150,25 @@ export function HomePage({
               <div>
                 <dt className="text-xs uppercase tracking-[0.24em] text-foreground/45">Employment focus</dt>
                 <dd className="mt-2 text-base text-foreground/78">
-                  {about?.preferredEmploymentArea ?? 'Pharmaceutical research and quality support'}
+                  {about?.preferredEmploymentArea ?? 'Research, quality, and analytical work'}
                 </dd>
               </div>
               <div>
                 <dt className="text-xs uppercase tracking-[0.24em] text-foreground/45">Availability</dt>
                 <dd className="mt-2 text-base text-foreground/78">
-                  {about?.availabilityLabel ?? 'Open to responsible opportunities'}
+                  {about?.availabilityLabel ?? 'Open to suitable opportunities'}
                 </dd>
               </div>
               <div>
                 <dt className="text-xs uppercase tracking-[0.24em] text-foreground/45">Location</dt>
                 <dd className="mt-2 text-base text-foreground/78">
-                  {about?.currentLocation ?? profile?.generalLocation ?? 'Lucknow, India'}
+                  {about?.currentLocation ?? profile?.generalLocation ?? 'Location available on request'}
                 </dd>
               </div>
               <div>
                 <dt className="text-xs uppercase tracking-[0.24em] text-foreground/45">Current role</dt>
                 <dd className="mt-2 text-base text-foreground/78">
-                  {profile?.professionalTitle ?? 'Research Analyst'}
+                  {profile?.professionalTitle ?? 'Professional Portfolio'}
                 </dd>
               </div>
             </dl>
@@ -186,8 +189,8 @@ export function HomePage({
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Experience"
-          title="Professional and academic milestones"
-          description="Every public record on this site is stored in MongoDB and managed from the administrator dashboard."
+          title="Experience, education, and training highlights"
+          description="A concise view of professional responsibility, academic preparation, and practical exposure."
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-3">
           <SummaryColumn title="Experience" items={experience.map((item) => ({
@@ -214,8 +217,8 @@ export function HomePage({
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Skills"
-          title="Tools, software, and strengths"
-          description="Technical skills and personal strengths are grouped separately so the portfolio can stay honest, editable, and easy to maintain."
+          title="Capabilities and core strengths"
+          description="Technical ability and personal strengths presented with clarity and balance."
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="space-y-4 rounded-[2rem] border border-border/60 bg-card/70 p-6 shadow-soft">
@@ -256,8 +259,8 @@ export function HomePage({
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Projects"
-          title="Featured learning work"
-          description="Projects stay hidden from the public site until they are marked as published in the dashboard."
+          title="Selected projects and practical work"
+          description="A focused collection of published work, case studies, and learning-led contributions."
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
           {featuredProjects.map((project) => (
@@ -291,8 +294,8 @@ export function HomePage({
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Additional"
-          title="Languages, interests, and resume access"
-          description="Public contact details remain editable, while private information stays outside the public bundle."
+          title="Languages, interests, and resume"
+          description="A broader view of communication, interests, and supporting professional material."
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-[0.8fr_0.8fr_1.1fr]">
           <div className="rounded-[2rem] border border-border/60 bg-card/70 p-6 shadow-soft">
@@ -321,7 +324,7 @@ export function HomePage({
               {resume?.title ?? 'Current resume'}
             </h3>
             <p className="mt-3 text-sm leading-7 text-foreground/72">
-              Preview the active resume inline or download the published version directly from MongoDB GridFS.
+              View the latest resume online or download a copy for reference.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link
@@ -337,7 +340,7 @@ export function HomePage({
                   rel="noreferrer"
                   className="rounded-full border border-border/70 px-5 py-3 text-sm font-semibold text-foreground/78"
                 >
-                  Download PDF
+                  {getResumeDownloadLabel(resume.media)}
                 </a>
               ) : null}
             </div>

@@ -158,13 +158,13 @@ async function seedPortfolio(adminId: string) {
   });
 
   await HeroModel.create({
-    eyebrow: 'Pharmaceutical Portfolio',
+    eyebrow: 'Professional Profile',
     heading: ankitaSeedData.heroHeading,
     subheading: ankitaSeedData.heroSubheading,
     highlights: ankitaSeedData.heroHighlights,
     ctaPrimaryLabel: 'View Resume',
     ctaPrimaryHref: '/resume',
-    ctaSecondaryLabel: 'Contact Ankita',
+    ctaSecondaryLabel: 'Contact',
     ctaSecondaryHref: '/contact',
     publicationStatus: 'published',
   });
@@ -173,7 +173,7 @@ async function seedPortfolio(adminId: string) {
     fullBiography: ankitaSeedData.fullBiography,
     preferredEmploymentArea: ankitaSeedData.preferredEmploymentArea,
     currentLocation: location || 'Lucknow, India',
-    availabilityLabel: 'Open to responsible opportunities',
+    availabilityLabel: 'Open to suitable opportunities',
     keyStrengths: ankitaSeedData.keyStrengths,
     publicationStatus: 'published',
   });
@@ -238,7 +238,7 @@ async function seedPortfolio(adminId: string) {
       secondaryAccentColor: DEFAULT_SECONDARY_ACCENT,
       enableDarkTheme: true,
       maintenanceMode: false,
-      footerText: 'Built for Ankita Singh using Next.js, Express, MongoDB, and GridFS.',
+      footerText: 'A professional portfolio focused on clarity, credibility, and thoughtful presentation.',
     }),
     SeoSettingsModel.create({
       defaultTitle: 'Ankita Singh | Research Analyst and Pharmacy Graduate',

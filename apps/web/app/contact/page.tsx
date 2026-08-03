@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { PortfolioImage } from '@/components/common/portfolio-image';
 import { SectionHeading } from '@/components/common/section-heading';
 import { ContactForm } from '@/components/forms/contact-form';
-import { defaultPublicContact } from '@/lib/site-fallbacks';
+import { getResumeDownloadLabel } from '@/lib/media';
 import { getPublicProfile, getPublicResume, getPublicSocialLinks } from '@/services/public';
 
 export const dynamic = 'force-dynamic';
@@ -17,14 +17,14 @@ export default async function ContactPage() {
     getPublicSocialLinks(),
   ]);
 
-  const displayName = profile?.fullName ?? defaultPublicContact.fullName;
-  const title = profile?.professionalTitle ?? defaultPublicContact.professionalTitle;
-  const email = profile?.publicEmail ?? defaultPublicContact.publicEmail;
-  const phone = profile?.publicPhone ?? defaultPublicContact.publicPhone;
-  const location = profile?.generalLocation ?? defaultPublicContact.generalLocation;
+  const displayName = profile?.fullName ?? 'Professional Portfolio';
+  const title = profile?.professionalTitle ?? 'Professional Portfolio';
+  const email = profile?.publicEmail ?? null;
+  const phone = profile?.publicPhone ?? null;
+  const location = profile?.generalLocation ?? null;
   const introduction =
     profile?.professionalSummary ??
-    'Thoughtful communication, clear professional context, and timely follow-up help turn interest into meaningful opportunities.';
+    'Meaningful professional conversations begin with clarity, context, and thoughtful communication.';
   const profileTags = (profile?.rotatingTitles ?? []).slice(0, 4);
 
   return (
@@ -37,7 +37,7 @@ export default async function ContactPage() {
           <div className="space-y-8">
             <SectionHeading
               eyebrow="Contact"
-              title="Let's start a thoughtful professional conversation."
+              title="Get in touch for professional opportunities."
               description={introduction}
             />
 
@@ -62,28 +62,28 @@ export default async function ContactPage() {
               <ContactMethod
                 icon={<Mail className="h-5 w-5" />}
                 label="Email"
-                value={email}
-                href={`mailto:${email}`}
+                value={email ?? 'Available on request'}
+                href={email ? `mailto:${email}` : undefined}
                 description="Best for detailed opportunities, role context, and formal communication."
               />
               <ContactMethod
                 icon={<Phone className="h-5 w-5" />}
                 label="Phone"
-                value={phone}
-                href={`tel:${phone}`}
+                value={phone ?? 'Shared when relevant'}
+                href={phone ? `tel:${phone}` : undefined}
                 description="Useful for urgent calls, quick clarifications, or interview coordination."
               />
               <ContactMethod
                 icon={<MapPin className="h-5 w-5" />}
                 label="Location"
-                value={location}
-                description="Available for conversations aligned with this geography or remote collaboration."
+                value={location ?? 'Location available on request'}
+                description="Open to discussions around local, regional, or remote opportunities."
               />
               <ContactMethod
                 icon={<Clock3 className="h-5 w-5" />}
                 label="Response Rhythm"
                 value="Usually within 24 to 48 hours"
-                description="Messages sent with clear subject lines and context are easier to answer quickly."
+                description="Well-structured messages are easier to review and respond to promptly."
               />
             </div>
 
@@ -91,11 +91,10 @@ export default async function ContactPage() {
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="space-y-2">
                   <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent/80">
-                    Quick Access
+                    Highlights
                   </p>
                   <p className="max-w-2xl text-sm leading-7 text-foreground/72">
-                    If you are reviewing experience, training, or project work, the latest public resume and social
-                    links stay accessible here as well.
+                    Resume access and professional links remain available here for quick reference.
                   </p>
                 </div>
 
@@ -114,7 +113,7 @@ export default async function ContactPage() {
                       rel="noreferrer"
                       className="hover-lift premium-pill inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-foreground/82"
                     >
-                      Download PDF
+                      {getResumeDownloadLabel(resume.media)}
                       <ArrowUpRight className="h-4 w-4" />
                     </a>
                   ) : null}
@@ -155,15 +154,15 @@ export default async function ContactPage() {
                 <div className="space-y-4">
                   <div className="premium-pill inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-accent/82">
                     <MessageSquareText className="h-4 w-4" />
-                    Conversation Quality
+                    Professional Outreach
                   </div>
                   <p className="font-display text-2xl font-semibold text-foreground">
-                    Share enough context to get a better reply.
+                    A clear message leads to a stronger conversation.
                   </p>
                   <ul className="space-y-3 text-sm leading-7 text-foreground/72">
-                    <li>Include role type, organization name, and expected timeline if outreach is opportunity-based.</li>
-                    <li>Mention any project, skill, or resume section you want to discuss so replies can stay focused.</li>
-                    <li>Use the form for structured communication or direct email when attachments and long context matter.</li>
+                    <li>Share the role, organization, or project you would like to discuss.</li>
+                    <li>Include timing, expectations, or relevant context where helpful.</li>
+                    <li>Mention the most useful next step, such as a reply, call, or document review.</li>
                   </ul>
                 </div>
               </div>
@@ -172,18 +171,17 @@ export default async function ContactPage() {
             <div className="premium-panel p-6">
               <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent/80">Direct Message</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent/80">Contact Form</p>
                   <h3 className="mt-3 font-display text-2xl font-semibold text-foreground">
-                    Send a polished introduction
+                    Send a professional enquiry
                   </h3>
                   <p className="mt-2 max-w-xl text-sm leading-7 text-foreground/72">
-                    The form below feeds directly into the portfolio database, making follow-up and message tracking
-                    easier from the admin dashboard.
+                    Use the form below to introduce yourself, share context, and outline the purpose of your message.
                   </p>
                 </div>
 
                 <div className="premium-outline rounded-[1.35rem] px-4 py-3 text-sm leading-6 text-foreground/70">
-                  Use a clear subject line and include a phone number only when a callback is actually helpful.
+                  A clear subject line and concise summary help keep communication efficient.
                 </div>
               </div>
 

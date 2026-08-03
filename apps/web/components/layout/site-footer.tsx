@@ -4,8 +4,6 @@ import type { ReactNode } from 'react';
 
 import type { NavigationItem, PublicProfile, SocialLink } from '@ankita-portfolio/shared-types';
 
-import { defaultPublicContact } from '@/lib/site-fallbacks';
-
 export function SiteFooter({
   profile,
   navigation,
@@ -17,11 +15,11 @@ export function SiteFooter({
   socialLinks: SocialLink[];
   footerText?: string | null;
 }) {
-  const displayName = profile?.fullName ?? defaultPublicContact.fullName;
-  const title = profile?.professionalTitle ?? defaultPublicContact.professionalTitle;
-  const email = profile?.publicEmail ?? defaultPublicContact.publicEmail;
-  const phone = profile?.publicPhone ?? defaultPublicContact.publicPhone;
-  const location = profile?.generalLocation ?? defaultPublicContact.generalLocation;
+  const displayName = profile?.fullName ?? 'Professional Portfolio';
+  const title = profile?.professionalTitle ?? 'A professional presence shaped by clarity, credibility, and purpose.';
+  const email = profile?.publicEmail ?? null;
+  const phone = profile?.publicPhone ?? null;
+  const location = profile?.generalLocation ?? null;
   const year = new Date().getFullYear();
 
   return (
@@ -50,9 +48,23 @@ export function SiteFooter({
               </div>
 
               <div className="grid gap-4 sm:grid-cols-3">
-                <ContactStat label="Email" value={email} href={`mailto:${email}`} icon={<Mail className="h-4 w-4" />} />
-                <ContactStat label="Phone" value={phone} href={`tel:${phone}`} icon={<Phone className="h-4 w-4" />} />
-                <ContactStat label="Location" value={location} icon={<MapPin className="h-4 w-4" />} />
+                <ContactStat
+                  label="Email"
+                  value={email ?? 'Available on request'}
+                  href={email ? `mailto:${email}` : undefined}
+                  icon={<Mail className="h-4 w-4" />}
+                />
+                <ContactStat
+                  label="Phone"
+                  value={phone ?? 'Shared when relevant'}
+                  href={phone ? `tel:${phone}` : undefined}
+                  icon={<Phone className="h-4 w-4" />}
+                />
+                <ContactStat
+                  label="Location"
+                  value={location ?? 'Location available on request'}
+                  icon={<MapPin className="h-4 w-4" />}
+                />
               </div>
 
               <div className="flex flex-wrap gap-3">
@@ -60,7 +72,7 @@ export function SiteFooter({
                   href="/contact"
                   className="hover-lift inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] px-6 py-3 text-sm font-semibold text-white shadow-soft"
                 >
-                  Contact Ankita
+                  Contact
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
                 <Link
@@ -69,6 +81,13 @@ export function SiteFooter({
                 >
                   View Resume
                   <FileText className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/admin/login"
+                  className="hover-lift premium-pill inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-foreground/82"
+                >
+                  Admin Login
+                  <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </div>
             </div>
@@ -108,14 +127,14 @@ export function SiteFooter({
                     ))
                   ) : (
                     <div className="rounded-[1.5rem] border border-dashed border-border/60 bg-background/40 px-4 py-4 text-sm leading-7 text-foreground/62">
-                      Social links will appear here when they are published from the dashboard.
+                      Professional links will appear here soon.
                     </div>
                   )}
                 </div>
 
                 <div className="mt-6 rounded-[1.5rem] border border-border/50 bg-background/45 p-4 text-sm leading-7 text-foreground/68">
-                  Clear communication, accessible contact details, and database-managed public content keep this
-                  portfolio current across both light and dark experiences.
+                  Clear presentation, thoughtful detail, and approachable contact options shape every page of this
+                  portfolio.
                 </div>
               </div>
             </div>
@@ -126,10 +145,16 @@ export function SiteFooter({
           <p>
             &copy; {year} {displayName}. Built as a modern, media-driven professional portfolio.
           </p>
-          <a href="#main-content" className="inline-flex items-center gap-2 transition hover:text-accent">
-            Back to top
-            <ArrowUpRight className="h-4 w-4" />
-          </a>
+          <div className="flex flex-wrap items-center gap-4">
+            <Link href="/admin/login" className="inline-flex items-center gap-2 transition hover:text-accent">
+              Admin Login
+              <ArrowUpRight className="h-4 w-4" />
+            </Link>
+            <a href="#main-content" className="inline-flex items-center gap-2 transition hover:text-accent">
+              Back to top
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
+          </div>
         </div>
       </div>
     </footer>

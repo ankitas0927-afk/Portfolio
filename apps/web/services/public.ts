@@ -6,6 +6,7 @@ import type {
   HeroSection,
   InterestRecord,
   LanguageRecord,
+  MediaReference,
   NavigationItem,
   ProjectRecord,
   PublicProfile,
@@ -31,15 +32,15 @@ export type PublicSiteContext = {
     accentColor?: string;
     secondaryAccentColor?: string;
     footerText?: string;
-    logo?: { publicUrl: string; altText?: string; width?: number; height?: number } | null;
-    favicon?: { publicUrl: string } | null;
-    openGraphImage?: { publicUrl: string } | null;
+    logo?: MediaReference | null;
+    favicon?: MediaReference | null;
+    openGraphImage?: MediaReference | null;
   } | null;
   seoSettings: {
     defaultTitle?: string;
     defaultDescription?: string;
     defaultKeywords?: string[];
-    defaultOpenGraphImage?: { publicUrl: string } | null;
+    defaultOpenGraphImage?: MediaReference | null;
   } | null;
 };
 
@@ -58,7 +59,7 @@ export type PublicSkillsBundle = {
 export type PublicResumeBundle = ResumeRecord & {
   previewUrl: string;
   downloadUrl: string;
-  media?: { publicUrl: string } | null;
+  media?: MediaReference | null;
 };
 
 async function fetchPublic<T>(path: string): Promise<T | null> {

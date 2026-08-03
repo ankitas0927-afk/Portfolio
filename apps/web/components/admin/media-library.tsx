@@ -4,6 +4,7 @@ import { useDeferredValue, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
+import { getAcceptedFileTypes } from '@/lib/media';
 import { formatBytes } from '@/lib/utils';
 import { useAuth } from '@/providers/auth-provider';
 import { webEnv } from '@/lib/env';
@@ -58,12 +59,14 @@ export function MediaLibrary() {
       if (!file) {
         throw new Error('Please choose a file to upload');
       }
+
       const data = new FormData();
       data.append('file', file);
       data.append('category', formState.category);
       data.append('isPublic', String(formState.isPublic));
       data.append('altText', formState.altText);
       data.append('caption', formState.caption);
+
       return apiRequest({
         url: '/admin/media/upload',
         method: 'POST',
@@ -111,9 +114,14 @@ export function MediaLibrary() {
             <label className="mb-2 block text-sm font-medium text-foreground/72">File</label>
             <input
               type="file"
+              accept={getAcceptedFileTypes(formState.category)}
               onChange={(event) => setFile(event.target.files?.[0] ?? null)}
               className="w-full rounded-2xl border border-border/70 bg-background px-4 py-3 text-sm"
             />
+            <p className="mt-2 text-xs leading-6 text-foreground/48">
+              Accepted formats depend on category. Resumes and documents support PDF, DOC, and DOCX. Images support
+              JPG, JPEG, PNG, WebP, GIF, and AVIF, while logo and favicon uploads also accept ICO.
+            </p>
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-foreground/72">Category</label>
@@ -165,33 +173,35 @@ export function MediaLibrary() {
             placeholder="Search media"
             className="w-full rounded-full border border-border/70 bg-background px-4 py-3 text-sm"
           />
-          {(query.data?.items ?? []).map((item) => (
-            <article key={String(item.id)} className="rounded-[1.5rem] border border-border/60 bg-background/70 p-5">
-              <p className="font-semibold text-foreground">{String(item.originalName)}</p>
-              <p className="mt-2 text-xs uppercase tracking-[0.22em] text-foreground/45">
-                {String(item.category)} • {formatBytes(Number(item.size ?? 0))}
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {item.isPublic ? (
-                  <a
-                    href={`${webEnv.browserApiBaseUrl}/public/media/${String(item.id)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="rounded-full border border-border/70 px-3 py-2 text-xs font-semibold"
+          {(query.data?.items ?? []).map((item) => {
+            const metaLabel = `${String(item.category)} | ${formatBytes(Number(item.size ?? 0))}`;
+
+            return (
+              <article key={String(item.id)} className="rounded-[1.5rem] border border-border/60 bg-background/70 p-5">
+                <p className="font-semibold text-foreground">{String(item.originalName)}</p>
+                <p className="mt-2 text-xs uppercase tracking-[0.22em] text-foreground/45">{metaLabel}</p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {item.isPublic ? (
+                    <a
+                      href={`${webEnv.browserApiBaseUrl}/public/media/${String(item.id)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded-full border border-border/70 px-3 py-2 text-xs font-semibold"
+                    >
+                      Preview
+                    </a>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={() => deleteMutation.mutate(String(item.id))}
+                    className="rounded-full border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600"
                   >
-                    Preview
-                  </a>
-                ) : null}
-                <button
-                  type="button"
-                  onClick={() => deleteMutation.mutate(String(item.id))}
-                  className="rounded-full border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600"
-                >
-                  Delete
-                </button>
-              </div>
-            </article>
-          ))}
+                    Delete
+                  </button>
+                </div>
+              </article>
+            );
+          })}
           <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-background/60 px-4 py-3 text-sm">
             <button type="button" onClick={() => setPage((current) => Math.max(1, current - 1))}>
               Previous
@@ -202,9 +212,7 @@ export function MediaLibrary() {
             <button
               type="button"
               onClick={() =>
-                setPage((current) =>
-                  Math.min(query.data?.pagination.totalPages ?? current, current + 1),
-                )
+                setPage((current) => Math.min(query.data?.pagination.totalPages ?? current, current + 1))
               }
             >
               Next

@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { resumeFileAccept } from '@/lib/media';
 import { useAuth } from '@/providers/auth-provider';
 
 type ResumeRecord = {
@@ -18,7 +19,7 @@ export function ResumeManager() {
   const { apiRequest } = useAuth();
   const queryClient = useQueryClient();
   const [file, setFile] = useState<File | null>(null);
-  const [title, setTitle] = useState('Ankita Singh Resume');
+  const [title, setTitle] = useState('Professional Resume');
   const [versionLabel, setVersionLabel] = useState('');
   const [isActive, setIsActive] = useState(true);
 
@@ -30,7 +31,7 @@ export function ResumeManager() {
   const uploadMutation = useMutation({
     mutationFn: async () => {
       if (!file) {
-        throw new Error('Please select a resume PDF');
+        throw new Error('Please select a resume file');
       }
       const data = new FormData();
       data.append('file', file);
@@ -79,7 +80,8 @@ export function ResumeManager() {
       <div>
         <h2 className="font-display text-2xl font-semibold">Resume Manager</h2>
         <p className="mt-2 text-sm text-foreground/70">
-          Every resume version is stored in GridFS and activated separately.
+          Every resume version is stored in GridFS and activated separately. PDF, DOC, and DOCX are supported, while
+          inline preview is best for PDF.
         </p>
       </div>
 
@@ -104,7 +106,7 @@ export function ResumeManager() {
         />
         <input
           type="file"
-          accept="application/pdf"
+          accept={resumeFileAccept}
           onChange={(event) => setFile(event.target.files?.[0] ?? null)}
           className="rounded-2xl border border-border/70 bg-background px-4 py-3 text-sm"
         />
@@ -116,7 +118,7 @@ export function ResumeManager() {
           type="submit"
           className="rounded-full bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] px-5 py-3 text-sm font-semibold text-white lg:col-span-4"
         >
-          {uploadMutation.isPending ? 'Uploading...' : 'Upload resume'}
+          {uploadMutation.isPending ? 'Uploading...' : 'Upload resume file'}
         </button>
       </form>
 

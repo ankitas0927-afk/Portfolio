@@ -1,4 +1,5 @@
 import { Readable } from 'stream';
+import path from 'path';
 
 import { GRIDFS_BUCKETS, IMAGE_VARIANTS } from '@ankita-portfolio/config';
 import { AppError } from '../errors/app-error.js';
@@ -43,8 +44,50 @@ type ResolvedUpload = {
   variants: Array<{ variant: Exclude<MediaVariant, 'original'>; buffer: Buffer; width?: number; height?: number }>;
 };
 
-const imageMimeTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
-const documentMimeTypes = new Set(['application/pdf']);
+const imageMimeTypes = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/avif',
+  'image/x-icon',
+]);
+const documentMimeTypes = new Set([
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+]);
+const iconMimeTypes = new Set(['image/x-icon']);
+const documentCategoryExtensions = new Set(['pdf', 'doc', 'docx']);
+
+function getOriginalExtension(fileName: string) {
+  return path.extname(fileName).replace(/^\./, '').toLowerCase();
+}
+
+async function resolveDetectedFileType(file: Express.Multer.File) {
+  const detected = await fileTypeFromBuffer(file.buffer);
+  const originalExtension = getOriginalExtension(file.originalname);
+
+  if (detected?.mime === 'application/x-cfb' && originalExtension === 'doc') {
+    return {
+      ext: 'doc',
+      mime: 'application/msword',
+    };
+  }
+
+  if (detected) {
+    return detected;
+  }
+
+  if (originalExtension === 'doc' && ['application/msword', 'application/octet-stream'].includes(file.mimetype)) {
+    return {
+      ext: 'doc',
+      mime: 'application/msword',
+    };
+  }
+
+  return null;
+}
 
 function categoryToBucket(
   category: MediaCategory,
@@ -127,27 +170,36 @@ async function validateAndTransformFile(input: UploadMediaInput): Promise<Resolv
     throw new AppError(400, 'Uploaded file exceeds the configured size limit', 'FILE_TOO_LARGE');
   }
 
-  const detected = await fileTypeFromBuffer(file.buffer);
+  const detected = await resolveDetectedFileType(file);
   if (!detected) {
     throw new AppError(400, 'Unable to detect a safe file signature', 'UNSUPPORTED_FILE');
   }
 
   const expectsImage = isImageCategory(category);
   const detectedMimeType = detected.mime;
+  const detectedExtension = detected.ext.toLowerCase();
 
   if (expectsImage && !imageMimeTypes.has(detectedMimeType)) {
-    throw new AppError(400, 'Only JPEG, PNG, and WebP images are allowed here', 'INVALID_IMAGE');
+    throw new AppError(
+      400,
+      'Supported image formats here are JPG, JPEG, PNG, WebP, GIF, AVIF, and ICO.',
+      'INVALID_IMAGE',
+    );
   }
 
-  if (!expectsImage && !documentMimeTypes.has(detectedMimeType)) {
-    throw new AppError(400, 'Only PDF files are allowed for this upload category', 'INVALID_DOCUMENT');
+  if (!expectsImage && (!documentMimeTypes.has(detectedMimeType) || !documentCategoryExtensions.has(detectedExtension))) {
+    throw new AppError(400, 'Supported document formats here are PDF, DOC, and DOCX.', 'INVALID_DOCUMENT');
+  }
+
+  if (iconMimeTypes.has(detectedMimeType) && !['favicon', 'logo'].includes(category)) {
+    throw new AppError(400, 'ICO files are only allowed for logo and favicon uploads.', 'INVALID_IMAGE');
   }
 
   const bucketName = categoryToBucket(category);
 
   if (!expectsImage) {
     return {
-      extension: detected.ext,
+      extension: detectedExtension,
       detectedMimeType,
       bucketName,
       sanitizedOriginalBuffer: file.buffer,
@@ -157,15 +209,41 @@ async function validateAndTransformFile(input: UploadMediaInput): Promise<Resolv
     };
   }
 
-  const metadata = await sharp(file.buffer, { failOnError: true }).metadata();
+  if (iconMimeTypes.has(detectedMimeType)) {
+    return {
+      extension: detectedExtension,
+      detectedMimeType,
+      bucketName,
+      sanitizedOriginalBuffer: file.buffer,
+      size: file.buffer.length,
+      isImage: true,
+      variants: [],
+    };
+  }
+
+  const sharpOptions = {
+    failOnError: true,
+    animated: detectedMimeType === 'image/gif',
+  } as const;
+  const metadata = await sharp(file.buffer, sharpOptions).metadata();
   const width = metadata.width;
   const height = metadata.height;
 
   const sanitizedOriginalBuffer =
     detectedMimeType === 'image/png'
-      ? await sharp(file.buffer).rotate().png({ compressionLevel: 9 }).toBuffer()
+      ? await sharp(file.buffer, sharpOptions).rotate().png({ compressionLevel: 9 }).toBuffer()
       : detectedMimeType === 'image/webp'
-        ? await sharp(file.buffer).rotate().webp({ quality: IMAGE_VARIANTS.original.quality }).toBuffer()
+        ? await sharp(file.buffer, sharpOptions)
+            .rotate()
+            .webp({ quality: IMAGE_VARIANTS.original.quality })
+            .toBuffer()
+        : detectedMimeType === 'image/avif'
+          ? await sharp(file.buffer, sharpOptions)
+              .rotate()
+              .avif({ quality: IMAGE_VARIANTS.original.quality })
+              .toBuffer()
+          : detectedMimeType === 'image/gif'
+            ? file.buffer
         : await sharp(file.buffer)
             .rotate()
             .jpeg({ quality: IMAGE_VARIANTS.original.quality, mozjpeg: true })
@@ -177,7 +255,7 @@ async function validateAndTransformFile(input: UploadMediaInput): Promise<Resolv
       continue;
     }
 
-    const transformed = await sharp(file.buffer)
+    const transformed = await sharp(file.buffer, sharpOptions)
       .rotate()
       .resize({ width: config.width, withoutEnlargement: true })
       .webp({ quality: config.quality })
@@ -192,7 +270,7 @@ async function validateAndTransformFile(input: UploadMediaInput): Promise<Resolv
   }
 
   return {
-    extension: detected.ext,
+    extension: detectedExtension,
     detectedMimeType,
     bucketName,
     sanitizedOriginalBuffer,

@@ -7,15 +7,20 @@ import { useState } from 'react';
 
 import type { NavigationItem } from '@ankita-portfolio/shared-types';
 
+import { PortfolioImage } from '@/components/common/portfolio-image';
 import { ThemeToggle } from '@/components/common/theme-toggle';
 import { cn } from '@/lib/utils';
 
 export function SiteHeader({
   navigation,
+  logo,
   siteName,
+  siteTagline,
 }: {
   navigation: NavigationItem[];
+  logo?: { publicUrl: string; altText?: string; width?: number; height?: number } | null;
   siteName: string;
+  siteTagline?: string | null;
 }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
@@ -32,14 +37,27 @@ export function SiteHeader({
     <header className="sticky top-0 z-40 border-b border-sky-100/80 bg-[linear-gradient(180deg,rgba(245,250,255,0.97),rgba(236,245,255,0.94))] backdrop-blur-xl dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(9,16,28,0.97),rgba(12,22,38,0.94))]">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-4 py-4 sm:px-6 lg:px-8">
         <Link href="/" className="group flex min-w-0 items-center gap-3">
-          <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] font-display text-lg text-white shadow-[0_14px_32px_-18px_rgba(29,78,216,0.72)] ring-2 ring-white/80 dark:ring-white/10">
-            A
-          </span>
+          {logo?.publicUrl ? (
+            <PortfolioImage
+              src={logo.publicUrl}
+              alt={logo.altText ?? `${siteName} logo`}
+              width={logo.width ?? 44}
+              height={logo.height ?? 44}
+              className="h-11 w-11 rounded-2xl object-cover shadow-[0_14px_32px_-18px_rgba(29,78,216,0.72)] ring-2 ring-white/80 dark:ring-white/10"
+              sizes="44px"
+            />
+          ) : (
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] font-display text-lg text-white shadow-[0_14px_32px_-18px_rgba(29,78,216,0.72)] ring-2 ring-white/80 dark:ring-white/10">
+              {siteName.slice(0, 1).toUpperCase()}
+            </span>
+          )}
           <div className="min-w-0">
             <p className="truncate font-display text-xl font-semibold tracking-tight text-sky-700 dark:text-sky-300">
               {siteName}
             </p>
-            <p className="text-xs uppercase tracking-[0.34em] text-foreground/48">Portfolio</p>
+            <p className="truncate text-xs uppercase tracking-[0.34em] text-foreground/48">
+              {siteTagline?.trim() || 'Portfolio'}
+            </p>
           </div>
         </Link>
 

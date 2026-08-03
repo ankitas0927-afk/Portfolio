@@ -21,22 +21,40 @@ const fontDisplay = Fraunces({
 export async function generateMetadata(): Promise<Metadata> {
   const [siteContext, profile] = await Promise.all([getSiteContext(), getPublicProfile()]);
 
-  const title = siteContext?.seoSettings?.defaultTitle ?? `${profile?.fullName ?? 'Ankita Singh'} Portfolio`;
+  const siteName = siteContext?.siteSettings?.siteName ?? profile?.fullName ?? 'Professional Portfolio';
+  const title = siteContext?.seoSettings?.defaultTitle ?? `${siteName} Portfolio`;
   const description =
     siteContext?.seoSettings?.defaultDescription ??
     profile?.professionalSummary ??
-    'Database-driven personal portfolio built with Next.js and MongoDB GridFS.';
+    'A professional portfolio showcasing experience, capabilities, projects, and career highlights.';
+  const iconUrl = siteContext?.siteSettings?.favicon?.publicUrl ?? siteContext?.siteSettings?.logo?.publicUrl;
+  const openGraphImageUrl =
+    siteContext?.seoSettings?.defaultOpenGraphImage?.publicUrl ??
+    siteContext?.siteSettings?.openGraphImage?.publicUrl ??
+    siteContext?.siteSettings?.logo?.publicUrl;
 
   return {
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
+    applicationName: siteName,
     title,
     description,
+    icons: iconUrl
+      ? {
+          icon: [{ url: iconUrl }],
+          shortcut: [{ url: iconUrl }],
+          apple: [{ url: iconUrl }],
+        }
+      : undefined,
     openGraph: {
       title,
       description,
-      images: siteContext?.seoSettings?.defaultOpenGraphImage?.publicUrl
-        ? [siteContext.seoSettings.defaultOpenGraphImage.publicUrl]
-        : [],
+      images: openGraphImageUrl ? [openGraphImageUrl] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: openGraphImageUrl ? [openGraphImageUrl] : [],
     },
   };
 }
@@ -61,7 +79,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           </a>
           <SiteHeader
             navigation={navigation}
-            siteName={siteContext?.siteSettings?.siteName ?? 'Ankita Singh'}
+            logo={siteContext?.siteSettings?.logo ?? null}
+            siteName={siteContext?.siteSettings?.siteName ?? profile?.fullName ?? 'Professional Portfolio'}
+            siteTagline={siteContext?.siteSettings?.siteTagline ?? null}
           />
           <main id="main-content">{children}</main>
           <SiteFooter

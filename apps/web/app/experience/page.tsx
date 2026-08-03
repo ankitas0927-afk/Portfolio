@@ -11,7 +11,7 @@ export default async function ExperiencePage() {
       <SectionHeading
         eyebrow="Experience"
         title="Work experience"
-        description="Only published experience entries are visible on the public portfolio."
+        description="A concise overview of professional roles, responsibilities, and career growth."
       />
       <div className="mt-12 space-y-6">
         {experience.map((item) => (

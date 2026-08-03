@@ -13,7 +13,7 @@ export default async function ProjectsPage() {
       <SectionHeading
         eyebrow="Projects"
         title="Published projects"
-        description="Draft projects remain private until they are published from the admin dashboard."
+        description="A selection of practical work, case studies, and published project highlights."
       />
       <div className="mt-12 grid gap-6 lg:grid-cols-2">
         {projects.map((project) => (

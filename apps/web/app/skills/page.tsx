@@ -12,7 +12,7 @@ export default async function SkillsPage() {
       <SectionHeading
         eyebrow="Skills"
         title="Technical skills and personal strengths"
-        description="Public skill categories, software knowledge, and personal strengths managed from the admin dashboard."
+        description="Technical capability, software familiarity, and personal strengths presented with clarity."
       />
 
       {hasContent ? (
@@ -61,7 +61,7 @@ export default async function SkillsPage() {
       ) : (
         <div className="mt-12 rounded-[2rem] border border-border/60 bg-card/75 p-6 shadow-soft">
           <p className="text-sm leading-7 text-foreground/72">
-            No published skills are available yet. Add or publish them from the administrator dashboard.
+            Skills and strengths will appear here soon.
           </p>
         </div>
       )}

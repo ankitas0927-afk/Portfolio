@@ -33,6 +33,9 @@ export interface MediaReference {
   id: string;
   publicUrl: string;
   altText?: string;
+  originalName?: string;
+  extension?: string;
+  mimeType?: string;
   width?: number;
   height?: number;
   variant?: MediaVariant;

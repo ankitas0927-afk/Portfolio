@@ -11,13 +11,13 @@ export default async function AboutPage() {
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <SectionHeading
         eyebrow="About"
-        title={profile?.professionalTitle ?? 'About Ankita Singh'}
+        title={profile?.professionalTitle ?? 'About This Portfolio'}
         description={about?.fullBiography ?? profile?.professionalSummary}
       />
       <div className="mt-12 grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
         <PortfolioImage
           src={about?.aboutImage?.publicUrl ?? profile?.profileImage?.publicUrl}
-          alt={profile?.fullName ?? 'Ankita Singh'}
+          alt={profile?.fullName ?? 'Professional profile image'}
           width={about?.aboutImage?.width ?? profile?.profileImage?.width ?? 680}
           height={about?.aboutImage?.height ?? profile?.profileImage?.height ?? 800}
           className="min-h-[420px] rounded-[2rem]"
