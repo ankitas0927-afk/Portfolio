@@ -34,6 +34,13 @@ const documentMimes = [
   ...wordMimes
 ] as const;
 
+function parsePositiveInteger(value: string | undefined, fallback: number): number {
+  const parsed = Number.parseInt(value ?? "", 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+const uploadMaxDocumentBytes = parsePositiveInteger(process.env.MAX_DOCUMENT_MB, 15) * 1024 * 1024;
+
 type StoreBufferInput = {
   buffer: Buffer;
   originalName: string;
@@ -67,7 +74,7 @@ type GridFsFile = {
 
 export const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: getEnv().MAX_DOCUMENT_MB * 1024 * 1024, files: 1 }
+  limits: { fileSize: uploadMaxDocumentBytes, files: 1 }
 });
 
 function getBucket(bucketName: MediaBucket): GridFSBucket {

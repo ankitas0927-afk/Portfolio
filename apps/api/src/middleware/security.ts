@@ -6,13 +6,28 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import pinoHttp from "pino-http";
-import { getEnv } from "../config/env";
 import { logger } from "../config/logger";
 
+function resolveFrontendUrl(): string | undefined {
+  const frontendUrl = process.env.FRONTEND_URL?.trim();
+  if (frontendUrl) {
+    return frontendUrl;
+  }
+
+  const vercelUrl = process.env.VERCEL_URL?.trim();
+  return vercelUrl ? `https://${vercelUrl}` : undefined;
+}
+
 export function applySecurity(app: Express): void {
-  const env = getEnv();
+  const frontendUrl = resolveFrontendUrl();
+  const isTest = process.env.NODE_ENV === "test";
 
   app.disable("x-powered-by");
+  const connectSrc = ["'self'"];
+  if (frontendUrl) {
+    connectSrc.push(frontendUrl);
+  }
+
   app.use(
     helmet({
       crossOriginResourcePolicy: { policy: "cross-origin" },
@@ -23,14 +38,14 @@ export function applySecurity(app: Express): void {
           "img-src": ["'self'", "data:", "blob:"],
           "script-src": ["'self'"],
           "style-src": ["'self'", "'unsafe-inline'"],
-          "connect-src": ["'self'", env.FRONTEND_URL]
+          "connect-src": connectSrc
         }
       }
     }),
   );
   app.use(
     cors({
-      origin: env.FRONTEND_URL,
+      origin: frontendUrl ?? true,
       credentials: true,
       methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"]
     }),
@@ -49,7 +64,7 @@ export function applySecurity(app: Express): void {
   app.use(
     rateLimit({
       windowMs: 15 * 60 * 1000,
-      limit: env.NODE_ENV === "test" ? 1000 : 300,
+      limit: isTest ? 1000 : 300,
       standardHeaders: true,
       legacyHeaders: false
     }),

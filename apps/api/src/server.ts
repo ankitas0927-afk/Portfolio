@@ -5,15 +5,16 @@ import { createApp } from "./app";
 import { connectDatabase, disconnectDatabase } from "./database/connection";
 
 const app = createApp();
+const isVercel = Boolean(process.env.VERCEL);
 
 async function bootstrap(): Promise<void> {
-  const env = getEnv();
-  await connectDatabase();
-
-  if (process.env.VERCEL) {
+  if (isVercel) {
     logger.info("API initialized for Vercel runtime");
     return;
   }
+
+  const env = getEnv();
+  await connectDatabase();
 
   const server = http.createServer(app);
 

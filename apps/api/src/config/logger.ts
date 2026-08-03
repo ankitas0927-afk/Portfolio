@@ -1,5 +1,4 @@
 import pino from "pino";
-import { getEnv } from "./env";
 
 const redact = [
   "req.headers.authorization",
@@ -16,6 +15,6 @@ const redact = [
 ];
 
 export const logger = pino({
-  level: getEnv().NODE_ENV === "test" ? "silent" : "info",
+  level: process.env.NODE_ENV === "test" ? "silent" : "info",
   redact
 });

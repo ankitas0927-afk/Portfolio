@@ -2,7 +2,6 @@ import type { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
 import { AppError } from "../errors/appError";
 import { logger } from "../config/logger";
-import { getEnv } from "../config/env";
 
 export function errorHandler(
   error: Error,
@@ -10,7 +9,7 @@ export function errorHandler(
   res: Response,
   _next: NextFunction,
 ): void {
-  const env = getEnv();
+  const isProduction = process.env.NODE_ENV === "production";
 
   if (error instanceof ZodError) {
     res.status(400).json({
@@ -32,7 +31,7 @@ export function errorHandler(
       error: {
         code: error.code,
         message: error.message,
-        details: env.NODE_ENV === "production" ? undefined : error.details,
+        details: isProduction ? undefined : error.details,
         requestId: req.requestId
       }
     });
@@ -44,7 +43,7 @@ export function errorHandler(
     error: {
       code: "INTERNAL_SERVER_ERROR",
       message: "An unexpected error occurred",
-      details: env.NODE_ENV === "production" ? undefined : { message: error.message },
+      details: isProduction ? undefined : { message: error.message },
       requestId: req.requestId
     }
   });

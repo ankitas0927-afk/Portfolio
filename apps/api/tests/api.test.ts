@@ -25,6 +25,12 @@ describe("API", () => {
     expect(response.body.ok).toBe(true);
   });
 
+  it("redirects the root route to the public site", async () => {
+    const response = await request(app).get("/");
+    expect(response.status).toBe(302);
+    expect(response.headers.location).toBe("http://localhost:3000");
+  });
+
   it("rejects invalid admin login", async () => {
     await createInitialAdmin();
     const response = await request(app).post("/api/v1/auth/login").send({
