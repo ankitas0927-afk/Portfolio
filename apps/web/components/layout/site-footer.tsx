@@ -3,6 +3,7 @@ import { ArrowUpRight, FileText, Mail, MapPin, Phone, Sparkles } from 'lucide-re
 import type { ReactNode } from 'react';
 
 import type { NavigationItem, PublicProfile, SocialLink } from '@ankita-portfolio/shared-types';
+import { cvFallback } from '@/lib/cv-fallback';
 
 export function SiteFooter({
   profile,
@@ -15,11 +16,11 @@ export function SiteFooter({
   socialLinks: SocialLink[];
   footerText?: string | null;
 }) {
-  const displayName = profile?.fullName ?? 'Professional Portfolio';
-  const title = profile?.professionalTitle ?? 'A professional presence shaped by clarity, credibility, and purpose.';
-  const email = profile?.publicEmail ?? null;
-  const phone = profile?.publicPhone ?? null;
-  const location = profile?.generalLocation ?? null;
+  const displayName = profile?.fullName ?? cvFallback.fullName;
+  const title = profile?.professionalTitle ?? cvFallback.professionalTitle;
+  const email = profile?.publicEmail ?? cvFallback.publicEmail;
+  const phone = profile?.publicPhone ?? cvFallback.publicPhone;
+  const location = profile?.generalLocation ?? cvFallback.location;
   const year = new Date().getFullYear();
 
   return (
@@ -94,7 +95,9 @@ export function SiteFooter({
 
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="premium-outline rounded-[1.75rem] p-5">
-                <p className="text-sm font-semibold uppercase tracking-[0.28em] text-foreground/52">Navigation</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.28em] text-foreground/52">
+                  Navigation
+                </p>
                 <div className="mt-5 grid gap-3 text-sm text-foreground/74">
                   {navigation.map((item) => (
                     <Link
@@ -110,7 +113,9 @@ export function SiteFooter({
               </div>
 
               <div className="premium-outline rounded-[1.75rem] p-5">
-                <p className="text-sm font-semibold uppercase tracking-[0.28em] text-foreground/52">Connect</p>
+                <p className="text-sm font-semibold uppercase tracking-[0.28em] text-foreground/52">
+                  Connect
+                </p>
                 <div className="mt-5 flex flex-wrap gap-3">
                   {socialLinks.length > 0 ? (
                     socialLinks.map((link) => (
@@ -133,8 +138,8 @@ export function SiteFooter({
                 </div>
 
                 <div className="mt-6 rounded-[1.5rem] border border-border/50 bg-background/45 p-4 text-sm leading-7 text-foreground/68">
-                  Clear presentation, thoughtful detail, and approachable contact options shape every page of this
-                  portfolio.
+                  Clear presentation, thoughtful detail, and approachable contact options shape
+                  every page of this portfolio.
                 </div>
               </div>
             </div>
@@ -146,11 +151,17 @@ export function SiteFooter({
             &copy; {year} {displayName}. Built as a modern, media-driven professional portfolio.
           </p>
           <div className="flex flex-wrap items-center gap-4">
-            <Link href="/admin/login" className="inline-flex items-center gap-2 transition hover:text-accent">
+            <Link
+              href="/admin/login"
+              className="inline-flex items-center gap-2 transition hover:text-accent"
+            >
               Admin Login
               <ArrowUpRight className="h-4 w-4" />
             </Link>
-            <a href="#main-content" className="inline-flex items-center gap-2 transition hover:text-accent">
+            <a
+              href="#main-content"
+              className="inline-flex items-center gap-2 transition hover:text-accent"
+            >
               Back to top
               <ArrowUpRight className="h-4 w-4" />
             </a>

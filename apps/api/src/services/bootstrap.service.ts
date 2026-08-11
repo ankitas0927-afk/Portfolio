@@ -10,6 +10,7 @@ import { logger } from '../config/logger.js';
 import {
   AboutModel,
   AdminModel,
+  CertificateModel,
   EducationModel,
   ExperienceModel,
   HeroModel,
@@ -30,6 +31,20 @@ import {
 } from '../models/index.js';
 import { updateMediaMetadata, uploadMedia } from './media.service.js';
 import { ankitaSeedData } from '../scripts/seed-data.js';
+
+type BootstrapProfileSnapshot = {
+  _id?: { toString(): string };
+  fullName?: string;
+  professionalTitle?: string;
+  shortIntroduction?: string;
+  professionalSummary?: string;
+  careerObjective?: string;
+  generalLocation?: string;
+  profileImageId?: { toString(): string } | null;
+  activeResumeId?: { toString(): string } | null;
+};
+
+const BOOTSTRAP_REQUEST_ID = 'bootstrap-seed';
 
 function resolveSeedPath(filePath: string) {
   return path.resolve(process.cwd(), filePath);
@@ -60,7 +75,10 @@ async function resolveSeedAssetPath(configuredPath: string | undefined, fallback
   return path.resolve(process.cwd(), fallbackPath);
 }
 
-async function readFileAsMulterUpload(filePath: string, mimetype: string): Promise<Express.Multer.File> {
+async function readFileAsMulterUpload(
+  filePath: string,
+  mimetype: string,
+): Promise<Express.Multer.File> {
   const buffer = await fs.readFile(filePath);
   return {
     fieldname: 'file',
@@ -95,35 +113,82 @@ export async function ensureAdminAccount() {
   return { admin: createdAdmin, created: true };
 }
 
-export async function ensurePortfolioSeed(adminId: string) {
-  const existingProfile = await PersonalProfileModel.findOne({});
-  if (existingProfile) {
-    return { seeded: false };
+function getOwnerLocation() {
+  return (
+    [env.OWNER_CITY, env.OWNER_STATE, env.OWNER_COUNTRY].filter(Boolean).join(', ') ||
+    ankitaSeedData.currentLocation
+  );
+}
+
+function getResumeMimeType(filePath: string) {
+  const resumeExtension = path.extname(filePath).toLowerCase();
+  if (resumeExtension === '.doc') {
+    return 'application/msword';
   }
 
-  const profileImagePath = await resolveSeedAssetPath(env.PROFILE_IMAGE_PATH, 'seed-assets/ankita-profile.png');
-  const resumePath = await resolveSeedAssetPath(env.RESUME_PDF_PATH, 'seed-assets/ankita-resume.pdf');
+  if (resumeExtension === '.docx') {
+    return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+  }
 
-  const resumeExtension = path.extname(resumePath).toLowerCase();
-  const resumeMimeType =
-    resumeExtension === '.doc'
-      ? 'application/msword'
-      : resumeExtension === '.docx'
-        ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        : 'application/pdf';
+  return 'application/pdf';
+}
 
+function isGenericPortfolioProfile(profile: BootstrapProfileSnapshot) {
+  const combinedText = [
+    profile.fullName,
+    profile.professionalTitle,
+    profile.shortIntroduction,
+    profile.professionalSummary,
+    profile.careerObjective,
+    profile.generalLocation,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+
+  return (
+    !combinedText.includes('ankita') ||
+    combinedText.includes('professional portfolio') ||
+    combinedText.includes('published profile') ||
+    combinedText.includes('location available on request')
+  );
+}
+
+async function uploadSeedProfileImage(adminId: string) {
+  const profileImagePath = await resolveSeedAssetPath(
+    env.PROFILE_IMAGE_PATH,
+    'seed-assets/ankita-profile.png',
+  );
+  return uploadMedia({
+    file: await readFileAsMulterUpload(profileImagePath, 'image/png'),
+    category: 'profile-image',
+    isPublic: true,
+    altText: 'Ankita Singh portrait',
+    associatedModel: 'PersonalProfile',
+    adminId,
+    requestId: BOOTSTRAP_REQUEST_ID,
+  });
+}
+
+async function createSeedResume(adminId: string) {
+  const resumePath = await resolveSeedAssetPath(
+    env.RESUME_PDF_PATH,
+    'seed-assets/ankita-resume.pdf',
+  );
   const resumeUpload = await uploadMedia({
-    file: await readFileAsMulterUpload(resumePath, resumeMimeType),
+    file: await readFileAsMulterUpload(resumePath, getResumeMimeType(resumePath)),
     category: 'resume',
     isPublic: true,
     associatedModel: 'Resume',
     adminId,
-    requestId: 'bootstrap-seed',
+    requestId: BOOTSTRAP_REQUEST_ID,
   });
+
+  await ResumeModel.updateMany({}, { $set: { isActive: false } });
 
   const resume = await ResumeModel.create({
     title: 'Ankita Singh Resume',
-    versionLabel: 'Initial Resume',
+    versionLabel: 'Current CV',
     mediaAssetId: resumeUpload.asset.id,
     isActive: true,
     publicationStatus: 'published',
@@ -133,83 +198,37 @@ export async function ensurePortfolioSeed(adminId: string) {
     resumeUpload.asset.id as string,
     { associatedModel: 'Resume', associatedDocumentId: resume._id.toString(), isPublic: true },
     adminId,
-    'bootstrap-seed',
+    BOOTSTRAP_REQUEST_ID,
   );
 
-  const profileImageUpload = await uploadMedia({
-    file: await readFileAsMulterUpload(profileImagePath, 'image/png'),
-    category: 'profile-image',
-    isPublic: true,
-    altText: 'Ankita Singh portrait',
-    associatedModel: 'PersonalProfile',
-    adminId,
-    requestId: 'bootstrap-seed',
-  });
+  return resume;
+}
 
-  const location = [env.OWNER_CITY, env.OWNER_STATE, env.OWNER_COUNTRY].filter(Boolean).join(', ');
+async function clearSeedManagedPortfolioContent() {
+  await Promise.all([
+    PersonalProfileModel.deleteMany({}),
+    PrivatePersonalDetailsModel.deleteMany({}),
+    SiteSettingsModel.deleteMany({}),
+    HeroModel.deleteMany({}),
+    AboutModel.deleteMany({}),
+    ExperienceModel.deleteMany({}),
+    EducationModel.deleteMany({}),
+    ProfessionalTrainingModel.deleteMany({}),
+    SkillCategoryModel.deleteMany({}),
+    SkillModel.deleteMany({}),
+    PersonalSkillModel.deleteMany({}),
+    ProjectModel.deleteMany({}),
+    LanguageModel.deleteMany({}),
+    InterestModel.deleteMany({}),
+    CertificateModel.deleteMany({}),
+    ResumeModel.deleteMany({}),
+    SocialLinkModel.deleteMany({}),
+    NavigationItemModel.deleteMany({}),
+    SeoSettingsModel.deleteMany({}),
+  ]);
+}
 
-  const profile = await PersonalProfileModel.create({
-    fullName: 'Ankita Singh',
-    professionalTitle: ankitaSeedData.professionalHeading,
-    rotatingTitles: ankitaSeedData.rotatingTitles,
-    shortIntroduction: ankitaSeedData.shortIntroduction,
-    professionalSummary: ankitaSeedData.professionalSummary,
-    careerObjective: ankitaSeedData.careerObjective,
-    generalLocation: location || 'Lucknow, India',
-    availability: 'open_to_work',
-    profileImageId: profileImageUpload.asset.id,
-    publicEmail: env.OWNER_PUBLIC_EMAIL || undefined,
-    publicPhone: env.OWNER_PUBLIC_PHONE || undefined,
-    activeResumeId: resume._id,
-    publicationStatus: 'published',
-  });
-
-  await updateMediaMetadata(
-    profileImageUpload.asset.id as string,
-    { associatedModel: 'PersonalProfile', associatedDocumentId: profile._id.toString(), isPublic: true },
-    adminId,
-    'bootstrap-seed',
-  );
-
-  await PrivatePersonalDetailsModel.create({
-    profileId: profile._id,
-    privateEmail: env.OWNER_PRIVATE_EMAIL || undefined,
-    privatePhone: env.OWNER_PRIVATE_PHONE || undefined,
-    fullAddress: env.OWNER_PRIVATE_ADDRESS || undefined,
-    dateOfBirth: env.OWNER_DATE_OF_BIRTH || undefined,
-    parentOrGuardian: env.OWNER_PARENT_GUARDIAN || undefined,
-    gender: env.OWNER_GENDER || undefined,
-    nationality: env.OWNER_NATIONALITY || undefined,
-    city: env.OWNER_CITY || undefined,
-    state: env.OWNER_STATE || undefined,
-    country: env.OWNER_COUNTRY || undefined,
-    publicProfessionalEmail: env.OWNER_PUBLIC_EMAIL || undefined,
-    publicProfessionalPhone: env.OWNER_PUBLIC_PHONE || undefined,
-    emailIsPublic: Boolean(env.OWNER_PUBLIC_EMAIL),
-    phoneIsPublic: Boolean(env.OWNER_PUBLIC_PHONE),
-  });
-
-  await HeroModel.create({
-    eyebrow: 'Professional Profile',
-    heading: ankitaSeedData.heroHeading,
-    subheading: ankitaSeedData.heroSubheading,
-    highlights: ankitaSeedData.heroHighlights,
-    ctaPrimaryLabel: 'View Resume',
-    ctaPrimaryHref: '/resume',
-    ctaSecondaryLabel: 'Contact',
-    ctaSecondaryHref: '/contact',
-    publicationStatus: 'published',
-  });
-
-  await AboutModel.create({
-    fullBiography: ankitaSeedData.fullBiography,
-    preferredEmploymentArea: ankitaSeedData.preferredEmploymentArea,
-    currentLocation: location || 'Lucknow, India',
-    availabilityLabel: 'Open to suitable opportunities',
-    keyStrengths: ankitaSeedData.keyStrengths,
-    publicationStatus: 'published',
-  });
-
+async function insertOrderedPortfolioRecords() {
   const skillCategories = await SkillCategoryModel.insertMany(
     ankitaSeedData.skillCategories.map((category) => ({
       ...category,
@@ -260,23 +279,112 @@ export async function ensurePortfolioSeed(adminId: string) {
       })),
     ),
   ]);
+}
+
+async function createPortfolioSeed(adminId: string) {
+  const profileImageUpload = await uploadSeedProfileImage(adminId);
+  const resume = await createSeedResume(adminId);
+  const location = getOwnerLocation();
+
+  const profile = await PersonalProfileModel.create({
+    fullName: 'Ankita Singh',
+    professionalTitle: ankitaSeedData.professionalHeading,
+    rotatingTitles: ankitaSeedData.rotatingTitles,
+    shortIntroduction: ankitaSeedData.shortIntroduction,
+    professionalSummary: ankitaSeedData.professionalSummary,
+    careerObjective: ankitaSeedData.careerObjective,
+    generalLocation: location,
+    availability: 'open_to_work',
+    profileImageId: profileImageUpload.asset.id,
+    heroImageId: profileImageUpload.asset.id,
+    publicEmail: env.OWNER_PUBLIC_EMAIL || undefined,
+    publicPhone: env.OWNER_PUBLIC_PHONE || undefined,
+    activeResumeId: resume._id,
+    publicationStatus: 'published',
+  });
+
+  await updateMediaMetadata(
+    profileImageUpload.asset.id as string,
+    {
+      associatedModel: 'PersonalProfile',
+      associatedDocumentId: profile._id.toString(),
+      isPublic: true,
+    },
+    adminId,
+    BOOTSTRAP_REQUEST_ID,
+  );
+
+  await PrivatePersonalDetailsModel.create({
+    profileId: profile._id,
+    privateEmail: env.OWNER_PRIVATE_EMAIL || undefined,
+    privatePhone: env.OWNER_PRIVATE_PHONE || undefined,
+    fullAddress: env.OWNER_PRIVATE_ADDRESS || undefined,
+    dateOfBirth: env.OWNER_DATE_OF_BIRTH || undefined,
+    parentOrGuardian: env.OWNER_PARENT_GUARDIAN || undefined,
+    gender: env.OWNER_GENDER || undefined,
+    nationality: env.OWNER_NATIONALITY || undefined,
+    city: env.OWNER_CITY || undefined,
+    state: env.OWNER_STATE || undefined,
+    country: env.OWNER_COUNTRY || undefined,
+    publicProfessionalEmail: env.OWNER_PUBLIC_EMAIL || undefined,
+    publicProfessionalPhone: env.OWNER_PUBLIC_PHONE || undefined,
+    emailIsPublic: Boolean(env.OWNER_PUBLIC_EMAIL),
+    phoneIsPublic: Boolean(env.OWNER_PUBLIC_PHONE),
+  });
+
+  await HeroModel.create({
+    eyebrow: 'Professional Profile',
+    heading: ankitaSeedData.heroHeading,
+    subheading: ankitaSeedData.heroSubheading,
+    highlights: ankitaSeedData.heroHighlights,
+    ctaPrimaryLabel: 'View Resume',
+    ctaPrimaryHref: '/resume',
+    ctaSecondaryLabel: 'Contact',
+    ctaSecondaryHref: '/contact',
+    heroImageId: profileImageUpload.asset.id,
+    publicationStatus: 'published',
+  });
+
+  await AboutModel.create({
+    fullBiography: ankitaSeedData.fullBiography,
+    preferredEmploymentArea: ankitaSeedData.preferredEmploymentArea,
+    currentLocation: location,
+    availabilityLabel: 'Open to suitable opportunities',
+    keyStrengths: ankitaSeedData.keyStrengths,
+    aboutImageId: profileImageUpload.asset.id,
+    publicationStatus: 'published',
+  });
+
+  await insertOrderedPortfolioRecords();
 
   await Promise.all([
     SocialLinkModel.deleteMany({}),
     SiteSettingsModel.create({
-      siteName: 'Ankita Singh Portfolio',
-      siteTagline: 'Research, pharmacy, and quality-focused professional portfolio',
+      siteName: 'Ankita Singh',
+      siteTagline: 'Research Analyst | Pharmacy Graduate',
+      logoId: profileImageUpload.asset.id,
+      faviconId: profileImageUpload.asset.id,
+      openGraphImageId: profileImageUpload.asset.id,
       accentColor: DEFAULT_ACCENT,
       secondaryAccentColor: DEFAULT_SECONDARY_ACCENT,
       enableDarkTheme: true,
       maintenanceMode: false,
-      footerText: 'A professional portfolio focused on clarity, credibility, and thoughtful presentation.',
+      footerText:
+        'Research analyst and pharmacy graduate focused on accurate analysis, quality control exposure, and dependable professional communication.',
     }),
     SeoSettingsModel.create({
       defaultTitle: 'Ankita Singh | Research Analyst and Pharmacy Graduate',
       defaultDescription:
-        'Professional portfolio of Ankita Singh, a research analyst and pharmacy graduate with pharmaceutical training and analysis software experience.',
-      defaultKeywords: ['Ankita Singh', 'Research Analyst', 'Pharmacy Graduate', 'Pharmaceutical'],
+        'Portfolio of Ankita Singh, a current Research Analyst and B.Pharm graduate with quality control training, pharmaceutical software exposure, and data analysis tool experience.',
+      defaultKeywords: [
+        'Ankita Singh',
+        'Research Analyst',
+        'Pharmacy Graduate',
+        'Quality Control',
+        'Glenmark Pharmaceuticals',
+        'Royal Research',
+      ],
+      defaultOpenGraphImageId: profileImageUpload.asset.id,
       siteUrl: env.FRONTEND_URL,
     }),
   ]);
@@ -286,12 +394,154 @@ export async function ensurePortfolioSeed(adminId: string) {
   return { seeded: true };
 }
 
+async function ensureMissingPublicShell(adminId: string, profile: BootstrapProfileSnapshot) {
+  let changed = false;
+  const location = getOwnerLocation();
+
+  if (!profile.profileImageId) {
+    const profileImageUpload = await uploadSeedProfileImage(adminId);
+    await PersonalProfileModel.updateOne(
+      { _id: profile._id },
+      {
+        $set: {
+          profileImageId: profileImageUpload.asset.id,
+          heroImageId: profileImageUpload.asset.id,
+        },
+      },
+    );
+    await updateMediaMetadata(
+      profileImageUpload.asset.id as string,
+      {
+        associatedModel: 'PersonalProfile',
+        associatedDocumentId: profile._id?.toString(),
+        isPublic: true,
+      },
+      adminId,
+      BOOTSTRAP_REQUEST_ID,
+    );
+    profile.profileImageId = { toString: () => String(profileImageUpload.asset.id) };
+    changed = true;
+  }
+
+  if (
+    !profile.activeResumeId &&
+    (await ResumeModel.countDocuments({ isActive: true, publicationStatus: 'published' })) === 0
+  ) {
+    const resume = await createSeedResume(adminId);
+    await PersonalProfileModel.updateOne(
+      { _id: profile._id },
+      { $set: { activeResumeId: resume._id } },
+    );
+    changed = true;
+  }
+
+  if ((await NavigationItemModel.countDocuments({ publicationStatus: 'published' })) === 0) {
+    await NavigationItemModel.insertMany(
+      ankitaSeedData.navigation.map((item) => ({
+        ...item,
+        opensInNewTab: false,
+        publicationStatus: 'published',
+      })),
+    );
+    changed = true;
+  }
+
+  if ((await HeroModel.countDocuments({ publicationStatus: 'published' })) === 0) {
+    await HeroModel.create({
+      eyebrow: 'Professional Profile',
+      heading: ankitaSeedData.heroHeading,
+      subheading: ankitaSeedData.heroSubheading,
+      highlights: ankitaSeedData.heroHighlights,
+      ctaPrimaryLabel: 'View Resume',
+      ctaPrimaryHref: '/resume',
+      ctaSecondaryLabel: 'Contact',
+      ctaSecondaryHref: '/contact',
+      heroImageId: profile.profileImageId,
+      publicationStatus: 'published',
+    });
+    changed = true;
+  }
+
+  if ((await AboutModel.countDocuments({ publicationStatus: 'published' })) === 0) {
+    await AboutModel.create({
+      fullBiography: ankitaSeedData.fullBiography,
+      preferredEmploymentArea: ankitaSeedData.preferredEmploymentArea,
+      currentLocation: location,
+      availabilityLabel: 'Open to suitable opportunities',
+      keyStrengths: ankitaSeedData.keyStrengths,
+      aboutImageId: profile.profileImageId,
+      publicationStatus: 'published',
+    });
+    changed = true;
+  }
+
+  if ((await SiteSettingsModel.countDocuments({})) === 0) {
+    await SiteSettingsModel.create({
+      siteName: 'Ankita Singh',
+      siteTagline: 'Research Analyst | Pharmacy Graduate',
+      logoId: profile.profileImageId,
+      faviconId: profile.profileImageId,
+      openGraphImageId: profile.profileImageId,
+      accentColor: DEFAULT_ACCENT,
+      secondaryAccentColor: DEFAULT_SECONDARY_ACCENT,
+      enableDarkTheme: true,
+      maintenanceMode: false,
+      footerText:
+        'Research analyst and pharmacy graduate focused on accurate analysis, quality control exposure, and dependable professional communication.',
+    });
+    changed = true;
+  }
+
+  if ((await SeoSettingsModel.countDocuments({})) === 0) {
+    await SeoSettingsModel.create({
+      defaultTitle: 'Ankita Singh | Research Analyst and Pharmacy Graduate',
+      defaultDescription:
+        'Portfolio of Ankita Singh, a current Research Analyst and B.Pharm graduate with quality control training, pharmaceutical software exposure, and data analysis tool experience.',
+      defaultKeywords: ['Ankita Singh', 'Research Analyst', 'Pharmacy Graduate', 'Quality Control'],
+      defaultOpenGraphImageId: profile.profileImageId,
+      siteUrl: env.FRONTEND_URL,
+    });
+    changed = true;
+  }
+
+  return changed;
+}
+
+export async function ensurePortfolioSeed(adminId: string) {
+  const existingProfile = await PersonalProfileModel.findOne(
+    {},
+  ).lean<BootstrapProfileSnapshot | null>();
+  if (!existingProfile) {
+    return createPortfolioSeed(adminId);
+  }
+
+  if (isGenericPortfolioProfile(existingProfile)) {
+    logger.warn(
+      {
+        existingName: existingProfile.fullName,
+        existingTitle: existingProfile.professionalTitle,
+      },
+      'Generic portfolio content detected. Replacing it with Ankita CV seed data.',
+    );
+    await clearSeedManagedPortfolioContent();
+    const result = await createPortfolioSeed(adminId);
+    return { ...result, repairedPlaceholders: true };
+  }
+
+  const changed = await ensureMissingPublicShell(adminId, existingProfile);
+  return { seeded: false, repairedPlaceholders: false, ensuredMissingContent: changed };
+}
+
 export async function ensureInitialPortfolioData() {
   const { admin, created } = await ensureAdminAccount();
-  const { seeded } = await ensurePortfolioSeed(admin._id.toString());
+  const portfolioResult = await ensurePortfolioSeed(admin._id.toString());
 
   return {
     createdAdmin: created,
-    seededPortfolio: seeded,
+    seededPortfolio: portfolioResult.seeded,
+    repairedPlaceholders:
+      'repairedPlaceholders' in portfolioResult ? portfolioResult.repairedPlaceholders : false,
+    ensuredMissingContent:
+      'ensuredMissingContent' in portfolioResult ? portfolioResult.ensuredMissingContent : false,
   };
 }

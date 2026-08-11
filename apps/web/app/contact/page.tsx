@@ -1,10 +1,20 @@
 import Link from 'next/link';
-import { ArrowUpRight, Clock3, FileText, Mail, MapPin, MessageSquareText, Phone, Sparkles } from 'lucide-react';
+import {
+  ArrowUpRight,
+  Clock3,
+  FileText,
+  Mail,
+  MapPin,
+  MessageSquareText,
+  Phone,
+  Sparkles,
+} from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import { PortfolioImage } from '@/components/common/portfolio-image';
 import { SectionHeading } from '@/components/common/section-heading';
 import { ContactForm } from '@/components/forms/contact-form';
+import { cvFallback } from '@/lib/cv-fallback';
 import { getResumeDownloadLabel } from '@/lib/media';
 import { getPublicProfile, getPublicResume, getPublicSocialLinks } from '@/services/public';
 
@@ -17,15 +27,15 @@ export default async function ContactPage() {
     getPublicSocialLinks(),
   ]);
 
-  const displayName = profile?.fullName ?? 'Professional Portfolio';
-  const title = profile?.professionalTitle ?? 'Professional Portfolio';
-  const email = profile?.publicEmail ?? null;
-  const phone = profile?.publicPhone ?? null;
-  const location = profile?.generalLocation ?? null;
-  const introduction =
-    profile?.professionalSummary ??
-    'Meaningful professional conversations begin with clarity, context, and thoughtful communication.';
-  const profileTags = (profile?.rotatingTitles ?? []).slice(0, 4);
+  const displayName = profile?.fullName ?? cvFallback.fullName;
+  const title = profile?.professionalTitle ?? cvFallback.professionalTitle;
+  const email = profile?.publicEmail ?? cvFallback.publicEmail;
+  const phone = profile?.publicPhone ?? cvFallback.publicPhone;
+  const location = profile?.generalLocation ?? cvFallback.location;
+  const introduction = profile?.professionalSummary ?? cvFallback.summary;
+  const profileTags = (
+    profile?.rotatingTitles?.length ? profile.rotatingTitles : cvFallback.rotatingTitles
+  ).slice(0, 4);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
@@ -44,13 +54,18 @@ export default async function ContactPage() {
             <div className="flex flex-wrap gap-3">
               {profileTags.length > 0 ? (
                 profileTags.map((tag) => (
-                  <span key={tag} className="premium-pill px-4 py-2 text-sm font-medium text-foreground/76">
+                  <span
+                    key={tag}
+                    className="premium-pill px-4 py-2 text-sm font-medium text-foreground/76"
+                  >
                     {tag}
                   </span>
                 ))
               ) : (
                 <>
-                  <span className="premium-pill px-4 py-2 text-sm font-medium text-foreground/76">{title}</span>
+                  <span className="premium-pill px-4 py-2 text-sm font-medium text-foreground/76">
+                    {title}
+                  </span>
                   <span className="premium-pill px-4 py-2 text-sm font-medium text-foreground/76">
                     Open to meaningful opportunities
                   </span>
@@ -162,7 +177,9 @@ export default async function ContactPage() {
                   <ul className="space-y-3 text-sm leading-7 text-foreground/72">
                     <li>Share the role, organization, or project you would like to discuss.</li>
                     <li>Include timing, expectations, or relevant context where helpful.</li>
-                    <li>Mention the most useful next step, such as a reply, call, or document review.</li>
+                    <li>
+                      Mention the most useful next step, such as a reply, call, or document review.
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -171,12 +188,15 @@ export default async function ContactPage() {
             <div className="premium-panel p-6">
               <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent/80">Contact Form</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent/80">
+                    Contact Form
+                  </p>
                   <h3 className="mt-3 font-display text-2xl font-semibold text-foreground">
                     Send a professional enquiry
                   </h3>
                   <p className="mt-2 max-w-xl text-sm leading-7 text-foreground/72">
-                    Use the form below to introduce yourself, share context, and outline the purpose of your message.
+                    Use the form below to introduce yourself, share context, and outline the purpose
+                    of your message.
                   </p>
                 </div>
 

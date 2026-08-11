@@ -4,8 +4,14 @@ import type { ReactNode } from 'react';
 
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
+import { cvFallback } from '@/lib/cv-fallback';
 import { AppProviders } from '@/providers/app-providers';
-import { getNavigation, getPublicProfile, getPublicSocialLinks, getSiteContext } from '@/services/public';
+import {
+  getNavigation,
+  getPublicProfile,
+  getPublicSocialLinks,
+  getSiteContext,
+} from '@/services/public';
 import '@/app/globals.css';
 
 const fontSans = Manrope({
@@ -21,13 +27,14 @@ const fontDisplay = Fraunces({
 export async function generateMetadata(): Promise<Metadata> {
   const [siteContext, profile] = await Promise.all([getSiteContext(), getPublicProfile()]);
 
-  const siteName = siteContext?.siteSettings?.siteName ?? profile?.fullName ?? 'Professional Portfolio';
+  const siteName = siteContext?.siteSettings?.siteName ?? profile?.fullName ?? cvFallback.fullName;
   const title = siteContext?.seoSettings?.defaultTitle ?? `${siteName} Portfolio`;
   const description =
     siteContext?.seoSettings?.defaultDescription ??
     profile?.professionalSummary ??
-    'A professional portfolio showcasing experience, capabilities, projects, and career highlights.';
-  const iconUrl = siteContext?.siteSettings?.favicon?.publicUrl ?? siteContext?.siteSettings?.logo?.publicUrl;
+    cvFallback.summary;
+  const iconUrl =
+    siteContext?.siteSettings?.favicon?.publicUrl ?? siteContext?.siteSettings?.logo?.publicUrl;
   const openGraphImageUrl =
     siteContext?.seoSettings?.defaultOpenGraphImage?.publicUrl ??
     siteContext?.siteSettings?.openGraphImage?.publicUrl ??
@@ -80,8 +87,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           <SiteHeader
             navigation={navigation}
             logo={siteContext?.siteSettings?.logo ?? null}
-            siteName={siteContext?.siteSettings?.siteName ?? profile?.fullName ?? 'Professional Portfolio'}
-            siteTagline={siteContext?.siteSettings?.siteTagline ?? null}
+            siteName={
+              siteContext?.siteSettings?.siteName ?? profile?.fullName ?? cvFallback.fullName
+            }
+            siteTagline={siteContext?.siteSettings?.siteTagline ?? cvFallback.siteTagline}
           />
           <main id="main-content">{children}</main>
           <SiteFooter
