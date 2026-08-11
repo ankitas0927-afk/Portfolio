@@ -6,7 +6,6 @@
     "jsx": "preserve",
     "allowJs": false,
     "incremental": true,
-    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./*"
