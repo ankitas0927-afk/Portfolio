@@ -1,7 +1,10 @@
 import type { NextConfig } from 'next';
 
+const isVercelDeployment = Boolean(process.env.VERCEL_URL);
 const apiProxyTarget = (
-  process.env.INTERNAL_API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? ''
+  isVercelDeployment
+    ? process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.INTERNAL_API_BASE_URL ?? ''
+    : process.env.INTERNAL_API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? ''
 ).replace(/\/$/, '');
 
 const nextConfig: NextConfig = {

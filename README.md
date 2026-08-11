@@ -74,7 +74,7 @@ Important variables:
   - `NEXT_PUBLIC_SITE_URL`
   - `INTERNAL_API_BASE_URL`
 
-`INTERNAL_API_BASE_URL` is used for server-side rendering inside Docker or reverse-proxy deployments. In production, browser-side requests are proxied through the Next.js app at `/api/v1` so authentication stays same-origin and avoids CORS/cookie issues.
+`INTERNAL_API_BASE_URL` is used for server-side rendering inside Docker or reverse-proxy deployments. In production, browser-side requests are proxied through the Next.js app at `/api/v1` so authentication stays same-origin and avoids CORS/cookie issues. On Vercel, prefer a public `NEXT_PUBLIC_API_BASE_URL`; only set `INTERNAL_API_BASE_URL` if it is also publicly reachable from the Vercel deployment.
 
 ## Local Development
 
