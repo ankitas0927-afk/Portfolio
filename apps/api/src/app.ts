@@ -5,7 +5,7 @@ import express from 'express';
 import helmet from 'helmet';
 
 import { API_PREFIX } from '@ankita-portfolio/config';
-import { env } from './config/env.js';
+import { env, frontendOriginAllowlist } from './config/env.js';
 import { logger } from './config/logger.js';
 import { errorHandler, notFoundMiddleware } from './middleware/error-handler.js';
 import { requestContextMiddleware } from './middleware/request-context.js';
@@ -50,7 +50,14 @@ export function createApp() {
   );
   app.use(
     cors({
-      origin: env.FRONTEND_URL,
+      origin: (origin, callback) => {
+        if (!origin || frontendOriginAllowlist.includes(origin)) {
+          callback(null, true);
+          return;
+        }
+
+        callback(null, false);
+      },
       credentials: true,
       exposedHeaders: ['x-request-id'],
     }),
