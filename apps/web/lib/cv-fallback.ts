@@ -4,8 +4,14 @@ import type {
   ExperienceRecord,
   HeroSection,
   LanguageRecord,
+  MediaReference,
+  NavigationItem,
+  PersonalSkillRecord,
   ProjectRecord,
   PublicProfile,
+  SkillCategoryRecord,
+  SkillRecord,
+  SocialLink,
   TrainingRecord,
 } from '@ankita-portfolio/shared-types';
 
@@ -40,6 +46,26 @@ export const cvFallback = {
   ],
 };
 
+export const fallbackProfileImage: MediaReference = {
+  id: 'fallback-profile-image',
+  publicUrl: '/api/fallback/profile-image',
+  altText: 'Ankita Singh portrait',
+  originalName: 'ankita-profile.png',
+  extension: 'png',
+  mimeType: 'image/png',
+  width: 720,
+  height: 720,
+};
+
+export const fallbackResumeMedia: MediaReference = {
+  id: 'fallback-resume-media',
+  publicUrl: '/api/fallback/resume',
+  altText: 'Ankita Singh resume',
+  originalName: 'ankita-resume.pdf',
+  extension: 'pdf',
+  mimeType: 'application/pdf',
+};
+
 export const fallbackProfile: PublicProfile = {
   id: 'fallback-profile',
   fullName: cvFallback.fullName,
@@ -52,11 +78,19 @@ export const fallbackProfile: PublicProfile = {
     'To secure a research or quality-focused role in a reputed pharmaceutical organization where analytical skills, disciplined work ethic, and accuracy under pressure can support dependable outcomes.',
   generalLocation: cvFallback.location,
   availability: 'open_to_work',
-  profileImage: null,
+  profileImage: fallbackProfileImage,
   publicEmail: cvFallback.publicEmail,
   publicPhone: cvFallback.publicPhone,
   activeResumeId: null,
-  socialLinks: [],
+  socialLinks: [
+    {
+      id: 'fallback-social-email',
+      label: 'Email',
+      url: `mailto:${cvFallback.publicEmail}`,
+      publicationStatus: 'published',
+      displayOrder: 0,
+    },
+  ],
 };
 
 export const fallbackHero: HeroSection = {
@@ -69,7 +103,7 @@ export const fallbackHero: HeroSection = {
   ctaPrimaryHref: '/resume',
   ctaSecondaryLabel: 'Contact',
   ctaSecondaryHref: '/contact',
-  heroImage: null,
+  heroImage: fallbackProfileImage,
   publicationStatus: 'published',
 };
 
@@ -81,7 +115,7 @@ export const fallbackAbout: AboutSection = {
   currentLocation: cvFallback.location,
   availabilityLabel: 'Open to suitable opportunities',
   keyStrengths: cvFallback.strengths,
-  aboutImage: null,
+  aboutImage: fallbackProfileImage,
   publicationStatus: 'published',
 };
 
@@ -228,6 +262,117 @@ export const fallbackProjects: ProjectRecord[] = [
   },
 ];
 
+export const fallbackSkillCategories: SkillCategoryRecord[] = [
+  {
+    id: 'fallback-skill-category-office',
+    name: 'Office and productivity',
+    displayOrder: 0,
+    publicationStatus: 'published',
+  },
+  {
+    id: 'fallback-skill-category-pharma',
+    name: 'Pharmaceutical software tools',
+    displayOrder: 1,
+    publicationStatus: 'published',
+  },
+  {
+    id: 'fallback-skill-category-analysis',
+    name: 'Data analysis tools',
+    displayOrder: 2,
+    publicationStatus: 'published',
+  },
+  {
+    id: 'fallback-skill-category-research',
+    name: 'Database and research tools',
+    displayOrder: 3,
+    publicationStatus: 'published',
+  },
+];
+
+export const fallbackSkillRecords: SkillRecord[] = [
+  {
+    id: 'fallback-skill-ms-office',
+    name: 'Microsoft Office',
+    categoryId: 'fallback-skill-category-office',
+    categoryName: 'Office and productivity',
+    featured: true,
+    publicationStatus: 'published',
+    displayOrder: 0,
+  },
+  {
+    id: 'fallback-skill-marg-erp',
+    name: 'Marg ERP',
+    categoryId: 'fallback-skill-category-pharma',
+    categoryName: 'Pharmaceutical software tools',
+    featured: true,
+    publicationStatus: 'published',
+    displayOrder: 1,
+  },
+  {
+    id: 'fallback-skill-chemdraw',
+    name: 'ChemDraw',
+    categoryId: 'fallback-skill-category-pharma',
+    categoryName: 'Pharmaceutical software tools',
+    featured: true,
+    publicationStatus: 'published',
+    displayOrder: 2,
+  },
+  {
+    id: 'fallback-skill-spss',
+    name: 'SPSS',
+    categoryId: 'fallback-skill-category-analysis',
+    categoryName: 'Data analysis tools',
+    featured: true,
+    publicationStatus: 'published',
+    displayOrder: 3,
+  },
+  {
+    id: 'fallback-skill-nvivo',
+    name: 'NVivo',
+    categoryId: 'fallback-skill-category-analysis',
+    categoryName: 'Data analysis tools',
+    featured: true,
+    publicationStatus: 'published',
+    displayOrder: 4,
+  },
+  {
+    id: 'fallback-skill-orange',
+    name: 'Orange Data Mining',
+    categoryId: 'fallback-skill-category-analysis',
+    categoryName: 'Data analysis tools',
+    featured: true,
+    publicationStatus: 'published',
+    displayOrder: 5,
+  },
+  {
+    id: 'fallback-skill-mysql',
+    name: 'MySQL',
+    categoryId: 'fallback-skill-category-research',
+    categoryName: 'Database and research tools',
+    featured: true,
+    publicationStatus: 'published',
+    displayOrder: 6,
+  },
+  {
+    id: 'fallback-skill-blast',
+    name: 'BLAST',
+    categoryId: 'fallback-skill-category-research',
+    categoryName: 'Database and research tools',
+    featured: true,
+    publicationStatus: 'published',
+    displayOrder: 7,
+  },
+];
+
+export const fallbackPersonalSkills: PersonalSkillRecord[] = cvFallback.strengths.map(
+  (strength, index) => ({
+    id: `fallback-personal-skill-${index}`,
+    title: strength,
+    publicationStatus: 'published',
+    displayOrder: index,
+  }),
+);
+
 export const fallbackLanguages: LanguageRecord[] = [
   {
     id: 'fallback-language-hindi',
@@ -250,3 +395,46 @@ export const fallbackLanguages: LanguageRecord[] = [
     publicationStatus: 'published',
   },
 ];
+
+export const fallbackNavigation: NavigationItem[] = [
+  { id: 'fallback-nav-home', label: 'Home', href: '/', opensInNewTab: false, publicationStatus: 'published', displayOrder: 0 },
+  { id: 'fallback-nav-about', label: 'About', href: '/about', opensInNewTab: false, publicationStatus: 'published', displayOrder: 1 },
+  { id: 'fallback-nav-experience', label: 'Experience', href: '/experience', opensInNewTab: false, publicationStatus: 'published', displayOrder: 2 },
+  { id: 'fallback-nav-skills', label: 'Skills', href: '/skills', opensInNewTab: false, publicationStatus: 'published', displayOrder: 3 },
+  { id: 'fallback-nav-projects', label: 'Projects', href: '/projects', opensInNewTab: false, publicationStatus: 'published', displayOrder: 4 },
+  { id: 'fallback-nav-resume', label: 'Resume', href: '/resume', opensInNewTab: false, publicationStatus: 'published', displayOrder: 5 },
+  { id: 'fallback-nav-contact', label: 'Contact', href: '/contact', opensInNewTab: false, publicationStatus: 'published', displayOrder: 6 },
+];
+
+export const fallbackSocialLinks: SocialLink[] = [
+  {
+    id: 'fallback-social-email',
+    label: 'Email',
+    url: `mailto:${cvFallback.publicEmail}`,
+    publicationStatus: 'published',
+    displayOrder: 0,
+  },
+];
+
+export const fallbackSiteSettings = {
+  siteName: cvFallback.fullName,
+  siteTagline: cvFallback.siteTagline,
+  footerText:
+    'Research analyst and pharmacy graduate focused on dependable communication, careful analysis, and quality-oriented work.',
+  logo: fallbackProfileImage,
+  favicon: fallbackProfileImage,
+  openGraphImage: fallbackProfileImage,
+};
+
+export const fallbackSeoSettings = {
+  defaultTitle: 'Ankita Singh | Research Analyst and Pharmacy Graduate',
+  defaultDescription: cvFallback.summary,
+  defaultKeywords: [
+    'Ankita Singh',
+    'Research Analyst',
+    'Pharmacy Graduate',
+    'Quality Control',
+    'Royal Research',
+  ],
+  defaultOpenGraphImage: fallbackProfileImage,
+};
