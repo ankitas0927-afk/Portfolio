@@ -45,6 +45,12 @@ type BootstrapProfileSnapshot = {
 };
 
 const BOOTSTRAP_REQUEST_ID = 'bootstrap-seed';
+const legacyInterestTitles = [
+  'Interacting with people',
+  'Watching films',
+  'Listening to music',
+  'Exercise',
+];
 
 function resolveSeedPath(filePath: string) {
   return path.resolve(process.cwd(), filePath);
@@ -394,6 +400,15 @@ async function createPortfolioSeed(adminId: string) {
   return { seeded: true };
 }
 
+async function hasLegacyResumeSeedContent() {
+  const [legacyEducation, legacyInterestCount] = await Promise.all([
+    EducationModel.exists({ qualification: /Bachelor of Science/i }),
+    InterestModel.countDocuments({ title: { $in: legacyInterestTitles } }),
+  ]);
+
+  return Boolean(legacyEducation) || legacyInterestCount > 0;
+}
+
 async function ensureMissingPublicShell(adminId: string, profile: BootstrapProfileSnapshot) {
   let changed = false;
   const location = getOwnerLocation();
@@ -526,6 +541,15 @@ export async function ensurePortfolioSeed(adminId: string) {
     await clearSeedManagedPortfolioContent();
     const result = await createPortfolioSeed(adminId);
     return { ...result, repairedPlaceholders: true };
+  }
+
+  if (await hasLegacyResumeSeedContent()) {
+    logger.warn(
+      'Outdated resume seed content detected. Refreshing seed-managed portfolio data to match the current resume.',
+    );
+    await clearSeedManagedPortfolioContent();
+    const result = await createPortfolioSeed(adminId);
+    return { ...result, refreshedLegacySeed: true };
   }
 
   const changed = await ensureMissingPublicShell(adminId, existingProfile);

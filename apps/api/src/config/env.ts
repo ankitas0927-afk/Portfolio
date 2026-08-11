@@ -7,6 +7,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(5000),
   MONGODB_URI: z.string().trim().min(1, 'MONGODB_URI is required'),
   FRONTEND_URL: z.string().trim().url('FRONTEND_URL must be a valid URL'),
+  FRONTEND_URLS: z.string().trim().optional().default(''),
   API_PUBLIC_URL: z.string().trim().url('API_PUBLIC_URL must be a valid URL'),
   JWT_ACCESS_SECRET: z.string().trim().min(32, 'JWT_ACCESS_SECRET must be at least 32 chars'),
   JWT_REFRESH_SECRET: z
@@ -53,3 +54,21 @@ if (!parsed.success) {
 
 export const env = parsed.data;
 export const isProduction = env.NODE_ENV === 'production';
+
+const extraFrontendOrigins = env.FRONTEND_URLS.split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+for (const origin of extraFrontendOrigins) {
+  try {
+    new URL(origin);
+  } catch {
+    throw new Error(
+      `Invalid environment configuration:\n- FRONTEND_URLS: ${origin} must be a valid URL`,
+    );
+  }
+}
+
+export const frontendOriginAllowlist = Array.from(
+  new Set([env.FRONTEND_URL, ...extraFrontendOrigins]),
+);

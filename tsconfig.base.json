@@ -12,11 +12,10 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
     "paths": {
-      "@ankita-portfolio/config": ["packages/config/src/index.ts"],
-      "@ankita-portfolio/shared-types": ["packages/shared-types/src/index.ts"],
-      "@ankita-portfolio/validation": ["packages/validation/src/index.ts"]
+      "@ankita-portfolio/config": ["./packages/config/src/index.ts"],
+      "@ankita-portfolio/shared-types": ["./packages/shared-types/src/index.ts"],
+      "@ankita-portfolio/validation": ["./packages/validation/src/index.ts"]
     }
   }
 }

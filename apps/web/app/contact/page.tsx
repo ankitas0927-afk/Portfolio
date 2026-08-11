@@ -14,7 +14,12 @@ import type { ReactNode } from 'react';
 import { PortfolioImage } from '@/components/common/portfolio-image';
 import { SectionHeading } from '@/components/common/section-heading';
 import { ContactForm } from '@/components/forms/contact-form';
-import { cvFallback } from '@/lib/cv-fallback';
+import {
+  DEFAULT_LOCATION,
+  DEFAULT_SITE_DESCRIPTION,
+  DEFAULT_SITE_NAME,
+  DEFAULT_SITE_TAGLINE,
+} from '@/lib/default-site-copy';
 import { getResumeDownloadLabel } from '@/lib/media';
 import { getPublicProfile, getPublicResume, getPublicSocialLinks } from '@/services/public';
 
@@ -27,15 +32,13 @@ export default async function ContactPage() {
     getPublicSocialLinks(),
   ]);
 
-  const displayName = profile?.fullName ?? cvFallback.fullName;
-  const title = profile?.professionalTitle ?? cvFallback.professionalTitle;
-  const email = profile?.publicEmail ?? cvFallback.publicEmail;
-  const phone = profile?.publicPhone ?? cvFallback.publicPhone;
-  const location = profile?.generalLocation ?? cvFallback.location;
-  const introduction = profile?.professionalSummary ?? cvFallback.summary;
-  const profileTags = (
-    profile?.rotatingTitles?.length ? profile.rotatingTitles : cvFallback.rotatingTitles
-  ).slice(0, 4);
+  const displayName = profile?.fullName ?? DEFAULT_SITE_NAME;
+  const title = profile?.professionalTitle ?? DEFAULT_SITE_TAGLINE;
+  const email = profile?.publicEmail ?? null;
+  const phone = profile?.publicPhone ?? null;
+  const location = profile?.generalLocation ?? DEFAULT_LOCATION;
+  const introduction = profile?.professionalSummary ?? DEFAULT_SITE_DESCRIPTION;
+  const profileTags = (profile?.rotatingTitles ?? []).slice(0, 4);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">

@@ -1,29 +1,27 @@
 export const ankitaSeedData = {
-  professionalHeading:
-    'Research Analyst | Pharmacy Graduate | Quality Control and Pharmaceutical Software',
+  professionalHeading: 'Research Analyst | Pharmacy Graduate | Quality Control Trainee',
   rotatingTitles: [
     'Research Analyst',
     'Pharmacy Graduate',
-    'Quality Control Industrial Trainee',
-    'Pharmaceutical Software Learner',
-    'Data Analysis Tools User',
+    'Quality Control Trainee',
+    'Pharmaceutical Software Tools User',
   ],
   heroHeading: 'Ankita Singh',
   heroSubheading:
-    'Detail-oriented pharmacy graduate and current Research Analyst with hands-on quality control training, pharmaceutical software exposure, and a disciplined approach to accurate research work.',
+    'Detail-oriented and dedicated pharmacy graduate with current research analysis experience, hands-on quality control training, and practical proficiency in pharmaceutical software tools.',
   heroHighlights: [
-    'Current Research Analyst at Royal Research',
-    '2 years and 3 months of research analysis experience',
-    'B.Pharm graduate with QC training at Glenmark Pharmaceuticals',
+    'Research Analyst at Royal Research',
+    '2 years and 3 months of current experience',
+    '45-day quality control training at Glenmark Pharmaceuticals',
   ],
   shortIntroduction:
-    'Dedicated pharmacy graduate with research analysis experience, QC training, and practical familiarity with pharmaceutical software tools.',
+    'Dedicated pharmacy graduate with research analysis experience, industrial quality control training, and practical familiarity with pharmaceutical software tools.',
   professionalSummary:
-    'Ankita Singh is a detail-oriented Research Analyst at Royal Research and a pharmacy graduate with hands-on industrial training in quality control. Her experience includes structured research analysis, data-driven evaluation, report accuracy, and collaboration with cross-functional teams while using pharmaceutical and data analysis tools.',
+    'Ankita Singh is a detail-oriented pharmacy graduate and current Research Analyst with hands-on industrial training in quality control and working proficiency in pharmaceutical software and data analysis tools.',
   careerObjective:
-    'To secure a research or quality-focused role in a reputed pharmaceutical organization where strong analytical skills, disciplined work ethic, and accuracy under pressure can support dependable outcomes.',
+    'To secure a research or quality-focused role in a reputed pharmaceutical organization where strong analytical skills, disciplined work ethic, and a commitment to accuracy under pressure can support dependable outcomes.',
   fullBiography:
-    'Ankita Singh is a pharmacy graduate and current Research Analyst based in Sankrail, Howrah, West Bengal. She brings 2 years and 3 months of research analysis experience at Royal Research, practical industrial exposure from the Quality Control department at Glenmark Pharmaceuticals, and working knowledge of pharmaceutical software and data analysis tools. Her professional approach is careful, adaptable, collaborative, and focused on accurate delivery under pressure.',
+    'Ankita Singh is a pharmacy graduate based in Sankrail, Howrah, West Bengal, India and currently works as a Research Analyst at Royal Research. She brings 2 years and 3 months of research analysis experience, 45 days of industrial quality control training at Glenmark Pharmaceuticals, and practical use of pharmaceutical software and data analysis tools in disciplined, accuracy-focused work.',
   preferredEmploymentArea:
     'Research analysis, pharmaceutical quality control, and data-supported evaluation',
   currentLocation: 'Sankrail, Howrah, West Bengal, India',
@@ -31,7 +29,7 @@ export const ankitaSeedData = {
     'Strong adaptability to new concepts and evolving work environments',
     'Positive attitude with effective time management',
     'Collaborative team player with a hardworking and flexible approach',
-    'Accuracy-focused work under pressure',
+    'Commitment to accuracy under pressure',
   ],
   experience: [
     {
@@ -43,11 +41,11 @@ export const ankitaSeedData = {
       approximateDuration: '2 years and 3 months',
       datePrecision: 'duration',
       professionalSummary:
-        'Conducts research analysis and data-driven evaluation to support organized, accurate, and timely reporting.',
+        'Conducts research analysis and data-driven evaluation on 15-20 projects per month to support organized decision-making and timely reporting.',
       responsibilities: [
-        'Conduct research analysis and data-driven evaluation across 15-20 projects per month.',
-        'Apply structured methodologies to maintain accuracy, consistency, and timely delivery of research outcomes.',
-        'Collaborate with cross-functional teams of 4-6 members to streamline reporting and reduce errors.',
+        'Conduct research analysis and data-driven evaluation on 15-20 projects per month to support organizational decision-making.',
+        'Apply structured methodologies to ensure accuracy, consistency, and timely delivery of research outcomes.',
+        'Collaborate with cross-functional teams of 4-6 members to streamline reporting processes and reduce errors.',
       ],
       keyAchievements: [
         'Improved report turnaround time by approximately 20% through structured research workflows.',
@@ -73,21 +71,12 @@ export const ankitaSeedData = {
       displayOrder: 0,
     },
     {
-      institution: 'Veer Bahadur Singh Purvanchal University',
-      qualification: 'Bachelor of Science',
-      startDate: '2017',
-      completionDate: '2020',
-      datePrecision: 'year',
-      publicationStatus: 'published',
-      displayOrder: 1,
-    },
-    {
       institution: 'MMD Public School',
       qualification: 'Intermediate, Class XII',
       completionDate: '2017',
       datePrecision: 'year',
       publicationStatus: 'published',
-      displayOrder: 2,
+      displayOrder: 1,
     },
     {
       institution: 'MMD Public School',
@@ -95,28 +84,27 @@ export const ankitaSeedData = {
       completionDate: '2015',
       datePrecision: 'year',
       publicationStatus: 'published',
-      displayOrder: 3,
+      displayOrder: 2,
     },
   ],
   training: [
     {
       organisation: 'Glenmark Pharmaceuticals',
-      trainingTitle: 'Industrial Training Placement',
-      department: 'Quality Control Department',
+      trainingTitle: 'Industrial Trainee',
+      department: 'Quality Control (QC) Department',
       trainingType: 'Industrial Training',
       location: 'Baddi, Himachal Pradesh, India',
       startDate: '2022-02',
       endDate: '2022-03',
       duration: '45 days',
       description:
-        'Completed a 45-day industrial training program in the Quality Control department with exposure to pharmaceutical sample analysis, documentation, and GMP-focused practices.',
+        'Completed a 45-day industrial training program in the Quality Control department, handling 30-50 pharmaceutical samples for analysis.',
       responsibilities: [
-        'Handled 30-50 pharmaceutical samples for quality-focused analysis during training.',
-        'Supported documentation accuracy and adherence to pharmaceutical compliance standards.',
+        'Handled 30-50 pharmaceutical samples for analysis during training.',
       ],
       learningOutcomes: [
-        'Practical exposure to quality testing procedures.',
-        'Improved understanding of GMP practices and pharmaceutical compliance expectations.',
+        'Gained practical exposure to quality testing procedures and pharmaceutical compliance standards.',
+        'Contributed to improved documentation accuracy and adherence to GMP practices.',
       ],
       skillsDeveloped: [
         'Quality Control',
@@ -130,30 +118,25 @@ export const ankitaSeedData = {
   ],
   skillCategories: [
     { name: 'Office and productivity', displayOrder: 0 },
-    { name: 'Database', displayOrder: 1 },
-    { name: 'Data analysis', displayOrder: 2 },
-    { name: 'Bioinformatics and scientific research', displayOrder: 3 },
-    { name: 'Pharmaceutical and scientific software', displayOrder: 4 },
+    { name: 'Pharmaceutical software tools', displayOrder: 1 },
+    { name: 'Data analysis tools', displayOrder: 2 },
+    { name: 'Database and research tools', displayOrder: 3 },
   ],
   skills: [
     { name: 'Microsoft Office', categoryName: 'Office and productivity', displayOrder: 0 },
-    { name: 'MySQL', categoryName: 'Database', displayOrder: 1 },
-    { name: 'SPSS', categoryName: 'Data analysis', displayOrder: 2 },
-    { name: 'NVivo', categoryName: 'Data analysis', displayOrder: 3 },
-    { name: 'Orange Data Mining', categoryName: 'Data analysis', displayOrder: 4 },
-    { name: 'BLAST', categoryName: 'Bioinformatics and scientific research', displayOrder: 5 },
-    { name: 'Marg ERP', categoryName: 'Pharmaceutical and scientific software', displayOrder: 6 },
-    { name: 'ChemDraw', categoryName: 'Pharmaceutical and scientific software', displayOrder: 7 },
+    { name: 'Marg ERP', categoryName: 'Pharmaceutical software tools', displayOrder: 1 },
+    { name: 'ChemDraw', categoryName: 'Pharmaceutical software tools', displayOrder: 2 },
+    { name: 'SPSS', categoryName: 'Data analysis tools', displayOrder: 3 },
+    { name: 'NVivo', categoryName: 'Data analysis tools', displayOrder: 4 },
+    { name: 'Orange Data Mining', categoryName: 'Data analysis tools', displayOrder: 5 },
+    { name: 'MySQL', categoryName: 'Database and research tools', displayOrder: 6 },
+    { name: 'BLAST', categoryName: 'Database and research tools', displayOrder: 7 },
   ],
   personalSkills: [
-    'Strong adaptability',
-    'Positive attitude',
-    'Effective time management',
-    'Collaborative teamwork',
-    'Hardworking approach',
-    'Flexible work style',
-    'Accuracy under pressure',
-    'Disciplined work ethic',
+    'Strong adaptability to new concepts and evolving work environments',
+    'Positive attitude with effective time management',
+    'Collaborative team player with a hardworking and flexible approach',
+    'Commitment to accuracy under pressure',
   ],
   languages: [
     {
@@ -172,17 +155,12 @@ export const ankitaSeedData = {
       displayOrder: 1,
     },
   ],
-  interests: [
-    { title: 'Interacting with people', displayOrder: 0, icon: 'MessagesSquare' },
-    { title: 'Watching films', displayOrder: 1, icon: 'Clapperboard' },
-    { title: 'Listening to music', displayOrder: 2, icon: 'Headphones' },
-    { title: 'Exercise', displayOrder: 3, icon: 'HeartPulse' },
-  ],
+  interests: [] as Array<{ title: string; displayOrder: number; icon?: string }>,
   project: {
     title: 'Pharmaceutical Software Project',
     slug: 'pharmaceutical-software-project',
     shortDescription:
-      'Three-month project focused on Marg ERP and ChemDraw for pharmaceutical workflows.',
+      'Three-month project focused on Marg ERP and ChemDraw for pharmaceutical data management and structure drawing.',
     fullDescription:
       'A three-month pharmaceutical software project focused on learning and applying Marg ERP for pharmaceutical data management and ChemDraw for chemical structure drawing.',
     category: 'Pharmaceutical software',
@@ -190,12 +168,12 @@ export const ankitaSeedData = {
     datePrecision: 'duration',
     toolsAndTechnologies: ['Marg ERP', 'ChemDraw'],
     objectives: [
-      'Build practical familiarity with pharmaceutical data management software.',
-      'Use chemical structure drawing tools in a pharmaceutical learning context.',
+      'Learn and apply pharmaceutical data management software in a practical workflow.',
+      'Use chemical structure drawing tools for pharmaceutical learning and documentation.',
     ],
     learningOutcomes: [
-      'Practical familiarity with Marg ERP for pharmaceutical data management.',
-      'Applied ChemDraw for chemical structure drawing.',
+      'Learned and applied Marg ERP for pharmaceutical data management.',
+      'Learned and applied ChemDraw for chemical structure drawing.',
     ],
     publicationStatus: 'published',
     featured: true,

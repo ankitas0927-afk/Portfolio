@@ -68,12 +68,13 @@ Important variables:
   - `ADMIN_EMAIL`
   - `ADMIN_INITIAL_PASSWORD`
   - `RESUME_PDF_PATH`
+  - `FRONTEND_URLS` for extra allowed origins such as preview deployments
 - Frontend:
   - `NEXT_PUBLIC_API_BASE_URL`
   - `NEXT_PUBLIC_SITE_URL`
   - `INTERNAL_API_BASE_URL`
 
-`INTERNAL_API_BASE_URL` is used for server-side rendering inside Docker or reverse-proxy deployments. Browser-side requests continue using `NEXT_PUBLIC_API_BASE_URL`.
+`INTERNAL_API_BASE_URL` is used for server-side rendering inside Docker or reverse-proxy deployments. In production, browser-side requests are proxied through the Next.js app at `/api/v1` so authentication stays same-origin and avoids CORS/cookie issues.
 
 ## Local Development
 
@@ -257,8 +258,9 @@ Recommended production shape:
 3. Deploy the web app from the `apps/web` root directory with the `Next.js` framework preset and both `NEXT_PUBLIC_API_BASE_URL` and `INTERNAL_API_BASE_URL` configured.
 4. If deploying the API separately, use the `apps/api` root directory, the `Express` framework preset, and set the build command to `pnpm --dir ../.. build:packages && pnpm run build`.
 5. Set `FRONTEND_URL` in the API to the final public frontend origin.
-6. Ensure reverse-proxy headers and CORS are aligned.
-7. Keep persistent uploads in MongoDB GridFS only.
+6. Add any preview or alternate frontend domains to `FRONTEND_URLS` as a comma-separated list.
+7. Ensure reverse-proxy headers and CORS are aligned.
+8. Keep persistent uploads in MongoDB GridFS only.
 
 For production:
 
