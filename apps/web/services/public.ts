@@ -18,16 +18,6 @@ import type {
 } from '@ankita-portfolio/shared-types';
 
 import { webEnv } from '../lib/env';
-import {
-  fallbackAbout,
-  fallbackEducation,
-  fallbackExperience,
-  fallbackHero,
-  fallbackLanguages,
-  fallbackProfile,
-  fallbackProjects,
-  fallbackTraining,
-} from '../lib/cv-fallback';
 import { resolvePrimaryNavigation } from '../lib/public-navigation';
 
 type ApiEnvelope<T> = {
@@ -72,137 +62,10 @@ export type PublicResumeBundle = ResumeRecord & {
   media?: MediaReference | null;
 };
 
-const fallbackSkills: PublicSkillsBundle = {
-  categories: [
-    {
-      id: 'fallback-skill-office',
-      name: 'Office and productivity',
-      displayOrder: 0,
-      publicationStatus: 'published',
-    },
-    {
-      id: 'fallback-skill-database',
-      name: 'Database',
-      displayOrder: 1,
-      publicationStatus: 'published',
-    },
-    {
-      id: 'fallback-skill-analysis',
-      name: 'Data analysis',
-      displayOrder: 2,
-      publicationStatus: 'published',
-    },
-    {
-      id: 'fallback-skill-science',
-      name: 'Bioinformatics and scientific research',
-      displayOrder: 3,
-      publicationStatus: 'published',
-    },
-    {
-      id: 'fallback-skill-pharma',
-      name: 'Pharmaceutical and scientific software',
-      displayOrder: 4,
-      publicationStatus: 'published',
-    },
-  ],
-  skills: [
-    {
-      id: 'fallback-ms-office',
-      name: 'Microsoft Office',
-      categoryId: 'fallback-skill-office',
-      featured: true,
-      publicationStatus: 'published',
-      displayOrder: 0,
-    },
-    {
-      id: 'fallback-mysql',
-      name: 'MySQL',
-      categoryId: 'fallback-skill-database',
-      featured: true,
-      publicationStatus: 'published',
-      displayOrder: 1,
-    },
-    {
-      id: 'fallback-spss',
-      name: 'SPSS',
-      categoryId: 'fallback-skill-analysis',
-      featured: true,
-      publicationStatus: 'published',
-      displayOrder: 2,
-    },
-    {
-      id: 'fallback-nvivo',
-      name: 'NVivo',
-      categoryId: 'fallback-skill-analysis',
-      featured: false,
-      publicationStatus: 'published',
-      displayOrder: 3,
-    },
-    {
-      id: 'fallback-orange',
-      name: 'Orange Data Mining',
-      categoryId: 'fallback-skill-analysis',
-      featured: false,
-      publicationStatus: 'published',
-      displayOrder: 4,
-    },
-    {
-      id: 'fallback-blast',
-      name: 'BLAST',
-      categoryId: 'fallback-skill-science',
-      featured: false,
-      publicationStatus: 'published',
-      displayOrder: 5,
-    },
-    {
-      id: 'fallback-marg',
-      name: 'Marg ERP',
-      categoryId: 'fallback-skill-pharma',
-      featured: true,
-      publicationStatus: 'published',
-      displayOrder: 6,
-    },
-    {
-      id: 'fallback-chemdraw',
-      name: 'ChemDraw',
-      categoryId: 'fallback-skill-pharma',
-      featured: true,
-      publicationStatus: 'published',
-      displayOrder: 7,
-    },
-  ],
-  personalSkills: [
-    {
-      id: 'fallback-strength-adaptability',
-      title: 'Strong adaptability',
-      publicationStatus: 'published',
-      displayOrder: 0,
-    },
-    {
-      id: 'fallback-strength-attitude',
-      title: 'Positive attitude',
-      publicationStatus: 'published',
-      displayOrder: 1,
-    },
-    {
-      id: 'fallback-strength-time',
-      title: 'Effective time management',
-      publicationStatus: 'published',
-      displayOrder: 2,
-    },
-    {
-      id: 'fallback-strength-team',
-      title: 'Collaborative teamwork',
-      publicationStatus: 'published',
-      displayOrder: 3,
-    },
-    {
-      id: 'fallback-strength-pressure',
-      title: 'Accuracy under pressure',
-      publicationStatus: 'published',
-      displayOrder: 4,
-    },
-  ],
+const emptySkillsBundle: PublicSkillsBundle = {
+  categories: [],
+  skills: [],
+  personalSkills: [],
 };
 
 async function fetchPublic<T>(path: string): Promise<T | null> {
@@ -232,58 +95,49 @@ export async function getNavigation() {
 }
 
 export async function getPublicProfile() {
-  return (await fetchPublic<PublicProfile>('/profile')) ?? fallbackProfile;
+  return fetchPublic<PublicProfile>('/profile');
 }
 
 export async function getPublicHero() {
-  return (await fetchPublic<HeroSection>('/hero')) ?? fallbackHero;
+  return fetchPublic<HeroSection>('/hero');
 }
 
 export async function getPublicAbout() {
-  return (await fetchPublic<AboutSection>('/about')) ?? fallbackAbout;
+  return fetchPublic<AboutSection>('/about');
 }
 
 export async function getPublicExperience() {
-  return (await fetchPublic<ExperienceRecord[]>('/experience')) ?? fallbackExperience;
+  return (await fetchPublic<ExperienceRecord[]>('/experience')) ?? [];
 }
 
 export async function getPublicEducation() {
-  return (await fetchPublic<EducationRecord[]>('/education')) ?? fallbackEducation;
+  return (await fetchPublic<EducationRecord[]>('/education')) ?? [];
 }
 
 export async function getPublicTraining() {
-  return (await fetchPublic<TrainingRecord[]>('/training')) ?? fallbackTraining;
+  return (await fetchPublic<TrainingRecord[]>('/training')) ?? [];
 }
 
 export async function getPublicSkills() {
-  return (await fetchPublic<PublicSkillsBundle>('/skills')) ?? fallbackSkills;
+  return (await fetchPublic<PublicSkillsBundle>('/skills')) ?? emptySkillsBundle;
 }
 
 export async function getPublicProjects(featured = false) {
   const endpoint = featured ? '/projects/featured' : '/projects';
-  const projects = await fetchPublic<ProjectRecord[]>(endpoint);
-  if (projects) {
-    return projects;
-  }
-
-  return featured ? fallbackProjects.filter((project) => project.featured) : fallbackProjects;
+  return (await fetchPublic<ProjectRecord[]>(endpoint)) ?? [];
 }
 
 export async function getPublicProject(slug: string) {
-  return (
-    (await fetchPublic<
-      ProjectRecord & {
-        galleryImages?: Array<{ publicUrl: string }>;
-        supportingDocuments?: Array<{ publicUrl: string }>;
-      }
-    >(`/projects/${slug}`)) ??
-    fallbackProjects.find((project) => project.slug === slug) ??
-    null
-  );
+  return fetchPublic<
+    ProjectRecord & {
+      galleryImages?: Array<{ publicUrl: string }>;
+      supportingDocuments?: Array<{ publicUrl: string }>;
+    }
+  >(`/projects/${slug}`);
 }
 
 export async function getPublicLanguages() {
-  return (await fetchPublic<LanguageRecord[]>('/languages')) ?? fallbackLanguages;
+  return (await fetchPublic<LanguageRecord[]>('/languages')) ?? [];
 }
 
 export async function getPublicInterests() {

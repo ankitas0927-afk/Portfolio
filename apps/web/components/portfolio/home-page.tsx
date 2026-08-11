@@ -15,7 +15,12 @@ import type {
 import type { PublicResumeBundle, PublicSkillsBundle } from '@/services/public';
 import { PortfolioImage } from '@/components/common/portfolio-image';
 import { SectionHeading } from '@/components/common/section-heading';
-import { cvFallback } from '@/lib/cv-fallback';
+import {
+  DEFAULT_LOCATION,
+  DEFAULT_SITE_DESCRIPTION,
+  DEFAULT_SITE_NAME,
+  DEFAULT_SITE_TAGLINE,
+} from '@/lib/default-site-copy';
 import { getResumeDownloadLabel } from '@/lib/media';
 
 type HomePageProps = {
@@ -67,8 +72,8 @@ export function HomePage({
   interests,
   resume,
 }: HomePageProps) {
-  const heroHighlights = hero?.highlights?.length ? hero.highlights : cvFallback.heroHighlights;
-  const keyStrengths = about?.keyStrengths?.length ? about.keyStrengths : cvFallback.strengths;
+  const heroHighlights = hero?.highlights ?? [];
+  const keyStrengths = about?.keyStrengths ?? [];
 
   return (
     <div className="space-y-24 pb-20">
@@ -89,21 +94,23 @@ export function HomePage({
             variants={reveal}
             className="max-w-4xl font-display text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl"
           >
-            {hero?.heading ?? profile?.fullName ?? cvFallback.fullName}
+            {hero?.heading ?? profile?.fullName ?? DEFAULT_SITE_NAME}
           </motion.h1>
           <motion.p variants={reveal} className="max-w-2xl text-lg leading-9 text-foreground/72">
-            {hero?.subheading ?? profile?.professionalSummary ?? cvFallback.summary}
+            {hero?.subheading ?? profile?.professionalSummary ?? DEFAULT_SITE_DESCRIPTION}
           </motion.p>
-          <motion.div variants={reveal} className="flex flex-wrap gap-3">
-            {heroHighlights.map((item) => (
-              <span
-                key={item}
-                className="rounded-full border border-border/70 bg-card/80 px-4 py-2 text-sm text-foreground/72 shadow-soft"
-              >
-                {item}
-              </span>
-            ))}
-          </motion.div>
+          {heroHighlights.length > 0 ? (
+            <motion.div variants={reveal} className="flex flex-wrap gap-3">
+              {heroHighlights.map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-border/70 bg-card/80 px-4 py-2 text-sm text-foreground/72 shadow-soft"
+                >
+                  {item}
+                </span>
+              ))}
+            </motion.div>
+          ) : null}
           <motion.div variants={reveal} className="flex flex-wrap gap-4">
             <Link
               href={hero?.ctaPrimaryHref ?? '/resume'}
@@ -127,14 +134,14 @@ export function HomePage({
           className="relative min-h-[420px] rounded-[2rem] border border-border/60 bg-[radial-gradient(circle_at_top,_rgba(13,148,136,0.18),_transparent_52%),linear-gradient(145deg,_rgba(255,255,255,0.92),_rgba(240,249,255,0.85))] p-5 shadow-soft dark:bg-[radial-gradient(circle_at_top,_rgba(13,148,136,0.25),_transparent_52%),linear-gradient(145deg,_rgba(12,18,31,0.95),_rgba(14,25,40,0.9))]"
         >
           <div className="absolute inset-x-7 top-6 flex items-center justify-between rounded-full border border-border/60 bg-background/90 px-4 py-3 text-xs uppercase tracking-[0.24em] text-foreground/55">
-            <span>{profile?.fullName ?? cvFallback.fullName}</span>
-            <span>{profile?.generalLocation ?? cvFallback.location}</span>
+            <span>{profile?.fullName ?? DEFAULT_SITE_NAME}</span>
+            <span>{profile?.generalLocation ?? DEFAULT_LOCATION}</span>
           </div>
           <div className="pt-16">
             <PortfolioImage
               src={hero?.heroImage?.publicUrl ?? profile?.profileImage?.publicUrl}
               alt={
-                hero?.heroImage?.altText ?? profile?.fullName ?? `${cvFallback.fullName} portrait`
+                hero?.heroImage?.altText ?? profile?.fullName ?? `${DEFAULT_SITE_NAME} portrait`
               }
               width={hero?.heroImage?.width ?? profile?.profileImage?.width ?? 720}
               height={hero?.heroImage?.height ?? profile?.profileImage?.height ?? 720}
@@ -150,7 +157,7 @@ export function HomePage({
         <SectionHeading
           eyebrow="About"
           title="Professional background, strengths, and direction."
-          description={about?.fullBiography ?? profile?.professionalSummary ?? cvFallback.biography}
+          description={about?.fullBiography ?? profile?.professionalSummary ?? DEFAULT_SITE_DESCRIPTION}
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="rounded-[2rem] border border-border/60 bg-card/75 p-6 shadow-soft">
@@ -161,7 +168,7 @@ export function HomePage({
                 </dt>
                 <dd className="mt-2 text-base text-foreground/78">
                   {about?.preferredEmploymentArea ??
-                    'Research analysis, quality control, and pharmaceutical work'}
+                    'Professional focus details will appear here once the public profile is available.'}
                 </dd>
               </div>
               <div>
@@ -175,7 +182,7 @@ export function HomePage({
               <div>
                 <dt className="text-xs uppercase tracking-[0.24em] text-foreground/45">Location</dt>
                 <dd className="mt-2 text-base text-foreground/78">
-                  {about?.currentLocation ?? profile?.generalLocation ?? cvFallback.location}
+                  {about?.currentLocation ?? profile?.generalLocation ?? DEFAULT_LOCATION}
                 </dd>
               </div>
               <div>
@@ -183,20 +190,26 @@ export function HomePage({
                   Current role
                 </dt>
                 <dd className="mt-2 text-base text-foreground/78">
-                  {profile?.professionalTitle ?? cvFallback.professionalTitle}
+                  {profile?.professionalTitle ?? DEFAULT_SITE_TAGLINE}
                 </dd>
               </div>
             </dl>
           </div>
           <div className="grid gap-3 rounded-[2rem] border border-border/60 bg-background/80 p-6 shadow-soft">
-            {keyStrengths.map((strength) => (
-              <div
-                key={strength}
-                className="rounded-2xl border border-border/60 bg-card/80 px-4 py-3 text-sm text-foreground/74"
-              >
-                {strength}
+            {keyStrengths.length > 0 ? (
+              keyStrengths.map((strength) => (
+                <div
+                  key={strength}
+                  className="rounded-2xl border border-border/60 bg-card/80 px-4 py-3 text-sm text-foreground/74"
+                >
+                  {strength}
+                </div>
+              ))
+            ) : (
+              <div className="rounded-2xl border border-dashed border-border/60 bg-card/80 px-4 py-4 text-sm text-foreground/68">
+                Core strengths will appear here once they are published from the database.
               </div>
-            ))}
+            )}
           </div>
         </div>
       </section>

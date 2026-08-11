@@ -4,7 +4,11 @@ import type { ReactNode } from 'react';
 
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
-import { cvFallback } from '@/lib/cv-fallback';
+import {
+  DEFAULT_SITE_DESCRIPTION,
+  DEFAULT_SITE_NAME,
+  DEFAULT_SITE_TAGLINE,
+} from '@/lib/default-site-copy';
 import { AppProviders } from '@/providers/app-providers';
 import {
   getNavigation,
@@ -27,12 +31,10 @@ const fontDisplay = Fraunces({
 export async function generateMetadata(): Promise<Metadata> {
   const [siteContext, profile] = await Promise.all([getSiteContext(), getPublicProfile()]);
 
-  const siteName = siteContext?.siteSettings?.siteName ?? profile?.fullName ?? cvFallback.fullName;
+  const siteName = siteContext?.siteSettings?.siteName ?? profile?.fullName ?? DEFAULT_SITE_NAME;
   const title = siteContext?.seoSettings?.defaultTitle ?? `${siteName} Portfolio`;
   const description =
-    siteContext?.seoSettings?.defaultDescription ??
-    profile?.professionalSummary ??
-    cvFallback.summary;
+    siteContext?.seoSettings?.defaultDescription ?? profile?.professionalSummary ?? DEFAULT_SITE_DESCRIPTION;
   const iconUrl =
     siteContext?.siteSettings?.favicon?.publicUrl ?? siteContext?.siteSettings?.logo?.publicUrl;
   const openGraphImageUrl =
@@ -87,10 +89,12 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           <SiteHeader
             navigation={navigation}
             logo={siteContext?.siteSettings?.logo ?? null}
-            siteName={
-              siteContext?.siteSettings?.siteName ?? profile?.fullName ?? cvFallback.fullName
+            siteName={siteContext?.siteSettings?.siteName ?? profile?.fullName ?? DEFAULT_SITE_NAME}
+            siteTagline={
+              siteContext?.siteSettings?.siteTagline ??
+              profile?.professionalTitle ??
+              DEFAULT_SITE_TAGLINE
             }
-            siteTagline={siteContext?.siteSettings?.siteTagline ?? cvFallback.siteTagline}
           />
           <main id="main-content">{children}</main>
           <SiteFooter

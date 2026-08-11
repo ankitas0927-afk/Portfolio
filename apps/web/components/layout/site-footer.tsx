@@ -3,7 +3,11 @@ import { ArrowUpRight, FileText, Mail, MapPin, Phone, Sparkles } from 'lucide-re
 import type { ReactNode } from 'react';
 
 import type { NavigationItem, PublicProfile, SocialLink } from '@ankita-portfolio/shared-types';
-import { cvFallback } from '@/lib/cv-fallback';
+import {
+  DEFAULT_LOCATION,
+  DEFAULT_SITE_NAME,
+  DEFAULT_SITE_TAGLINE,
+} from '@/lib/default-site-copy';
 
 export function SiteFooter({
   profile,
@@ -16,11 +20,11 @@ export function SiteFooter({
   socialLinks: SocialLink[];
   footerText?: string | null;
 }) {
-  const displayName = profile?.fullName ?? cvFallback.fullName;
-  const title = profile?.professionalTitle ?? cvFallback.professionalTitle;
-  const email = profile?.publicEmail ?? cvFallback.publicEmail;
-  const phone = profile?.publicPhone ?? cvFallback.publicPhone;
-  const location = profile?.generalLocation ?? cvFallback.location;
+  const displayName = profile?.fullName ?? DEFAULT_SITE_NAME;
+  const title = profile?.professionalTitle ?? DEFAULT_SITE_TAGLINE;
+  const email = profile?.publicEmail ?? null;
+  const phone = profile?.publicPhone ?? null;
+  const location = profile?.generalLocation ?? DEFAULT_LOCATION;
   const year = new Date().getFullYear();
 
   return (
@@ -99,16 +103,22 @@ export function SiteFooter({
                   Navigation
                 </p>
                 <div className="mt-5 grid gap-3 text-sm text-foreground/74">
-                  {navigation.map((item) => (
-                    <Link
-                      key={item.id}
-                      href={item.href}
-                      className="hover-lift inline-flex items-center justify-between rounded-2xl border border-border/50 bg-background/45 px-4 py-3 transition hover:border-accent/40 hover:text-accent"
-                    >
-                      <span>{item.label}</span>
-                      <ArrowUpRight className="h-4 w-4 opacity-60" />
-                    </Link>
-                  ))}
+                  {navigation.length > 0 ? (
+                    navigation.map((item) => (
+                      <Link
+                        key={item.id}
+                        href={item.href}
+                        className="hover-lift inline-flex items-center justify-between rounded-2xl border border-border/50 bg-background/45 px-4 py-3 transition hover:border-accent/40 hover:text-accent"
+                      >
+                        <span>{item.label}</span>
+                        <ArrowUpRight className="h-4 w-4 opacity-60" />
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="rounded-[1.5rem] border border-dashed border-border/60 bg-background/40 px-4 py-4 text-sm leading-7 text-foreground/62">
+                      Published navigation links will appear here once they are available in the database.
+                    </div>
+                  )}
                 </div>
               </div>
 
