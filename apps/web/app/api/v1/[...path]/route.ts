@@ -1,6 +1,10 @@
 import type { NextRequest } from 'next/server';
 
-import { apiRuntimeEnv, getUpstreamApiBaseUrl } from '@/lib/api-base-url';
+import {
+  apiRuntimeEnv,
+  getUpstreamApiBaseUrl,
+  hasExplicitUpstreamApiBaseUrl,
+} from '@/lib/api-base-url';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -13,6 +17,18 @@ function buildProxyHeaders(headers: Headers) {
   forwardedHeaders.delete('x-forwarded-host');
   forwardedHeaders.delete('x-forwarded-proto');
   return forwardedHeaders;
+}
+
+function isProtectedDeploymentResponse(response: Response) {
+  const redirectLocation = response.headers.get('location') ?? '';
+  const hasProtectionNonce =
+    response.headers.get('set-cookie')?.includes('_vercel_sso_nonce') ?? false;
+
+  return (
+    (response.status === 302 && redirectLocation.includes('vercel.com/sso-api')) ||
+    (response.status === 401 && redirectLocation.includes('vercel.com/sso-api')) ||
+    hasProtectionNonce
+  );
 }
 
 function buildErrorResponse(message: string, code: string, status = 503) {
@@ -34,6 +50,13 @@ async function proxyRequest(
 ) {
   const upstreamApiBaseUrl = getUpstreamApiBaseUrl();
   const { path } = await params;
+
+  if (apiRuntimeEnv.isVercelDeployment && !hasExplicitUpstreamApiBaseUrl()) {
+    return buildErrorResponse(
+      'The portfolio API base URL is missing for this Vercel deployment. Set NEXT_PUBLIC_API_BASE_URL or API_PUBLIC_URL to the public API deployment URL.',
+      'API_BASE_URL_MISSING',
+    );
+  }
 
   if (!upstreamApiBaseUrl) {
     return buildErrorResponse(
@@ -60,9 +83,17 @@ async function proxyRequest(
   }
 
   try {
+    const upstreamHeaders = buildProxyHeaders(request.headers);
+    if (apiRuntimeEnv.upstreamProtectionBypassSecret) {
+      upstreamHeaders.set(
+        'x-vercel-protection-bypass',
+        apiRuntimeEnv.upstreamProtectionBypassSecret,
+      );
+    }
+
     const upstreamResponse = await fetch(upstreamUrl, {
       method: request.method,
-      headers: buildProxyHeaders(request.headers),
+      headers: upstreamHeaders,
       body:
         request.method === 'GET' || request.method === 'HEAD'
           ? undefined
@@ -70,6 +101,13 @@ async function proxyRequest(
       cache: 'no-store',
       redirect: 'manual',
     });
+
+    if (isProtectedDeploymentResponse(upstreamResponse)) {
+      return buildErrorResponse(
+        'The portfolio API is protected by Vercel Authentication. Either disable API deployment protection for the public API or set UPSTREAM_VERCEL_PROTECTION_BYPASS_SECRET in the web deployment.',
+        'UPSTREAM_API_PROTECTED',
+      );
+    }
 
     const responseHeaders = new Headers();
     upstreamResponse.headers.forEach((value, key) => {

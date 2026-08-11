@@ -73,8 +73,9 @@ Important variables:
   - `NEXT_PUBLIC_API_BASE_URL`
   - `NEXT_PUBLIC_SITE_URL`
   - `INTERNAL_API_BASE_URL`
+  - `UPSTREAM_VERCEL_PROTECTION_BYPASS_SECRET` when the API project keeps Vercel Deployment Protection enabled
 
-`INTERNAL_API_BASE_URL` is used for server-side rendering inside Docker or reverse-proxy deployments. In production, browser-side requests are proxied through the Next.js app at `/api/v1` so authentication stays same-origin and avoids CORS/cookie issues. On Vercel, prefer a public `NEXT_PUBLIC_API_BASE_URL`; only set `INTERNAL_API_BASE_URL` if it is also publicly reachable from the Vercel deployment.
+`INTERNAL_API_BASE_URL` is used for server-side rendering inside Docker or reverse-proxy deployments. In production, browser-side requests are proxied through the Next.js app at `/api/v1` so authentication stays same-origin and avoids CORS/cookie issues. On Vercel, set `NEXT_PUBLIC_API_BASE_URL` or `API_PUBLIC_URL` to the public API deployment URL. If the API project uses Vercel Deployment Protection, create a Protection Bypass secret on the API project and copy that value into the web project's `UPSTREAM_VERCEL_PROTECTION_BYPASS_SECRET`.
 
 ## Local Development
 
@@ -255,7 +256,7 @@ Recommended production shape:
 
 1. Host MongoDB on Atlas or another managed MongoDB service.
 2. Deploy the API behind HTTPS with secure cookies enabled.
-3. Deploy the web app from the `apps/web` root directory with the `Next.js` framework preset and both `NEXT_PUBLIC_API_BASE_URL` and `INTERNAL_API_BASE_URL` configured.
+3. Deploy the web app from the `apps/web` root directory with the `Next.js` framework preset and `NEXT_PUBLIC_API_BASE_URL` configured to the public API deployment URL.
 4. If deploying the API separately, use the `apps/api` root directory, the `Express` framework preset, and set the build command to `pnpm --dir ../.. build:packages && pnpm run build`.
 5. Set `FRONTEND_URL` in the API to the final public frontend origin.
 6. Add any preview or alternate frontend domains to `FRONTEND_URLS` as a comma-separated list.
@@ -268,6 +269,7 @@ For production:
 - set `COOKIE_SAME_SITE=none` when the frontend and API are on different domains
 - use strong random JWT secrets
 - update `FRONTEND_URL`, `NEXT_PUBLIC_SITE_URL`, and `API_PUBLIC_URL`
+- if the API project uses Vercel Deployment Protection, set `UPSTREAM_VERCEL_PROTECTION_BYPASS_SECRET` on the web project to a Protection Bypass for Automation secret created on the API project
 - do not set `NODE_ENV` manually on Vercel or other Next.js hosts; let the platform/build command control it
 - run `pnpm seed` once after provisioning
 
@@ -275,5 +277,6 @@ For production:
 
 - If `sharp` or `bcrypt` fail after install, run `pnpm rebuild bcrypt sharp esbuild mongodb-memory-server`.
 - If the web app cannot reach the API in Docker, verify `INTERNAL_API_BASE_URL=http://api:5000/api/v1`.
+- If the web app on Vercel says the API is protected, either disable Vercel Authentication on the API project or configure `UPSTREAM_VERCEL_PROTECTION_BYPASS_SECRET` in the web project.
 - If the seed script cannot find the resume PDF, confirm `RESUME_PDF_PATH` is correct relative to `apps/api`. The bundled default is `seed-assets/ankita-resume.pdf`.
 - If uploads are rejected, check the configured file-size limits and category-specific MIME restrictions.

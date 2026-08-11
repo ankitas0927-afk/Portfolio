@@ -23,6 +23,8 @@ export const apiRuntimeEnv = {
   publicApiBaseUrl: normaliseApiBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL),
   internalApiBaseUrl: normaliseApiBaseUrl(process.env.INTERNAL_API_BASE_URL),
   apiPublicUrl: normaliseApiBaseUrl(process.env.API_PUBLIC_URL),
+  upstreamProtectionBypassSecret:
+    process.env.UPSTREAM_VERCEL_PROTECTION_BYPASS_SECRET?.trim() || null,
 };
 
 export function getUpstreamApiBaseUrl() {
@@ -40,5 +42,13 @@ export function getUpstreamApiBaseUrl() {
     apiRuntimeEnv.publicApiBaseUrl ??
     apiRuntimeEnv.apiPublicUrl ??
     apiRuntimeEnv.defaultLocalApiBaseUrl
+  );
+}
+
+export function hasExplicitUpstreamApiBaseUrl() {
+  return Boolean(
+    apiRuntimeEnv.publicApiBaseUrl ??
+      apiRuntimeEnv.internalApiBaseUrl ??
+      apiRuntimeEnv.apiPublicUrl,
   );
 }
