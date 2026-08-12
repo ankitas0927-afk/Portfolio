@@ -17,24 +17,6 @@ import type {
   TrainingRecord,
 } from '@ankita-portfolio/shared-types';
 
-import {
-  fallbackAbout,
-  fallbackEducation,
-  fallbackExperience,
-  fallbackHero,
-  fallbackLanguages,
-  fallbackNavigation,
-  fallbackPersonalSkills,
-  fallbackProfile,
-  fallbackProjects,
-  fallbackResumeMedia,
-  fallbackSeoSettings,
-  fallbackSiteSettings,
-  fallbackSkillCategories,
-  fallbackSkillRecords,
-  fallbackSocialLinks,
-  fallbackTraining,
-} from '../lib/cv-fallback';
 import { webEnv } from '../lib/env';
 import { resolvePrimaryNavigation } from '../lib/public-navigation';
 
@@ -80,29 +62,10 @@ export type PublicResumeBundle = ResumeRecord & {
   media?: MediaReference | null;
 };
 
-const fallbackSkillsBundle: PublicSkillsBundle = {
-  categories: fallbackSkillCategories,
-  skills: fallbackSkillRecords,
-  personalSkills: fallbackPersonalSkills,
-};
-
-const fallbackSiteContext: PublicSiteContext = {
-  siteSettings: fallbackSiteSettings,
-  seoSettings: fallbackSeoSettings,
-};
-
-const fallbackResume: PublicResumeBundle = {
-  id: 'fallback-resume',
-  title: 'Ankita Singh Resume',
-  versionLabel: 'Bundled resume',
-  mediaAssetId: fallbackResumeMedia.id,
-  isActive: true,
-  publicationStatus: 'published',
-  createdAt: '2026-08-11T00:00:00.000Z',
-  updatedAt: '2026-08-11T00:00:00.000Z',
-  previewUrl: '/api/fallback/resume',
-  downloadUrl: '/api/fallback/resume?download=1',
-  media: fallbackResumeMedia,
+const emptySkillsBundle: PublicSkillsBundle = {
+  categories: [],
+  skills: [],
+  personalSkills: [],
 };
 
 async function fetchPublic<T>(path: string): Promise<T | null> {
@@ -124,68 +87,62 @@ async function fetchPublic<T>(path: string): Promise<T | null> {
 }
 
 export async function getSiteContext() {
-  return (await fetchPublic<PublicSiteContext>('/site-context')) ?? fallbackSiteContext;
-}
-
-export async function getNavigation() {
-  return resolvePrimaryNavigation(
-    (await fetchPublic<NavigationItem[]>('/navigation')) ?? fallbackNavigation,
+  return (
+    (await fetchPublic<PublicSiteContext>('/site-context')) ?? {
+      siteSettings: null,
+      seoSettings: null,
+    }
   );
 }
 
+export async function getNavigation() {
+  return resolvePrimaryNavigation((await fetchPublic<NavigationItem[]>('/navigation')) ?? []);
+}
+
 export async function getPublicProfile() {
-  return (await fetchPublic<PublicProfile>('/profile')) ?? fallbackProfile;
+  return await fetchPublic<PublicProfile>('/profile');
 }
 
 export async function getPublicHero() {
-  return (await fetchPublic<HeroSection>('/hero')) ?? fallbackHero;
+  return await fetchPublic<HeroSection>('/hero');
 }
 
 export async function getPublicAbout() {
-  return (await fetchPublic<AboutSection>('/about')) ?? fallbackAbout;
+  return await fetchPublic<AboutSection>('/about');
 }
 
 export async function getPublicExperience() {
-  return (await fetchPublic<ExperienceRecord[]>('/experience')) ?? fallbackExperience;
+  return (await fetchPublic<ExperienceRecord[]>('/experience')) ?? [];
 }
 
 export async function getPublicEducation() {
-  return (await fetchPublic<EducationRecord[]>('/education')) ?? fallbackEducation;
+  return (await fetchPublic<EducationRecord[]>('/education')) ?? [];
 }
 
 export async function getPublicTraining() {
-  return (await fetchPublic<TrainingRecord[]>('/training')) ?? fallbackTraining;
+  return (await fetchPublic<TrainingRecord[]>('/training')) ?? [];
 }
 
 export async function getPublicSkills() {
-  return (await fetchPublic<PublicSkillsBundle>('/skills')) ?? fallbackSkillsBundle;
+  return (await fetchPublic<PublicSkillsBundle>('/skills')) ?? emptySkillsBundle;
 }
 
 export async function getPublicProjects(featured = false) {
   const endpoint = featured ? '/projects/featured' : '/projects';
-  const projects = await fetchPublic<ProjectRecord[]>(endpoint);
-  if (projects) {
-    return projects;
-  }
-
-  return featured ? fallbackProjects.filter((project) => project.featured) : fallbackProjects;
+  return (await fetchPublic<ProjectRecord[]>(endpoint)) ?? [];
 }
 
 export async function getPublicProject(slug: string) {
-  return (
-    (await fetchPublic<
-      ProjectRecord & {
-        galleryImages?: Array<{ publicUrl: string }>;
-        supportingDocuments?: Array<{ publicUrl: string }>;
-      }
-    >(`/projects/${slug}`)) ??
-    fallbackProjects.find((project) => project.slug === slug) ??
-    null
-  );
+  return await fetchPublic<
+    ProjectRecord & {
+      galleryImages?: Array<{ publicUrl: string }>;
+      supportingDocuments?: Array<{ publicUrl: string }>;
+    }
+  >(`/projects/${slug}`);
 }
 
 export async function getPublicLanguages() {
-  return (await fetchPublic<LanguageRecord[]>('/languages')) ?? fallbackLanguages;
+  return (await fetchPublic<LanguageRecord[]>('/languages')) ?? [];
 }
 
 export async function getPublicInterests() {
@@ -197,11 +154,11 @@ export async function getPublicCertificates() {
 }
 
 export async function getPublicSocialLinks() {
-  return (await fetchPublic<SocialLink[]>('/social-links')) ?? fallbackSocialLinks;
+  return (await fetchPublic<SocialLink[]>('/social-links')) ?? [];
 }
 
 export async function getPublicResume() {
-  return (await fetchPublic<PublicResumeBundle>('/resume')) ?? fallbackResume;
+  return await fetchPublic<PublicResumeBundle>('/resume');
 }
 
 export async function getHomeBundle() {

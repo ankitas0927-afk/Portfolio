@@ -93,12 +93,24 @@ export function MediaLibrary() {
     },
   });
 
+  const copyMediaId = async (mediaId: string) => {
+    try {
+      await navigator.clipboard.writeText(mediaId);
+      toast.success('Media ID copied');
+    } catch {
+      toast.error('Unable to copy media ID');
+    }
+  };
+
   return (
     <section className="premium-panel space-y-8 p-6">
       <div>
         <h2 className="font-display text-2xl font-semibold">Media Library</h2>
         <p className="mt-2 text-sm text-foreground/70">
           Uploads are processed in memory, stored in GridFS, and never written to a local uploads directory.
+        </p>
+        <p className="mt-2 text-xs uppercase tracking-[0.18em] text-foreground/48">
+          Upload a file here, then copy its media ID into profile, hero, about, project, SEO, or site settings fields.
         </p>
       </div>
 
@@ -180,7 +192,17 @@ export function MediaLibrary() {
               <article key={String(item.id)} className="section-card hover-lift px-5 py-5">
                 <p className="font-semibold text-foreground">{String(item.originalName)}</p>
                 <p className="mt-2 text-xs uppercase tracking-[0.22em] text-foreground/45">{metaLabel}</p>
+                <p className="mt-3 break-all text-xs text-foreground/58">
+                  Media ID: {String(item.id)}
+                </p>
                 <div className="mt-4 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => copyMediaId(String(item.id))}
+                    className="ghost-button px-3 py-2 text-xs"
+                  >
+                    Copy ID
+                  </button>
                   {item.isPublic ? (
                     <a
                       href={`${webEnv.browserApiBaseUrl}/public/media/${String(item.id)}`}

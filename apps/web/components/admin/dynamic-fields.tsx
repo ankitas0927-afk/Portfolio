@@ -20,12 +20,17 @@ export function DynamicFields({
         <div key={field.name} className="section-card px-4 py-4">
           <label className="mb-2 block text-sm font-semibold text-foreground/82">{field.label}</label>
           {field.type === 'textarea' ? (
-            <textarea rows={5} className={inputClassName} {...register(field.name)} />
+            <textarea
+              rows={5}
+              className={inputClassName}
+              placeholder={field.placeholder}
+              {...register(field.name)}
+            />
           ) : field.type === 'tags' ? (
             <textarea
               rows={3}
               className={inputClassName}
-              placeholder="Separate values with commas"
+              placeholder={field.placeholder ?? 'Separate values with commas'}
               {...register(field.name)}
             />
           ) : field.type === 'checkbox' ? (
@@ -44,7 +49,15 @@ export function DynamicFields({
             </select>
           ) : (
             <input
-              type={field.type === 'number' ? 'number' : field.type === 'email' ? 'email' : 'text'}
+              type={
+                field.type === 'number'
+                  ? 'number'
+                  : field.type === 'email'
+                    ? 'email'
+                    : field.type === 'url'
+                      ? 'url'
+                      : 'text'
+              }
               className={inputClassName}
               placeholder={field.placeholder}
               {...register(field.name)}
