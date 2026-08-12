@@ -104,7 +104,7 @@ export const personalProfileSchema = z.object({
   preferredName: z.string().trim().max(120).optional(),
   professionalTitle: z.string().trim().min(1).max(180),
   rotatingTitles: z.array(z.string().trim().min(1).max(120)).default([]),
-  shortIntroduction: z.string().trim().min(1).max(320),
+  shortIntroduction: z.string().trim().min(1).max(800),
   professionalSummary: z.string().trim().min(1).max(1400),
   careerObjective: z.string().trim().min(1).max(1400),
   generalLocation: z.string().trim().min(1).max(180),
