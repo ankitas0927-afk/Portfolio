@@ -16,6 +16,7 @@ import type {
   SocialLink,
   TrainingRecord,
 } from '@ankita-portfolio/shared-types';
+import { unstable_noStore as noStore } from 'next/cache';
 
 import { webEnv } from '../lib/env';
 import { resolvePrimaryNavigation } from '../lib/public-navigation';
@@ -68,7 +69,76 @@ const emptySkillsBundle: PublicSkillsBundle = {
   personalSkills: [],
 };
 
+function canUseEmbeddedApiRuntime() {
+  return [
+    'MONGODB_URI',
+    'FRONTEND_URL',
+    'JWT_ACCESS_SECRET',
+    'JWT_REFRESH_SECRET',
+    'ADMIN_NAME',
+    'ADMIN_EMAIL',
+    'ADMIN_INITIAL_PASSWORD',
+    'RESUME_PDF_PATH',
+  ].every((key) => Boolean(process.env[key]?.trim()));
+}
+
+async function readFromEmbeddedApi<T>(path: string) {
+  noStore();
+
+  try {
+    if (!canUseEmbeddedApiRuntime()) {
+      return null;
+    }
+
+    const [{ connectToDatabase }, publicService] = await Promise.all([
+      import('@ankita-portfolio/api/database/mongoose'),
+      import('@ankita-portfolio/api/services/public.service'),
+    ]);
+
+    await connectToDatabase();
+
+    const serverLoaders: Record<string, () => Promise<unknown>> = {
+      '/site-context': () => publicService.getPublicSiteContext(),
+      '/navigation': () => publicService.getPublicNavigation(),
+      '/profile': () => publicService.getPublicProfile(),
+      '/hero': () => publicService.getPublicHero(),
+      '/about': () => publicService.getPublicAbout(),
+      '/experience': () => publicService.getPublicExperience(),
+      '/education': () => publicService.getPublicEducation(),
+      '/training': () => publicService.getPublicTraining(),
+      '/skills': () => publicService.getPublicSkills(),
+      '/projects': () => publicService.getPublicProjects(),
+      '/projects/featured': () => publicService.getPublicProjects(true),
+      '/languages': () => publicService.getPublicLanguages(),
+      '/interests': () => publicService.getPublicInterests(),
+      '/certificates': () => publicService.getPublicCertificates(),
+      '/social-links': () => publicService.getPublicSocialLinks(),
+      '/resume': () => publicService.getPublicResume(),
+    };
+
+    const directLoader =
+      path.startsWith('/projects/') && path !== '/projects/featured'
+        ? () => publicService.getPublicProjectBySlug(path.replace('/projects/', ''))
+        : serverLoaders[path];
+
+    if (!directLoader) {
+      return null;
+    }
+
+    return (await directLoader()) as T;
+  } catch {
+    return null;
+  }
+}
+
 async function fetchPublic<T>(path: string): Promise<T | null> {
+  if (typeof window === 'undefined') {
+    const embeddedResult = await readFromEmbeddedApi<T>(path);
+    if (embeddedResult !== null) {
+      return embeddedResult;
+    }
+  }
+
   try {
     const response = await fetch(`${webEnv.apiBaseUrl}/public${path}`, {
       cache: 'no-store',
