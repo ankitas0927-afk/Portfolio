@@ -13,6 +13,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@ankita-portfolio/api": "workspace:*",
     "@ankita-portfolio/config": "workspace:*",
     "@ankita-portfolio/shared-types": "workspace:*",
     "@ankita-portfolio/validation": "workspace:*",

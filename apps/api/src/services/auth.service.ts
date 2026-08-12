@@ -66,6 +66,35 @@ export function getRefreshCookieOptions(): CookieOptions {
   };
 }
 
+function createRefreshTokenData(
+  adminId: string,
+  sessionId: string,
+  role: JwtPayload['role'],
+  createdByIp: string,
+) {
+  const refreshTokenId = new mongoose.Types.ObjectId();
+  const opaqueNonce = generateOpaqueToken();
+  const refreshToken = signRefreshToken({
+    adminId,
+    sessionId,
+    refreshTokenId: refreshTokenId.toString(),
+    role,
+  });
+
+  return {
+    refreshToken,
+    persistedToken: {
+      _id: refreshTokenId,
+      adminId,
+      sessionId,
+      tokenHash: hashToken(`${refreshToken}:${opaqueNonce}`),
+      expiresAt: new Date(Date.now() + getRefreshTokenMaxAgeMs()),
+      createdByIp,
+    },
+    responseToken: `${refreshToken}:${opaqueNonce}`,
+  };
+}
+
 async function issueSession(admin: AdminDocument, client: AuthClientDetails) {
   const session = await AdminSessionModel.create({
     adminId: admin._id,
@@ -82,28 +111,19 @@ async function issueSession(admin: AdminDocument, client: AuthClientDetails) {
   };
 
   const accessToken = signAccessToken(payload);
-  const opaqueNonce = generateOpaqueToken();
-  const refreshTokenRecord = await RefreshTokenModel.create({
-    adminId: admin._id,
-    sessionId: session._id,
-    tokenHash: '',
-    expiresAt: new Date(Date.now() + getRefreshTokenMaxAgeMs()),
-    createdByIp: client.ipAddress,
-  });
-
-  const refreshToken = signRefreshToken({
-    ...payload,
-    refreshTokenId: refreshTokenRecord._id.toString(),
-  });
-
-  refreshTokenRecord.tokenHash = hashToken(`${refreshToken}:${opaqueNonce}`);
-  await refreshTokenRecord.save();
+  const refreshTokenData = createRefreshTokenData(
+    admin._id.toString(),
+    session._id.toString(),
+    payload.role,
+    client.ipAddress,
+  );
+  await RefreshTokenModel.create(refreshTokenData.persistedToken);
 
   await AdminModel.updateOne({ _id: admin._id }, { $set: { lastLoginAt: new Date() } });
 
   return {
     accessToken,
-    refreshToken: `${refreshToken}:${opaqueNonce}`,
+    refreshToken: refreshTokenData.responseToken,
     admin: serializeAdmin(admin),
     sessionId: session._id.toString(),
   };
@@ -176,30 +196,22 @@ export async function refreshAdminSession(rawCookieToken: string, client: AuthCl
     throw new AppError(401, 'Refresh token is invalid', 'INVALID_REFRESH_TOKEN');
   }
 
-  const newOpaqueNonce = generateOpaqueToken();
-  const replacementTokenRecord = await RefreshTokenModel.create({
-    adminId: admin._id,
-    sessionId: session._id,
-    tokenHash: '',
-    expiresAt: new Date(Date.now() + getRefreshTokenMaxAgeMs()),
-    createdByIp: client.ipAddress,
-  });
-
-  const newRefreshJwt = signRefreshToken({
-    adminId: admin._id.toString(),
-    sessionId: session._id.toString(),
-    refreshTokenId: replacementTokenRecord._id.toString(),
-    role: 'owner',
-  });
-
-  replacementTokenRecord.tokenHash = hashToken(`${newRefreshJwt}:${newOpaqueNonce}`);
+  const replacementTokenData = createRefreshTokenData(
+    admin._id.toString(),
+    session._id.toString(),
+    'owner',
+    client.ipAddress,
+  );
+  const replacementTokenRecord = await RefreshTokenModel.create(
+    replacementTokenData.persistedToken,
+  );
 
   tokenRecord.revokedAt = new Date();
   tokenRecord.lastUsedAt = new Date();
   tokenRecord.replacedByTokenId = replacementTokenRecord._id as mongoose.Types.ObjectId;
   session.lastActivityAt = new Date();
 
-  await Promise.all([replacementTokenRecord.save(), tokenRecord.save(), session.save()]);
+  await Promise.all([tokenRecord.save(), session.save()]);
 
   await safeCreateAuditLog({
     adminId: admin._id.toString(),
@@ -216,7 +228,7 @@ export async function refreshAdminSession(rawCookieToken: string, client: AuthCl
       sessionId: session._id.toString(),
       role: 'owner',
     }),
-    refreshToken: `${newRefreshJwt}:${newOpaqueNonce}`,
+    refreshToken: replacementTokenData.responseToken,
     admin: serializeAdmin(admin as AdminDocument),
   };
 }

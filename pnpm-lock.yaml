@@ -156,6 +156,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@ankita-portfolio/api':
+        specifier: workspace:*
+        version: link:../api
       '@ankita-portfolio/config':
         specifier: workspace:*
         version: link:../../packages/config

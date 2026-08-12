@@ -9,7 +9,9 @@ let app: Express;
 let connectToDatabase: () => Promise<typeof mongoose>;
 let disconnectFromDatabase: () => Promise<void>;
 let AdminModel: typeof import('../src/models/index.js').AdminModel;
+let AdminSessionModel: typeof import('../src/models/index.js').AdminSessionModel;
 let PersonalProfileModel: typeof import('../src/models/index.js').PersonalProfileModel;
+let RefreshTokenModel: typeof import('../src/models/index.js').RefreshTokenModel;
 
 describe('API application', () => {
   beforeAll(async () => {
@@ -21,7 +23,9 @@ describe('API application', () => {
     connectToDatabase = dbModule.connectToDatabase;
     disconnectFromDatabase = dbModule.disconnectFromDatabase;
     AdminModel = modelModule.AdminModel;
+    AdminSessionModel = modelModule.AdminSessionModel;
     PersonalProfileModel = modelModule.PersonalProfileModel;
+    RefreshTokenModel = modelModule.RefreshTokenModel;
 
     await connectToDatabase();
   });
@@ -81,6 +85,43 @@ describe('API application', () => {
     expect(response.status).toBe(401);
     expect(response.body.success).toBe(false);
     expect(response.body.error.code).toBe('INVALID_CREDENTIALS');
+  });
+
+  it('allows valid login when legacy blank refresh-token hashes already exist', async () => {
+    const admin = await AdminModel.create({
+      name: 'Admin',
+      email: 'admin@example.com',
+      passwordHash: await bcrypt.hash('CorrectPass!123', 12),
+      role: 'owner',
+    });
+
+    const staleSession = await AdminSessionModel.create({
+      adminId: admin._id,
+      ipAddress: '127.0.0.1',
+      userAgent: 'legacy-client',
+      isActive: false,
+      lastActivityAt: new Date(),
+    });
+
+    await RefreshTokenModel.collection.insertOne({
+      adminId: admin._id,
+      sessionId: staleSession._id,
+      tokenHash: '',
+      expiresAt: new Date(Date.now() + 60_000),
+      createdByIp: '127.0.0.1',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    const response = await request(app).post('/api/v1/auth/login').send({
+      email: 'admin@example.com',
+      password: 'CorrectPass!123',
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.data.admin.email).toBe('admin@example.com');
+    expect(response.headers['set-cookie']).toBeDefined();
   });
 
   it('returns only public profile fields from the public endpoint', async () => {
