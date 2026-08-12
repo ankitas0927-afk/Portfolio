@@ -43,6 +43,40 @@ type BootstrapProfileSnapshot = {
   generalLocation?: string;
   profileImageId?: { toString(): string } | null;
   activeResumeId?: { toString(): string } | null;
+  publicationStatus?: string;
+};
+
+type BootstrapHeroSnapshot = {
+  _id?: { toString(): string };
+  heading?: string;
+  subheading?: string;
+  heroImageId?: { toString(): string } | null;
+  publicationStatus?: string;
+};
+
+type BootstrapAboutSnapshot = {
+  _id?: { toString(): string };
+  fullBiography?: string;
+  currentLocation?: string;
+  aboutImageId?: { toString(): string } | null;
+  publicationStatus?: string;
+};
+
+type BootstrapSiteSettingsSnapshot = {
+  _id?: { toString(): string };
+  siteName?: string;
+  siteTagline?: string;
+  logoId?: { toString(): string } | null;
+  faviconId?: { toString(): string } | null;
+  openGraphImageId?: { toString(): string } | null;
+};
+
+type BootstrapSeoSettingsSnapshot = {
+  _id?: { toString(): string };
+  defaultTitle?: string;
+  defaultDescription?: string;
+  siteUrl?: string;
+  defaultOpenGraphImageId?: { toString(): string } | null;
 };
 
 const BOOTSTRAP_REQUEST_ID = 'bootstrap-seed';
@@ -51,6 +85,12 @@ const legacyInterestTitles = [
   'Watching films',
   'Listening to music',
   'Exercise',
+];
+const genericPlaceholderFragments = [
+  'professional portfolio',
+  'sourced from the database',
+  'published profile',
+  'location available on request',
 ];
 const apiPackageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -188,9 +228,60 @@ function isGenericPortfolioProfile(profile: BootstrapProfileSnapshot) {
 
   return (
     !combinedText.includes('ankita') ||
-    combinedText.includes('professional portfolio') ||
-    combinedText.includes('published profile') ||
-    combinedText.includes('location available on request')
+    genericPlaceholderFragments.some((fragment) => combinedText.includes(fragment))
+  );
+}
+
+function normalizeSeedText(value: string | undefined) {
+  return value?.trim().toLowerCase() ?? '';
+}
+
+function hasGenericPlaceholderText(value: string | undefined) {
+  const normalized = normalizeSeedText(value);
+  return genericPlaceholderFragments.some((fragment) => normalized.includes(fragment));
+}
+
+function isGenericSiteSettings(settings: BootstrapSiteSettingsSnapshot | null) {
+  if (!settings) {
+    return true;
+  }
+
+  const siteName = normalizeSeedText(settings.siteName);
+  const tagline = normalizeSeedText(settings.siteTagline);
+
+  return !siteName || hasGenericPlaceholderText(siteName) || tagline === 'portfolio';
+}
+
+function isGenericHero(hero: BootstrapHeroSnapshot | null) {
+  if (!hero) {
+    return true;
+  }
+
+  return !normalizeSeedText(hero.heading) || hasGenericPlaceholderText(hero.heading) || hasGenericPlaceholderText(hero.subheading);
+}
+
+function isGenericAbout(about: BootstrapAboutSnapshot | null) {
+  if (!about) {
+    return true;
+  }
+
+  return (
+    !normalizeSeedText(about.fullBiography) ||
+    hasGenericPlaceholderText(about.fullBiography) ||
+    hasGenericPlaceholderText(about.currentLocation)
+  );
+}
+
+function isGenericSeoSettings(settings: BootstrapSeoSettingsSnapshot | null) {
+  if (!settings) {
+    return true;
+  }
+
+  return (
+    !normalizeSeedText(settings.defaultTitle) ||
+    hasGenericPlaceholderText(settings.defaultTitle) ||
+    hasGenericPlaceholderText(settings.defaultDescription) ||
+    normalizeSeedText(settings.siteUrl).includes('localhost')
   );
 }
 
@@ -319,6 +410,79 @@ async function insertOrderedPortfolioRecords() {
       })),
     ),
   ]);
+}
+
+async function ensureSeedCollections() {
+  let changed = false;
+
+  if ((await ExperienceModel.countDocuments({ publicationStatus: 'published' })) === 0) {
+    await ExperienceModel.insertMany(ankitaSeedData.experience);
+    changed = true;
+  }
+
+  if ((await EducationModel.countDocuments({ publicationStatus: 'published' })) === 0) {
+    await EducationModel.insertMany(ankitaSeedData.education);
+    changed = true;
+  }
+
+  if ((await ProfessionalTrainingModel.countDocuments({ publicationStatus: 'published' })) === 0) {
+    await ProfessionalTrainingModel.insertMany(ankitaSeedData.training);
+    changed = true;
+  }
+
+  const [skillCategoryCount, skillCount, personalSkillCount] = await Promise.all([
+    SkillCategoryModel.countDocuments({ publicationStatus: 'published' }),
+    SkillModel.countDocuments({ publicationStatus: 'published' }),
+    PersonalSkillModel.countDocuments({ publicationStatus: 'published' }),
+  ]);
+
+  if (skillCategoryCount === 0 && skillCount === 0 && personalSkillCount === 0) {
+    const skillCategories = await SkillCategoryModel.insertMany(
+      ankitaSeedData.skillCategories.map((category) => ({
+        ...category,
+        publicationStatus: 'published',
+      })),
+    );
+
+    const categoryMap = new Map(skillCategories.map((category) => [category.name, category._id]));
+
+    await Promise.all([
+      SkillModel.insertMany(
+        ankitaSeedData.skills.map((skill) => ({
+          name: skill.name,
+          categoryId: categoryMap.get(skill.categoryName),
+          displayOrder: skill.displayOrder,
+          publicationStatus: 'published',
+        })),
+      ),
+      PersonalSkillModel.insertMany(
+        ankitaSeedData.personalSkills.map((title, index) => ({
+          title,
+          displayOrder: index,
+          publicationStatus: 'published',
+        })),
+      ),
+    ]);
+
+    changed = true;
+  }
+
+  if ((await ProjectModel.countDocuments({ publicationStatus: 'published' })) === 0) {
+    await ProjectModel.create(ankitaSeedData.project);
+    changed = true;
+  }
+
+  if ((await LanguageModel.countDocuments({ publicationStatus: 'published' })) === 0) {
+    await LanguageModel.insertMany(
+      ankitaSeedData.languages.map((language) => ({
+        ...language,
+        publicationStatus: 'published',
+      })),
+    );
+    changed = true;
+  }
+
+  return changed;
 }
 
 async function createPortfolioSeed(adminId: string) {
@@ -495,7 +659,14 @@ async function ensureMissingPublicShell(adminId: string, profile: BootstrapProfi
     changed = true;
   }
 
-  if ((await HeroModel.countDocuments({ publicationStatus: 'published' })) === 0) {
+  const publishedHero = await HeroModel.findOne({
+    publicationStatus: 'published',
+  }).lean<BootstrapHeroSnapshot | null>();
+  const fallbackHero =
+    publishedHero ??
+    (await HeroModel.findOne({}).sort({ updatedAt: -1 }).lean<BootstrapHeroSnapshot | null>());
+
+  if (!fallbackHero) {
     await HeroModel.create({
       eyebrow: 'Professional Profile',
       heading: ankitaSeedData.heroHeading,
@@ -509,9 +680,46 @@ async function ensureMissingPublicShell(adminId: string, profile: BootstrapProfi
       publicationStatus: 'published',
     });
     changed = true;
+  } else {
+    const heroUpdate: Record<string, unknown> = {};
+
+    if (!publishedHero && fallbackHero.publicationStatus !== 'published') {
+      heroUpdate.publicationStatus = 'published';
+    }
+
+    if (!fallbackHero.heroImageId && profile.profileImageId) {
+      heroUpdate.heroImageId = profile.profileImageId;
+    }
+
+    if (isGenericHero(fallbackHero)) {
+      Object.assign(heroUpdate, {
+        eyebrow: 'Professional Profile',
+        heading: ankitaSeedData.heroHeading,
+        subheading: ankitaSeedData.heroSubheading,
+        highlights: ankitaSeedData.heroHighlights,
+        ctaPrimaryLabel: 'View Resume',
+        ctaPrimaryHref: '/resume',
+        ctaSecondaryLabel: 'Contact',
+        ctaSecondaryHref: '/contact',
+        heroImageId: profile.profileImageId,
+        publicationStatus: 'published',
+      });
+    }
+
+    if (Object.keys(heroUpdate).length > 0) {
+      await HeroModel.updateOne({ _id: fallbackHero._id }, { $set: heroUpdate });
+      changed = true;
+    }
   }
 
-  if ((await AboutModel.countDocuments({ publicationStatus: 'published' })) === 0) {
+  const publishedAbout = await AboutModel.findOne({
+    publicationStatus: 'published',
+  }).lean<BootstrapAboutSnapshot | null>();
+  const fallbackAbout =
+    publishedAbout ??
+    (await AboutModel.findOne({}).sort({ updatedAt: -1 }).lean<BootstrapAboutSnapshot | null>());
+
+  if (!fallbackAbout) {
     await AboutModel.create({
       fullBiography: ankitaSeedData.fullBiography,
       preferredEmploymentArea: ankitaSeedData.preferredEmploymentArea,
@@ -522,9 +730,38 @@ async function ensureMissingPublicShell(adminId: string, profile: BootstrapProfi
       publicationStatus: 'published',
     });
     changed = true;
+  } else {
+    const aboutUpdate: Record<string, unknown> = {};
+
+    if (!publishedAbout && fallbackAbout.publicationStatus !== 'published') {
+      aboutUpdate.publicationStatus = 'published';
+    }
+
+    if (!fallbackAbout.aboutImageId && profile.profileImageId) {
+      aboutUpdate.aboutImageId = profile.profileImageId;
+    }
+
+    if (isGenericAbout(fallbackAbout)) {
+      Object.assign(aboutUpdate, {
+        fullBiography: ankitaSeedData.fullBiography,
+        preferredEmploymentArea: ankitaSeedData.preferredEmploymentArea,
+        currentLocation: location,
+        availabilityLabel: 'Open to suitable opportunities',
+        keyStrengths: ankitaSeedData.keyStrengths,
+        aboutImageId: profile.profileImageId,
+        publicationStatus: 'published',
+      });
+    }
+
+    if (Object.keys(aboutUpdate).length > 0) {
+      await AboutModel.updateOne({ _id: fallbackAbout._id }, { $set: aboutUpdate });
+      changed = true;
+    }
   }
 
-  if ((await SiteSettingsModel.countDocuments({})) === 0) {
+  const siteSettings = await SiteSettingsModel.findOne({}).lean<BootstrapSiteSettingsSnapshot | null>();
+
+  if (!siteSettings) {
     await SiteSettingsModel.create({
       siteName: 'Ankita Singh',
       siteTagline: 'Research Analyst | Pharmacy Graduate',
@@ -539,9 +776,43 @@ async function ensureMissingPublicShell(adminId: string, profile: BootstrapProfi
         'Research analyst and pharmacy graduate focused on accurate analysis, quality control exposure, and dependable professional communication.',
     });
     changed = true;
+  } else {
+    const siteSettingsUpdate: Record<string, unknown> = {};
+
+    if (isGenericSiteSettings(siteSettings)) {
+      Object.assign(siteSettingsUpdate, {
+        siteName: 'Ankita Singh',
+        siteTagline: 'Research Analyst | Pharmacy Graduate',
+        accentColor: DEFAULT_ACCENT,
+        secondaryAccentColor: DEFAULT_SECONDARY_ACCENT,
+        enableDarkTheme: true,
+        maintenanceMode: false,
+        footerText:
+          'Research analyst and pharmacy graduate focused on accurate analysis, quality control exposure, and dependable professional communication.',
+      });
+    }
+
+    if (!siteSettings.logoId && profile.profileImageId) {
+      siteSettingsUpdate.logoId = profile.profileImageId;
+    }
+
+    if (!siteSettings.faviconId && profile.profileImageId) {
+      siteSettingsUpdate.faviconId = profile.profileImageId;
+    }
+
+    if (!siteSettings.openGraphImageId && profile.profileImageId) {
+      siteSettingsUpdate.openGraphImageId = profile.profileImageId;
+    }
+
+    if (Object.keys(siteSettingsUpdate).length > 0) {
+      await SiteSettingsModel.updateOne({ _id: siteSettings._id }, { $set: siteSettingsUpdate });
+      changed = true;
+    }
   }
 
-  if ((await SeoSettingsModel.countDocuments({})) === 0) {
+  const seoSettings = await SeoSettingsModel.findOne({}).lean<BootstrapSeoSettingsSnapshot | null>();
+
+  if (!seoSettings) {
     await SeoSettingsModel.create({
       defaultTitle: 'Ankita Singh | Research Analyst and Pharmacy Graduate',
       defaultDescription:
@@ -551,30 +822,71 @@ async function ensureMissingPublicShell(adminId: string, profile: BootstrapProfi
       siteUrl: env.FRONTEND_URL,
     });
     changed = true;
+  } else {
+    const seoSettingsUpdate: Record<string, unknown> = {};
+
+    if (isGenericSeoSettings(seoSettings)) {
+      Object.assign(seoSettingsUpdate, {
+        defaultTitle: 'Ankita Singh | Research Analyst and Pharmacy Graduate',
+        defaultDescription:
+          'Portfolio of Ankita Singh, a current Research Analyst and B.Pharm graduate with quality control training, pharmaceutical software exposure, and data analysis tool experience.',
+        defaultKeywords: ['Ankita Singh', 'Research Analyst', 'Pharmacy Graduate', 'Quality Control'],
+        siteUrl: env.FRONTEND_URL,
+      });
+    }
+
+    if (!seoSettings.defaultOpenGraphImageId && profile.profileImageId) {
+      seoSettingsUpdate.defaultOpenGraphImageId = profile.profileImageId;
+    }
+
+    if (Object.keys(seoSettingsUpdate).length > 0) {
+      await SeoSettingsModel.updateOne({ _id: seoSettings._id }, { $set: seoSettingsUpdate });
+      changed = true;
+    }
+  }
+
+  if (await ensureSeedCollections()) {
+    changed = true;
   }
 
   return changed;
 }
 
 export async function ensurePortfolioSeed(adminId: string) {
-  const existingProfile = await PersonalProfileModel.findOne(
-    {},
-  ).lean<BootstrapProfileSnapshot | null>();
-  if (!existingProfile) {
+  const publishedProfile = await PersonalProfileModel.findOne({
+    publicationStatus: 'published',
+  })
+    .sort({ updatedAt: -1 })
+    .lean<BootstrapProfileSnapshot | null>();
+  const fallbackProfile =
+    publishedProfile ??
+    (await PersonalProfileModel.findOne({})
+      .sort({ updatedAt: -1 })
+      .lean<BootstrapProfileSnapshot | null>());
+
+  if (!fallbackProfile) {
     return createPortfolioSeed(adminId);
   }
 
-  if (isGenericPortfolioProfile(existingProfile)) {
+  if (isGenericPortfolioProfile(fallbackProfile)) {
     logger.warn(
       {
-        existingName: existingProfile.fullName,
-        existingTitle: existingProfile.professionalTitle,
+        existingName: fallbackProfile.fullName,
+        existingTitle: fallbackProfile.professionalTitle,
       },
       'Generic portfolio content detected. Replacing it with Ankita CV seed data.',
     );
     await clearSeedManagedPortfolioContent();
     const result = await createPortfolioSeed(adminId);
     return { ...result, repairedPlaceholders: true };
+  }
+
+  if (!publishedProfile && fallbackProfile._id) {
+    await PersonalProfileModel.updateOne(
+      { _id: fallbackProfile._id },
+      { $set: { publicationStatus: 'published' } },
+    );
+    fallbackProfile.publicationStatus = 'published';
   }
 
   if (await hasLegacyResumeSeedContent()) {
@@ -586,7 +898,7 @@ export async function ensurePortfolioSeed(adminId: string) {
     return { ...result, refreshedLegacySeed: true };
   }
 
-  const changed = await ensureMissingPublicShell(adminId, existingProfile);
+  const changed = await ensureMissingPublicShell(adminId, fallbackProfile);
   return { seeded: false, repairedPlaceholders: false, ensuredMissingContent: changed };
 }
 
