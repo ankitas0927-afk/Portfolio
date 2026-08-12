@@ -1,6 +1,6 @@
-import { connectToDatabase, disconnectFromDatabase } from '../database/mongoose.js';
-import { logger } from '../config/logger.js';
-import { ensureInitialPortfolioData } from '../services/bootstrap.service.js';
+import { connectToDatabase, disconnectFromDatabase } from '../database/mongoose';
+import { logger } from '../config/logger';
+import { ensureInitialPortfolioData } from '../services/bootstrap.service';
 
 async function main() {
   await connectToDatabase();

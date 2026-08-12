@@ -1,6 +1,6 @@
 import multer from 'multer';
 
-import { env } from '../config/env.js';
+import { env } from '../config/env';
 
 const globalUploadLimitBytes =
   Math.max(

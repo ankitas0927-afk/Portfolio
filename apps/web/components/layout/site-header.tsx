@@ -22,7 +22,7 @@ export function SiteHeader({
   siteName: string;
   siteTagline?: string | null;
 }) {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? '/';
   const [isOpen, setIsOpen] = useState(false);
 
   const isItemActive = (href: string) => {

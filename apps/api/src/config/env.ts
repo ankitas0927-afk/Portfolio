@@ -2,13 +2,30 @@ import 'dotenv/config';
 
 import { z } from 'zod';
 
+function isValidOptionalUrl(value: string) {
+  if (!value) {
+    return true;
+  }
+
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().positive().default(5000),
   MONGODB_URI: z.string().trim().min(1, 'MONGODB_URI is required'),
   FRONTEND_URL: z.string().trim().url('FRONTEND_URL must be a valid URL'),
   FRONTEND_URLS: z.string().trim().optional().default(''),
-  API_PUBLIC_URL: z.string().trim().url('API_PUBLIC_URL must be a valid URL'),
+  API_PUBLIC_URL: z
+    .string()
+    .trim()
+    .default('')
+    .refine(isValidOptionalUrl, 'API_PUBLIC_URL must be a valid URL'),
   JWT_ACCESS_SECRET: z.string().trim().min(32, 'JWT_ACCESS_SECRET must be at least 32 chars'),
   JWT_REFRESH_SECRET: z
     .string()

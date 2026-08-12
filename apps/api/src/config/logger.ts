@@ -1,6 +1,6 @@
 import pino, { type LoggerOptions } from 'pino';
 
-import { env } from './env.js';
+import { env } from './env';
 
 const loggerOptions: LoggerOptions = {
   level: env.NODE_ENV === 'production' ? 'info' : 'debug',

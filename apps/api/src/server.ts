@@ -1,21 +1,11 @@
 import { createServer } from 'http';
 
-import { createApp } from './app.js';
-import { env } from './config/env.js';
-import { logger } from './config/logger.js';
-import { connectToDatabase, disconnectFromDatabase } from './database/mongoose.js';
-import { ensureInitialPortfolioData } from './services/bootstrap.service.js';
+import { env } from './config/env';
+import { logger } from './config/logger';
+import { disconnectPortfolioApiRuntime, getPortfolioApiApp } from './runtime';
 
 async function bootstrap() {
-  await connectToDatabase();
-  try {
-    const bootstrapResult = await ensureInitialPortfolioData();
-    logger.info(bootstrapResult, 'Application bootstrap check completed');
-  } catch (error) {
-    logger.error({ error }, 'Application bootstrap check failed');
-  }
-
-  const app = createApp();
+  const app = await getPortfolioApiApp();
   const server = createServer(app);
 
   server.listen(env.PORT, () => {
@@ -25,7 +15,7 @@ async function bootstrap() {
   const shutdown = async (signal: string) => {
     logger.info({ signal }, 'Gracefully shutting down');
     server.close(async () => {
-      await disconnectFromDatabase();
+      await disconnectPortfolioApiRuntime();
       process.exit(0);
     });
   };

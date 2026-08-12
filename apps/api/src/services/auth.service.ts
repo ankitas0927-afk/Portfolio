@@ -2,16 +2,16 @@ import bcrypt from 'bcrypt';
 import type { CookieOptions } from 'express';
 import mongoose from 'mongoose';
 
-import { env, isProduction } from '../config/env.js';
-import { AppError } from '../errors/app-error.js';
+import { env, isProduction } from '../config/env';
+import { AppError } from '../errors/app-error';
 import {
   AdminModel,
   AdminSessionModel,
   RefreshTokenModel,
   type AdminDocument,
-} from '../models/index.js';
-import { createAuditLog } from './audit.service.js';
-import { ensureAdminAccount } from './bootstrap.service.js';
+} from '../models/index';
+import { createAuditLog } from './audit.service';
+import { ensureAdminAccount } from './bootstrap.service';
 import {
   generateOpaqueToken,
   getRefreshTokenMaxAgeMs,
@@ -20,7 +20,7 @@ import {
   signRefreshToken,
   verifyRefreshToken,
   type JwtPayload,
-} from '../utils/auth.js';
+} from '../utils/auth';
 
 export const REFRESH_COOKIE_NAME = 'ankita_refresh_token';
 

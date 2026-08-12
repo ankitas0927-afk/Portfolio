@@ -1,9 +1,9 @@
 import { Router } from 'express';
 
 import { contactSubmissionSchema } from '@ankita-portfolio/validation';
-import { asyncHandler } from '../middleware/async-handler.js';
-import { contactRateLimiter } from '../middleware/rate-limit.js';
-import { createContactMessage } from '../services/contact.service.js';
+import { asyncHandler } from '../middleware/async-handler';
+import { contactRateLimiter } from '../middleware/rate-limit';
+import { createContactMessage } from '../services/contact.service';
 import {
   getPublicAbout,
   getPublicCertificates,
@@ -21,10 +21,10 @@ import {
   getPublicSkills,
   getPublicSocialLinks,
   getPublicTraining,
-} from '../services/public.service.js';
-import { getMediaAssetById, streamMediaAsset } from '../services/media.service.js';
-import { sendSuccess } from '../utils/http.js';
-import { getClientDetails } from '../utils/misc.js';
+} from '../services/public.service';
+import { getMediaAssetById, streamMediaAsset } from '../services/media.service';
+import { sendSuccess } from '../utils/http';
+import { getClientDetails } from '../utils/misc';
 
 const publicRouter = Router();
 

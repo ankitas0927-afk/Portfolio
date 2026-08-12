@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 
-import { AppError } from '../errors/app-error.js';
-import { verifyAccessToken } from '../utils/auth.js';
+import { AppError } from '../errors/app-error';
+import { verifyAccessToken } from '../utils/auth';
 
 function getBearerToken(request: Request): string | null {
   const authHeader = request.header('authorization');

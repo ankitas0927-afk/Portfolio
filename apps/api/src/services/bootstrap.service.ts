@@ -1,12 +1,13 @@
 import bcrypt from 'bcrypt';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 import type { Express } from 'express';
 
 import { DEFAULT_ACCENT, DEFAULT_SECONDARY_ACCENT } from '@ankita-portfolio/config';
-import { env } from '../config/env.js';
-import { logger } from '../config/logger.js';
+import { env } from '../config/env';
+import { logger } from '../config/logger';
 import {
   AboutModel,
   AdminModel,
@@ -28,9 +29,9 @@ import {
   SkillCategoryModel,
   SkillModel,
   SocialLinkModel,
-} from '../models/index.js';
-import { updateMediaMetadata, uploadMedia } from './media.service.js';
-import { ankitaSeedData } from '../scripts/seed-data.js';
+} from '../models/index';
+import { updateMediaMetadata, uploadMedia } from './media.service';
+import { ankitaSeedData } from '../scripts/seed-data';
 
 type BootstrapProfileSnapshot = {
   _id?: { toString(): string };
@@ -51,9 +52,21 @@ const legacyInterestTitles = [
   'Listening to music',
   'Exercise',
 ];
+const apiPackageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
-function resolveSeedPath(filePath: string) {
-  return path.resolve(process.cwd(), filePath);
+function resolveAssetCandidates(filePath: string) {
+  if (path.isAbsolute(filePath)) {
+    return [filePath];
+  }
+
+  const normalizedPath = filePath.replace(/^[./\\]+/, '');
+
+  return Array.from(
+    new Set([
+      path.resolve(process.cwd(), filePath),
+      path.resolve(apiPackageRoot, normalizedPath),
+    ]),
+  );
 }
 
 async function fileExists(filePath: string) {
@@ -67,18 +80,26 @@ async function fileExists(filePath: string) {
 
 async function resolveSeedAssetPath(configuredPath: string | undefined, fallbackPath: string) {
   if (configuredPath?.trim()) {
-    const resolvedConfiguredPath = resolveSeedPath(configuredPath);
-    if (await fileExists(resolvedConfiguredPath)) {
-      return resolvedConfiguredPath;
+    const configuredCandidates = resolveAssetCandidates(configuredPath);
+    for (const candidate of configuredCandidates) {
+      if (await fileExists(candidate)) {
+        return candidate;
+      }
     }
 
     logger.warn(
-      { configuredPath, resolvedConfiguredPath, fallbackPath },
+      { configuredPath, configuredCandidates, fallbackPath },
       'Configured seed asset was not found. Falling back to bundled asset.',
     );
   }
 
-  return path.resolve(process.cwd(), fallbackPath);
+  for (const candidate of resolveAssetCandidates(fallbackPath)) {
+    if (await fileExists(candidate)) {
+      return candidate;
+    }
+  }
+
+  throw new Error(`Bundled seed asset not found: ${fallbackPath}`);
 }
 
 async function readFileAsMulterUpload(

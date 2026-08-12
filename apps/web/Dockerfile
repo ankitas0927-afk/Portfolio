@@ -4,6 +4,7 @@ WORKDIR /workspace
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
 COPY packages ./packages
+COPY apps/api ./apps/api
 COPY apps/web ./apps/web
 
 RUN pnpm install --frozen-lockfile

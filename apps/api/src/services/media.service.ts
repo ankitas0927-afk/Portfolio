@@ -2,23 +2,24 @@ import { Readable } from 'stream';
 import path from 'path';
 
 import { GRIDFS_BUCKETS, IMAGE_VARIANTS } from '@ankita-portfolio/config';
-import { AppError } from '../errors/app-error.js';
-import { getGridFsBucket, getGridFsFileDocument, deleteGridFsFile } from '../database/gridfs.js';
+import { AppError } from '../errors/app-error';
+import { getGridFsBucket, getGridFsFileDocument, deleteGridFsFile } from '../database/gridfs';
 import {
   MediaAssetModel,
   ResumeModel,
   mediaReferenceMap,
   type MediaAssetDocument,
-} from '../models/index.js';
+} from '../models/index';
 import type { MediaCategory, MediaVariant } from '@ankita-portfolio/shared-types';
 import sharp from 'sharp';
 import { fileTypeFromBuffer } from 'file-type';
 import type { Request, Response } from 'express';
 import mongoose, { Types } from 'mongoose';
 
-import { env } from '../config/env.js';
-import { createAuditLog } from './audit.service.js';
-import { createChecksum, createStoredFilename } from '../utils/misc.js';
+import { env } from '../config/env';
+import { createAuditLog } from './audit.service';
+import { createChecksum, createStoredFilename } from '../utils/misc';
+import { buildPublicMediaUrl } from '../utils/public-url';
 
 type UploadMediaInput = {
   file: Express.Multer.File;
@@ -280,10 +281,6 @@ async function validateAndTransformFile(input: UploadMediaInput): Promise<Resolv
     isImage: true,
     variants,
   };
-}
-
-function buildPublicMediaUrl(mediaId: string) {
-  return `${env.API_PUBLIC_URL}/api/v1/public/media/${mediaId}`;
 }
 
 async function createMediaAssetRecord(input: {

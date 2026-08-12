@@ -2,8 +2,8 @@ import type { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import { ZodError } from 'zod';
 
-import { logger } from '../config/logger.js';
-import { AppError } from '../errors/app-error.js';
+import { logger } from '../config/logger';
+import { AppError } from '../errors/app-error';
 
 export function notFoundMiddleware(request: Request, response: Response): void {
   response.status(404).json({

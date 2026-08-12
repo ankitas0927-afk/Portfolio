@@ -13,6 +13,12 @@
       "@ankita-portfolio/config": [
         "../../packages/config/src/index.ts"
       ],
+      "@ankita-portfolio/api": [
+        "../../apps/api/src/index.ts"
+      ],
+      "@ankita-portfolio/api/*": [
+        "../../apps/api/src/*"
+      ],
       "@ankita-portfolio/shared-types": [
         "../../packages/shared-types/src/index.ts"
       ],
@@ -34,7 +40,9 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "next-env.d.ts"
+    "../api/src/types/**/*.d.ts",
+    "next-env.d.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

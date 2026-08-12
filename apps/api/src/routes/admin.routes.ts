@@ -25,10 +25,10 @@ import {
   trainingSchema,
   experienceSchema,
 } from '@ankita-portfolio/validation';
-import { asyncHandler } from '../middleware/async-handler.js';
-import { requireAuth } from '../middleware/auth.js';
-import { upload } from '../middleware/upload.js';
-import { createAuditLog } from '../services/audit.service.js';
+import { asyncHandler } from '../middleware/async-handler';
+import { requireAuth } from '../middleware/auth';
+import { upload } from '../middleware/upload';
+import { createAuditLog } from '../services/audit.service';
 import {
   cleanupOrphanedMedia,
   deleteMediaAsset,
@@ -39,7 +39,7 @@ import {
   streamMediaAsset,
   updateMediaMetadata,
   uploadMedia,
-} from '../services/media.service.js';
+} from '../services/media.service';
 import {
   collectionRegistry,
   createCollectionItem,
@@ -53,11 +53,11 @@ import {
   updateCollectionItem,
   updateCollectionStatus,
   updateSingleton,
-} from '../services/portfolio.service.js';
-import { getContactMessageById, listContactMessages, updateContactMessageStatus, deleteContactMessage, exportContactMessagesAsCsv } from '../services/contact.service.js';
-import { PrivatePersonalDetailsModel, ResumeModel, PersonalProfileModel, AuditLogModel } from '../models/index.js';
-import { sendSuccess } from '../utils/http.js';
-import { AppError } from '../errors/app-error.js';
+} from '../services/portfolio.service';
+import { getContactMessageById, listContactMessages, updateContactMessageStatus, deleteContactMessage, exportContactMessagesAsCsv } from '../services/contact.service';
+import { PrivatePersonalDetailsModel, ResumeModel, PersonalProfileModel, AuditLogModel } from '../models/index';
+import { sendSuccess } from '../utils/http';
+import { AppError } from '../errors/app-error';
 
 const adminRouter = Router();
 

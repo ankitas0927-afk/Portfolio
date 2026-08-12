@@ -1,9 +1,9 @@
 import { Router } from 'express';
 
 import { changePasswordSchema, loginSchema } from '@ankita-portfolio/validation';
-import { asyncHandler } from '../middleware/async-handler.js';
-import { requireAuth } from '../middleware/auth.js';
-import { authRateLimiter } from '../middleware/rate-limit.js';
+import { asyncHandler } from '../middleware/async-handler';
+import { requireAuth } from '../middleware/auth';
+import { authRateLimiter } from '../middleware/rate-limit';
 import {
   authenticateAdmin,
   changeAdminPassword,
@@ -15,9 +15,9 @@ import {
   REFRESH_COOKIE_NAME,
   refreshAdminSession,
   revokeAdminSession,
-} from '../services/auth.service.js';
-import { sendSuccess } from '../utils/http.js';
-import { getClientDetails } from '../utils/misc.js';
+} from '../services/auth.service';
+import { sendSuccess } from '../utils/http';
+import { getClientDetails } from '../utils/misc';
 
 const authRouter = Router();
 

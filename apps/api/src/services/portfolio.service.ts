@@ -22,9 +22,9 @@ import {
   SkillModel,
   SocialLinkModel,
   ContactMessageModel,
-} from '../models/index.js';
-import { AppError } from '../errors/app-error.js';
-import { createAuditLog } from './audit.service.js';
+} from '../models/index';
+import { AppError } from '../errors/app-error';
+import { createAuditLog } from './audit.service';
 
 type CollectionConfig = {
   model: Model<Record<string, unknown>>;

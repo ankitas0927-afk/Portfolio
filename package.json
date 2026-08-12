@@ -4,10 +4,10 @@
   "packageManager": "pnpm@10.14.0",
   "scripts": {
     "build:packages": "pnpm --filter @ankita-portfolio/config build && pnpm --filter @ankita-portfolio/shared-types build && pnpm --filter @ankita-portfolio/validation build",
-    "dev": "pnpm build:packages && concurrently -n api,web -c cyan,magenta \"pnpm --filter @ankita-portfolio/api dev\" \"pnpm --filter @ankita-portfolio/web dev\"",
+    "dev": "pnpm build:packages && pnpm --filter @ankita-portfolio/web dev",
     "dev:api": "pnpm build:packages && pnpm --filter @ankita-portfolio/api dev",
     "dev:web": "pnpm build:packages && pnpm --filter @ankita-portfolio/web dev",
-    "build": "pnpm build:packages && pnpm --filter @ankita-portfolio/api build && pnpm --filter @ankita-portfolio/web build",
+    "build": "pnpm build:packages && pnpm --filter @ankita-portfolio/web build",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm build:packages && pnpm -r typecheck",
     "test": "pnpm build:packages && pnpm -r test",

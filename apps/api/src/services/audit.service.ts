@@ -1,4 +1,4 @@
-import { AuditLogModel } from '../models/index.js';
+import { AuditLogModel } from '../models/index';
 
 export async function createAuditLog(input: {
   adminId?: string | null;

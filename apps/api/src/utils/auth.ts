@@ -3,7 +3,7 @@ import { createHash, randomBytes, randomUUID } from 'crypto';
 import jwt, { type SignOptions } from 'jsonwebtoken';
 import ms from 'ms';
 
-import { env } from '../config/env.js';
+import { env } from '../config/env';
 
 export interface JwtPayload {
   adminId: string;

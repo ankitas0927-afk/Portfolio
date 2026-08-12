@@ -1,5 +1,4 @@
-import { env } from '../config/env.js';
-import { AppError } from '../errors/app-error.js';
+import { AppError } from '../errors/app-error';
 import {
   AboutModel,
   CertificateModel,
@@ -20,7 +19,8 @@ import {
   SkillCategoryModel,
   SkillModel,
   SocialLinkModel,
-} from '../models/index.js';
+} from '../models/index';
+import { buildPublicMediaUrl } from '../utils/public-url';
 
 type WithId = { _id: { toString(): string } };
 type SiteSettingsDoc = WithId & {
@@ -110,10 +110,6 @@ type ResumeDoc = WithId & {
   updatedAt: Date;
 };
 
-function createPublicUrl(mediaId: string) {
-  return `${env.API_PUBLIC_URL}/api/v1/public/media/${mediaId}`;
-}
-
 async function loadMediaMap(ids: Array<string | null | undefined>) {
   const validIds = ids.filter(Boolean).map((id) => String(id));
   if (validIds.length === 0) {
@@ -132,7 +128,7 @@ async function loadMediaMap(ids: Array<string | null | undefined>) {
       String(item._id),
       {
         id: String(item._id),
-        publicUrl: createPublicUrl(String(item._id)),
+        publicUrl: buildPublicMediaUrl(String(item._id)),
         altText: item.altText,
         originalName: item.originalName,
         extension: item.extension,
@@ -481,7 +477,7 @@ export async function getPublicResume() {
     createdAt: resume.createdAt,
     updatedAt: resume.updatedAt,
     media,
-    previewUrl: createPublicUrl(String(resume.mediaAssetId)),
-    downloadUrl: `${createPublicUrl(String(resume.mediaAssetId))}?download=1`,
+    previewUrl: buildPublicMediaUrl(String(resume.mediaAssetId)),
+    downloadUrl: `${buildPublicMediaUrl(String(resume.mediaAssetId))}?download=1`,
   };
 }

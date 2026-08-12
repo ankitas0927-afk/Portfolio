@@ -5,15 +5,15 @@ import express from 'express';
 import helmet from 'helmet';
 
 import { API_PREFIX } from '@ankita-portfolio/config';
-import { frontendOriginAllowlist } from './config/env.js';
-import { logger } from './config/logger.js';
-import { errorHandler, notFoundMiddleware } from './middleware/error-handler.js';
-import { requestContextMiddleware } from './middleware/request-context.js';
-import { sanitizeInputMiddleware } from './middleware/sanitize-input.js';
-import { adminRouter } from './routes/admin.routes.js';
-import { authRouter } from './routes/auth.routes.js';
-import { healthRouter } from './routes/health.routes.js';
-import { publicRouter } from './routes/public.routes.js';
+import { frontendOriginAllowlist } from './config/env';
+import { logger } from './config/logger';
+import { errorHandler, notFoundMiddleware } from './middleware/error-handler';
+import { requestContextMiddleware } from './middleware/request-context';
+import { sanitizeInputMiddleware } from './middleware/sanitize-input';
+import { adminRouter } from './routes/admin.routes';
+import { authRouter } from './routes/auth.routes';
+import { healthRouter } from './routes/health.routes';
+import { publicRouter } from './routes/public.routes';
 
 export function createApp() {
   const app = express();

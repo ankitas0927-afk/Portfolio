@@ -1,8 +1,8 @@
 import { createHash } from 'crypto';
 
-import { AppError } from '../errors/app-error.js';
-import { ContactMessageModel } from '../models/index.js';
-import { createAuditLog } from './audit.service.js';
+import { AppError } from '../errors/app-error';
+import { ContactMessageModel } from '../models/index';
+import { createAuditLog } from './audit.service';
 
 function toCsvValue(value: string | null | undefined) {
   const normalized = value ?? '';
