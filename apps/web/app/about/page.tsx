@@ -10,6 +10,7 @@ export default async function AboutPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+      <div className="page-shell px-6 py-8 sm:px-8 lg:px-10 lg:py-10">
       <SectionHeading
         eyebrow="About"
         title={profile?.professionalTitle ?? DEFAULT_SITE_NAME}
@@ -21,14 +22,18 @@ export default async function AboutPage() {
           alt={profile?.fullName ?? `${DEFAULT_SITE_NAME} profile image`}
           width={about?.aboutImage?.width ?? profile?.profileImage?.width ?? 680}
           height={about?.aboutImage?.height ?? profile?.profileImage?.height ?? 800}
-          className="min-h-[420px] rounded-[2rem]"
+          className="section-card min-h-[420px] rounded-[2rem] object-cover object-top"
         />
-        <div className="space-y-6 rounded-[2rem] border border-border/60 bg-card/75 p-6 shadow-soft">
+        <div className="section-card space-y-6 px-6 py-6">
+          <div className="flex flex-wrap gap-3">
+            <span className="info-chip">{about?.currentLocation ?? profile?.generalLocation ?? 'Location available'}</span>
+            <span className="info-chip">{about?.availabilityLabel ?? 'Open to opportunities'}</span>
+          </div>
           {about?.keyStrengths?.length ? (
             about.keyStrengths.map((strength: string) => (
               <div
                 key={strength}
-                className="rounded-2xl border border-border/60 bg-background/70 px-4 py-3 text-sm"
+                className="metric-card text-sm"
               >
                 {strength}
               </div>
@@ -39,6 +44,7 @@ export default async function AboutPage() {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

@@ -34,8 +34,10 @@ export function SiteHeader({
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-sky-100/80 bg-[linear-gradient(180deg,rgba(245,250,255,0.97),rgba(236,245,255,0.94))] backdrop-blur-xl dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(9,16,28,0.97),rgba(12,22,38,0.94))]">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-4 py-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 px-3 pt-3 sm:px-4 lg:px-6">
+      <div className="page-shell shine-sweep mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+        <div className="pointer-events-none absolute inset-x-12 top-0 h-px bg-[linear-gradient(90deg,transparent,var(--accent),rgba(45,212,191,0.55),transparent)]" />
+        <div className="flex items-center justify-between gap-5">
         <Link href="/" className="group flex min-w-0 items-center gap-3">
           {logo?.publicUrl ? (
             <PortfolioImage
@@ -43,11 +45,11 @@ export function SiteHeader({
               alt={logo.altText ?? `${siteName} logo`}
               width={logo.width ?? 44}
               height={logo.height ?? 44}
-              className="h-11 w-11 rounded-2xl object-cover shadow-[0_14px_32px_-18px_rgba(29,78,216,0.72)] ring-2 ring-white/80 dark:ring-white/10"
+              className="h-12 w-12 rounded-[1.15rem] object-cover shadow-[0_18px_34px_-18px_rgba(29,78,216,0.72)] ring-2 ring-white/80 transition duration-300 group-hover:scale-[1.03] dark:ring-white/10"
               sizes="44px"
             />
           ) : (
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] font-display text-lg text-white shadow-[0_14px_32px_-18px_rgba(29,78,216,0.72)] ring-2 ring-white/80 dark:ring-white/10">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-[1.15rem] bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] font-display text-lg text-white shadow-[0_18px_34px_-18px_rgba(29,78,216,0.72)] ring-2 ring-white/80 transition duration-300 group-hover:scale-[1.03] dark:ring-white/10">
               {siteName.slice(0, 1).toUpperCase()}
             </span>
           )}
@@ -55,13 +57,13 @@ export function SiteHeader({
             <p className="truncate font-display text-xl font-semibold tracking-tight text-sky-700 dark:text-sky-300">
               {siteName}
             </p>
-            <p className="truncate text-xs uppercase tracking-[0.34em] text-foreground/48">
+            <p className="truncate text-[11px] uppercase tracking-[0.34em] text-foreground/48">
               {siteTagline?.trim() || 'Portfolio'}
             </p>
           </div>
         </Link>
 
-        <nav className="hidden items-center rounded-[1.4rem] border border-sky-100/90 bg-white/78 p-1.5 shadow-[0_18px_40px_-34px_rgba(15,23,42,0.45)] md:flex dark:border-white/10 dark:bg-white/5">
+        <nav className="hidden items-center gap-1 rounded-[1.5rem] border border-border/60 bg-white/70 p-1.5 shadow-[0_18px_40px_-34px_rgba(15,23,42,0.45)] backdrop-blur-xl md:flex dark:bg-white/5">
           {navigation.map((item) => {
             const isActive = isItemActive(item.href);
 
@@ -72,10 +74,10 @@ export function SiteHeader({
                 target={item.opensInNewTab ? '_blank' : undefined}
                 rel={item.opensInNewTab ? 'noreferrer' : undefined}
                 className={cn(
-                  'rounded-xl px-4 py-2.5 text-sm font-semibold transition',
+                  'rounded-[1rem] px-4 py-2.5 text-sm font-semibold transition duration-200',
                   isActive
                     ? 'border border-sky-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(234,245,255,0.98))] text-sky-700 shadow-[inset_0_-3px_0_0_rgba(96,165,250,0.92),0_10px_24px_-20px_rgba(29,78,216,0.85)] dark:border-sky-400/20 dark:bg-[linear-gradient(180deg,rgba(20,39,64,0.96),rgba(14,30,49,0.98))] dark:text-sky-200'
-                    : 'text-slate-700 hover:bg-white/82 hover:text-sky-700 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-sky-200',
+                    : 'text-slate-700 hover:-translate-y-0.5 hover:bg-white/82 hover:text-sky-700 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-sky-200',
                 )}
               >
                 {item.label}
@@ -85,10 +87,10 @@ export function SiteHeader({
         </nav>
 
         <div className="flex items-center gap-3">
-          <ThemeToggle className="rounded-2xl border-sky-200/90 bg-white/78 text-sky-700 hover:border-sky-300 hover:text-sky-800 dark:border-white/10 dark:bg-white/5 dark:text-sky-200 dark:hover:border-sky-300/30 dark:hover:text-white" />
+          <ThemeToggle className="rounded-[1.1rem] border-sky-200/90 bg-white/78 text-sky-700 shadow-[0_12px_28px_-18px_rgba(29,78,216,0.7)] hover:border-sky-300 hover:text-sky-800 dark:border-white/10 dark:bg-white/5 dark:text-sky-200 dark:hover:border-sky-300/30 dark:hover:text-white" />
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-sky-200/90 bg-white/78 text-sky-700 md:hidden dark:border-white/10 dark:bg-white/5 dark:text-sky-200"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-[1.1rem] border border-sky-200/90 bg-white/78 text-sky-700 shadow-[0_12px_28px_-18px_rgba(29,78,216,0.7)] md:hidden dark:border-white/10 dark:bg-white/5 dark:text-sky-200"
             aria-label={isOpen ? 'Close menu' : 'Open menu'}
             onClick={() => setIsOpen((value) => !value)}
           >
@@ -96,10 +98,12 @@ export function SiteHeader({
           </button>
         </div>
       </div>
+      </div>
 
       {isOpen ? (
-        <div className="border-t border-sky-100/80 bg-[linear-gradient(180deg,rgba(245,250,255,0.97),rgba(236,245,255,0.94))] px-4 py-4 md:hidden dark:border-white/10 dark:bg-[linear-gradient(180deg,rgba(9,16,28,0.97),rgba(12,22,38,0.94))]">
-          <nav className="flex flex-col gap-2 rounded-[1.5rem] border border-sky-100/90 bg-white/78 p-2 shadow-[0_18px_40px_-34px_rgba(15,23,42,0.45)] dark:border-white/10 dark:bg-white/5">
+        <div className="px-3 pb-3 md:hidden sm:px-4 lg:px-6">
+          <div className="page-shell mx-auto max-w-7xl px-4 py-4 sm:px-6">
+          <nav className="flex flex-col gap-2 rounded-[1.5rem] border border-border/60 bg-white/76 p-2 shadow-[0_18px_40px_-34px_rgba(15,23,42,0.45)] backdrop-blur-xl dark:bg-white/5">
             {navigation.map((item) => (
               <Link
                 key={item.id}
@@ -108,7 +112,7 @@ export function SiteHeader({
                 rel={item.opensInNewTab ? 'noreferrer' : undefined}
                 onClick={() => setIsOpen(false)}
                 className={cn(
-                  'rounded-2xl px-4 py-3 text-sm font-semibold transition',
+                  'rounded-[1.15rem] px-4 py-3 text-sm font-semibold transition',
                   isItemActive(item.href)
                     ? 'border border-sky-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(234,245,255,0.98))] text-sky-700 shadow-[inset_0_-3px_0_0_rgba(96,165,250,0.92)] dark:border-sky-400/20 dark:bg-[linear-gradient(180deg,rgba(20,39,64,0.96),rgba(14,30,49,0.98))] dark:text-sky-200'
                     : 'text-slate-700 hover:bg-sky-50/80 hover:text-sky-700 dark:text-slate-200 dark:hover:bg-white/10 dark:hover:text-sky-200',
@@ -118,6 +122,7 @@ export function SiteHeader({
               </Link>
             ))}
           </nav>
+          </div>
         </div>
       ) : null}
     </header>

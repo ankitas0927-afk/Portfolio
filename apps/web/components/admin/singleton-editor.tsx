@@ -54,7 +54,7 @@ export function SingletonEditor({
   });
 
   return (
-    <section className="rounded-[2rem] border border-border/60 bg-card/75 p-6 shadow-soft">
+    <section className="premium-panel p-6">
       <div className="mb-6">
         <h2 className="font-display text-2xl font-semibold">{title}</h2>
         {description ? <p className="mt-2 text-sm text-foreground/70">{description}</p> : null}
@@ -64,7 +64,7 @@ export function SingletonEditor({
         <button
           type="submit"
           disabled={mutation.isPending}
-          className="rounded-full bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] px-5 py-3 text-sm font-semibold text-white"
+          className="gradient-button"
         >
           {mutation.isPending ? 'Saving...' : 'Save changes'}
         </button>

@@ -5,7 +5,7 @@ import type { UseFormRegister } from 'react-hook-form';
 import type { FieldConfig } from '@/lib/admin-config';
 
 const inputClassName =
-  'w-full rounded-2xl border border-border/70 bg-background px-4 py-3 text-sm outline-none transition focus:border-accent';
+  'glass-input';
 
 export function DynamicFields({
   fields,
@@ -15,10 +15,10 @@ export function DynamicFields({
   register: UseFormRegister<Record<string, unknown>>;
 }) {
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-5">
       {fields.map((field) => (
-        <div key={field.name}>
-          <label className="mb-2 block text-sm font-medium text-foreground/72">{field.label}</label>
+        <div key={field.name} className="section-card px-4 py-4">
+          <label className="mb-2 block text-sm font-semibold text-foreground/82">{field.label}</label>
           {field.type === 'textarea' ? (
             <textarea rows={5} className={inputClassName} {...register(field.name)} />
           ) : field.type === 'tags' ? (
@@ -29,9 +29,9 @@ export function DynamicFields({
               {...register(field.name)}
             />
           ) : field.type === 'checkbox' ? (
-            <label className="inline-flex items-center gap-3 rounded-2xl border border-border/70 bg-background px-4 py-3 text-sm">
+            <label className="inline-flex items-center gap-3 rounded-2xl border border-border/70 bg-background/75 px-4 py-3 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.42)]">
               <input type="checkbox" {...register(field.name)} className="h-4 w-4 rounded border-border/70" />
-              <span>{field.label}</span>
+              <span className="font-medium text-foreground/76">{field.label}</span>
             </label>
           ) : field.type === 'select' ? (
             <select className={inputClassName} {...register(field.name)}>
@@ -50,6 +50,11 @@ export function DynamicFields({
               {...register(field.name)}
             />
           )}
+          {field.placeholder ? (
+            <p className="mt-3 text-xs uppercase tracking-[0.18em] text-foreground/42">
+              {field.placeholder}
+            </p>
+          ) : null}
         </div>
       ))}
     </div>

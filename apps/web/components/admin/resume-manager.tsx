@@ -76,7 +76,7 @@ export function ResumeManager() {
   });
 
   return (
-    <section className="space-y-8 rounded-[2rem] border border-border/60 bg-card/75 p-6 shadow-soft">
+    <section className="premium-panel space-y-8 p-6">
       <div>
         <h2 className="font-display text-2xl font-semibold">Resume Manager</h2>
         <p className="mt-2 text-sm text-foreground/70">
@@ -90,33 +90,33 @@ export function ResumeManager() {
           event.preventDefault();
           uploadMutation.mutate();
         }}
-        className="grid gap-4 rounded-[1.75rem] border border-border/60 bg-background/70 p-5 lg:grid-cols-4"
+        className="section-card grid gap-4 px-5 py-5 lg:grid-cols-4"
       >
         <input
           value={title}
           onChange={(event) => setTitle(event.target.value)}
-          className="rounded-2xl border border-border/70 bg-background px-4 py-3 text-sm"
+          className="glass-input"
           placeholder="Title"
         />
         <input
           value={versionLabel}
           onChange={(event) => setVersionLabel(event.target.value)}
-          className="rounded-2xl border border-border/70 bg-background px-4 py-3 text-sm"
+          className="glass-input"
           placeholder="Version label"
         />
         <input
           type="file"
           accept={resumeFileAccept}
           onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-          className="rounded-2xl border border-border/70 bg-background px-4 py-3 text-sm"
+          className="glass-input"
         />
-        <label className="inline-flex items-center gap-3 rounded-2xl border border-border/70 bg-background px-4 py-3 text-sm">
+        <label className="inline-flex items-center gap-3 rounded-2xl border border-border/70 bg-background/75 px-4 py-3 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.42)]">
           <input type="checkbox" checked={isActive} onChange={(event) => setIsActive(event.target.checked)} />
           Set active
         </label>
         <button
           type="submit"
-          className="rounded-full bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] px-5 py-3 text-sm font-semibold text-white lg:col-span-4"
+          className="gradient-button lg:col-span-4"
         >
           {uploadMutation.isPending ? 'Uploading...' : 'Upload resume file'}
         </button>
@@ -124,7 +124,7 @@ export function ResumeManager() {
 
       <div className="space-y-4">
         {(query.data ?? []).map((resume) => (
-          <article key={resume.id} className="rounded-[1.5rem] border border-border/60 bg-background/70 p-5">
+          <article key={resume.id} className="section-card hover-lift px-5 py-5">
             <p className="font-semibold text-foreground">{resume.title}</p>
             <p className="mt-1 text-sm text-foreground/68">{resume.versionLabel}</p>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -132,19 +132,19 @@ export function ResumeManager() {
                 <button
                   type="button"
                   onClick={() => activateMutation.mutate(resume.id)}
-                  className="rounded-full border border-border/70 px-3 py-2 text-xs font-semibold"
+                  className="ghost-button px-3 py-2 text-xs"
                 >
                   Activate
                 </button>
               ) : (
-                <span className="rounded-full bg-emerald-100 px-3 py-2 text-xs font-semibold text-emerald-700">
+                <span className="rounded-full bg-emerald-100 px-3 py-2 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
                   Active
                 </span>
               )}
               <button
                 type="button"
                 onClick={() => archiveMutation.mutate(resume.id)}
-                className="rounded-full border border-border/70 px-3 py-2 text-xs font-semibold"
+                className="ghost-button px-3 py-2 text-xs"
               >
                 Archive
               </button>
@@ -152,7 +152,7 @@ export function ResumeManager() {
                 <button
                   type="button"
                   onClick={() => deleteMutation.mutate(resume.id)}
-                  className="rounded-full border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600"
+                  className="rounded-full border border-rose-200/80 bg-rose-50/80 px-3 py-2 text-xs font-semibold text-rose-600 transition hover:-translate-y-0.5 dark:bg-rose-500/10"
                 >
                   Delete
                 </button>

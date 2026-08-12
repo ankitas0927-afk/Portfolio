@@ -94,7 +94,7 @@ export function MediaLibrary() {
   });
 
   return (
-    <section className="space-y-8 rounded-[2rem] border border-border/60 bg-card/75 p-6 shadow-soft">
+    <section className="premium-panel space-y-8 p-6">
       <div>
         <h2 className="font-display text-2xl font-semibold">Media Library</h2>
         <p className="mt-2 text-sm text-foreground/70">
@@ -108,7 +108,7 @@ export function MediaLibrary() {
             event.preventDefault();
             uploadMutation.mutate();
           }}
-          className="space-y-4 rounded-[1.75rem] border border-border/60 bg-background/70 p-5"
+          className="section-card space-y-4 px-5 py-5"
         >
           <div>
             <label className="mb-2 block text-sm font-medium text-foreground/72">File</label>
@@ -116,7 +116,7 @@ export function MediaLibrary() {
               type="file"
               accept={getAcceptedFileTypes(formState.category)}
               onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-              className="w-full rounded-2xl border border-border/70 bg-background px-4 py-3 text-sm"
+              className="glass-input"
             />
             <p className="mt-2 text-xs leading-6 text-foreground/48">
               Accepted formats depend on category. Resumes and documents support PDF, DOC, and DOCX. Images support
@@ -128,7 +128,7 @@ export function MediaLibrary() {
             <select
               value={formState.category}
               onChange={(event) => setFormState((current) => ({ ...current, category: event.target.value }))}
-              className="w-full rounded-2xl border border-border/70 bg-background px-4 py-3 text-sm"
+              className="glass-input"
             >
               {categoryOptions.map((option) => (
                 <option key={option} value={option}>
@@ -141,16 +141,16 @@ export function MediaLibrary() {
             value={formState.altText}
             onChange={(event) => setFormState((current) => ({ ...current, altText: event.target.value }))}
             placeholder="Alt text"
-            className="w-full rounded-2xl border border-border/70 bg-background px-4 py-3 text-sm"
+            className="glass-input"
           />
           <textarea
             value={formState.caption}
             onChange={(event) => setFormState((current) => ({ ...current, caption: event.target.value }))}
             rows={3}
             placeholder="Caption"
-            className="w-full rounded-2xl border border-border/70 bg-background px-4 py-3 text-sm"
+            className="glass-input"
           />
-          <label className="inline-flex items-center gap-3 rounded-2xl border border-border/70 bg-background px-4 py-3 text-sm">
+          <label className="inline-flex items-center gap-3 rounded-2xl border border-border/70 bg-background/75 px-4 py-3 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.42)]">
             <input
               type="checkbox"
               checked={formState.isPublic}
@@ -160,7 +160,7 @@ export function MediaLibrary() {
           </label>
           <button
             type="submit"
-            className="rounded-full bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] px-5 py-3 text-sm font-semibold text-white"
+            className="gradient-button"
           >
             {uploadMutation.isPending ? 'Uploading...' : 'Upload media'}
           </button>
@@ -171,13 +171,13 @@ export function MediaLibrary() {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search media"
-            className="w-full rounded-full border border-border/70 bg-background px-4 py-3 text-sm"
+            className="glass-input rounded-full"
           />
           {(query.data?.items ?? []).map((item) => {
             const metaLabel = `${String(item.category)} | ${formatBytes(Number(item.size ?? 0))}`;
 
             return (
-              <article key={String(item.id)} className="rounded-[1.5rem] border border-border/60 bg-background/70 p-5">
+              <article key={String(item.id)} className="section-card hover-lift px-5 py-5">
                 <p className="font-semibold text-foreground">{String(item.originalName)}</p>
                 <p className="mt-2 text-xs uppercase tracking-[0.22em] text-foreground/45">{metaLabel}</p>
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -186,7 +186,7 @@ export function MediaLibrary() {
                       href={`${webEnv.browserApiBaseUrl}/public/media/${String(item.id)}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="rounded-full border border-border/70 px-3 py-2 text-xs font-semibold"
+                      className="ghost-button px-3 py-2 text-xs"
                     >
                       Preview
                     </a>
@@ -194,7 +194,7 @@ export function MediaLibrary() {
                   <button
                     type="button"
                     onClick={() => deleteMutation.mutate(String(item.id))}
-                    className="rounded-full border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600"
+                    className="rounded-full border border-rose-200/80 bg-rose-50/80 px-3 py-2 text-xs font-semibold text-rose-600 transition hover:-translate-y-0.5 dark:bg-rose-500/10"
                   >
                     Delete
                   </button>
@@ -202,8 +202,8 @@ export function MediaLibrary() {
               </article>
             );
           })}
-          <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-background/60 px-4 py-3 text-sm">
-            <button type="button" onClick={() => setPage((current) => Math.max(1, current - 1))}>
+          <div className="section-card flex items-center justify-between px-4 py-3 text-sm">
+            <button type="button" className="ghost-button px-3 py-2 text-xs" onClick={() => setPage((current) => Math.max(1, current - 1))}>
               Previous
             </button>
             <span>
@@ -211,6 +211,7 @@ export function MediaLibrary() {
             </span>
             <button
               type="button"
+              className="ghost-button px-3 py-2 text-xs"
               onClick={() =>
                 setPage((current) => Math.min(query.data?.pagination.totalPages ?? current, current + 1))
               }

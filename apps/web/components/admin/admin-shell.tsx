@@ -24,7 +24,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   if (isHydrating || !admin) {
     return (
       <div className="mx-auto flex min-h-[70vh] max-w-6xl items-center justify-center px-4 py-16">
-        <div className="rounded-[2rem] border border-border/60 bg-card/80 px-6 py-5 text-sm shadow-soft">
+        <div className="section-card px-6 py-5 text-sm shadow-soft">
           Loading admin session...
         </div>
       </div>
@@ -32,11 +32,14 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[280px_1fr] lg:px-8">
-      <aside className="rounded-[2rem] border border-border/60 bg-card/75 p-5 shadow-soft">
+    <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[300px_1fr] lg:px-8">
+      <aside className="premium-panel shine-sweep p-5 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-auto">
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-display text-2xl font-semibold">Admin</p>
+            <div className="premium-pill inline-flex items-center gap-2 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent/82">
+              Dashboard
+            </div>
+            <p className="mt-4 font-display text-2xl font-semibold">Admin</p>
             <p className="text-sm text-foreground/62">{admin.name}</p>
           </div>
           <ThemeToggle />
@@ -45,10 +48,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <Link
             href="/admin"
             className={cn(
-              'rounded-2xl px-4 py-3 text-sm font-medium transition',
+              'rounded-[1.25rem] px-4 py-3 text-sm font-medium transition',
               pathname === '/admin'
-                ? 'bg-background text-accent shadow-soft'
-                : 'text-foreground/72 hover:bg-background/70',
+                ? 'bg-background text-accent shadow-[0_18px_36px_-28px_rgba(29,78,216,0.85)]'
+                : 'text-foreground/72 hover:bg-background/70 hover:text-accent',
             )}
           >
             Overview
@@ -58,10 +61,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               key={item.slug}
               href={`/admin/${item.slug}`}
               className={cn(
-                'rounded-2xl px-4 py-3 text-sm font-medium transition',
+                'rounded-[1.25rem] px-4 py-3 text-sm font-medium transition',
                 pathname === `/admin/${item.slug}`
-                  ? 'bg-background text-accent shadow-soft'
-                  : 'text-foreground/72 hover:bg-background/70',
+                  ? 'bg-background text-accent shadow-[0_18px_36px_-28px_rgba(29,78,216,0.85)]'
+                  : 'text-foreground/72 hover:bg-background/70 hover:text-accent',
               )}
             >
               {item.label}
@@ -74,13 +77,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             await logout();
             router.replace('/admin/login');
           }}
-          className="mt-6 w-full rounded-full border border-border/70 px-4 py-3 text-sm font-semibold"
+          className="ghost-button mt-6 w-full"
         >
           Logout
         </button>
       </aside>
 
-      <div className="min-w-0">{children}</div>
+      <div className="min-w-0 reveal-up">{children}</div>
     </div>
   );
 }

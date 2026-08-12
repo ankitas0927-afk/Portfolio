@@ -56,7 +56,7 @@ export function LoginForm() {
         <input
           id="email"
           type="email"
-          className="w-full rounded-2xl border border-border/70 bg-background px-4 py-3 text-sm outline-none transition focus:border-accent"
+          className="glass-input"
           {...form.register('email')}
         />
       </div>
@@ -67,14 +67,14 @@ export function LoginForm() {
         <input
           id="password"
           type="password"
-          className="w-full rounded-2xl border border-border/70 bg-background px-4 py-3 text-sm outline-none transition focus:border-accent"
+          className="glass-input"
           {...form.register('password')}
         />
       </div>
       <button
         type="submit"
         disabled={form.formState.isSubmitting}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] px-5 py-3 text-sm font-semibold text-white"
+        className="gradient-button w-full"
       >
         {form.formState.isSubmitting ? (
           <LoaderCircle className="h-4 w-4 animate-spin" />

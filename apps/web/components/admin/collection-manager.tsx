@@ -104,7 +104,7 @@ export function CollectionManager({
   );
 
   return (
-    <section className="rounded-[2rem] border border-border/60 bg-card/75 p-6 shadow-soft">
+    <section className="premium-panel p-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h2 className="font-display text-2xl font-semibold">{title}</h2>
@@ -115,12 +115,12 @@ export function CollectionManager({
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder={`Search ${title.toLowerCase()}`}
-            className="rounded-full border border-border/70 bg-background px-4 py-3 text-sm outline-none transition focus:border-accent"
+            className="glass-input rounded-full"
           />
           <button
             type="button"
             onClick={resetForCreate}
-            className="rounded-full border border-border/70 bg-background px-4 py-3 text-sm font-semibold"
+            className="ghost-button"
           >
             Add new
           </button>
@@ -135,7 +135,7 @@ export function CollectionManager({
               item.id ??
               `${title} item`;
             return (
-              <article key={String(item.id)} className="rounded-[1.5rem] border border-border/60 bg-background/70 p-5">
+              <article key={String(item.id)} className="section-card hover-lift px-5 py-5">
                 <p className="text-sm font-semibold text-foreground">{String(primaryValue)}</p>
                 <p className="mt-1 text-xs uppercase tracking-[0.22em] text-foreground/45">
                   {formatLabel(String(item.publicationStatus ?? 'draft'))}
@@ -147,14 +147,14 @@ export function CollectionManager({
                       setEditingItem(item);
                       form.reset(toFormDefaults(fields, item));
                     }}
-                    className="rounded-full border border-border/70 px-3 py-2 text-xs font-semibold"
+                    className="ghost-button px-3 py-2 text-xs"
                   >
                     Edit
                   </button>
                   <button
                     type="button"
                     onClick={() => deleteMutation.mutate(String(item.id))}
-                    className="rounded-full border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600"
+                    className="rounded-full border border-rose-200/80 bg-rose-50/80 px-3 py-2 text-xs font-semibold text-rose-600 transition hover:-translate-y-0.5 dark:bg-rose-500/10"
                   >
                     Delete
                   </button>
@@ -167,7 +167,7 @@ export function CollectionManager({
                           item.publicationStatus === 'published' ? 'draft' : 'published',
                       })
                     }
-                    className="rounded-full border border-border/70 px-3 py-2 text-xs font-semibold"
+                    className="ghost-button px-3 py-2 text-xs"
                   >
                     {item.publicationStatus === 'published' ? 'Move to draft' : 'Publish'}
                   </button>
@@ -176,12 +176,12 @@ export function CollectionManager({
             );
           })}
 
-          <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-background/60 px-4 py-3 text-sm">
+          <div className="section-card flex items-center justify-between px-4 py-3 text-sm">
             <button
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((current) => Math.max(1, current - 1))}
-              className="disabled:opacity-40"
+              className="ghost-button px-3 py-2 text-xs disabled:opacity-40"
             >
               Previous
             </button>
@@ -196,14 +196,14 @@ export function CollectionManager({
                   Math.min(query.data?.pagination.totalPages ?? current, current + 1),
                 )
               }
-              className="disabled:opacity-40"
+              className="ghost-button px-3 py-2 text-xs disabled:opacity-40"
             >
               Next
             </button>
           </div>
         </div>
 
-        <form onSubmit={form.handleSubmit((values) => saveMutation.mutate(values))} className="space-y-6 rounded-[1.75rem] border border-border/60 bg-background/70 p-5">
+        <form onSubmit={form.handleSubmit((values) => saveMutation.mutate(values))} className="section-card space-y-6 px-5 py-5">
           <div>
             <h3 className="font-display text-xl font-semibold">
               {editingItem ? `Edit ${title}` : `Create ${title}`}
@@ -216,7 +216,7 @@ export function CollectionManager({
           <button
             type="submit"
             disabled={saveMutation.isPending}
-            className="rounded-full bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] px-5 py-3 text-sm font-semibold text-white"
+            className="gradient-button"
           >
             {saveMutation.isPending ? 'Saving...' : editingItem ? 'Update item' : 'Create item'}
           </button>

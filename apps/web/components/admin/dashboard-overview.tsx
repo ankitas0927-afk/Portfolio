@@ -80,7 +80,7 @@ export function DashboardOverview() {
 
   return (
     <section className="space-y-8">
-      <div className="rounded-[2rem] border border-border/60 bg-card/75 p-6 shadow-soft">
+      <div className="premium-panel p-6">
         <h1 className="font-display text-3xl font-semibold">Dashboard Overview</h1>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-foreground/70">
           This dashboard now reads live counts and recent activity from MongoDB for the admin
@@ -96,7 +96,7 @@ export function DashboardOverview() {
           return (
             <article
               key={card.key}
-              className="rounded-[1.5rem] border border-border/60 bg-card/75 p-5 shadow-soft"
+              className="metric-card"
             >
               <p className="text-xs uppercase tracking-[0.22em] text-foreground/45">
                 {card.label}
@@ -108,22 +108,22 @@ export function DashboardOverview() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[0.85fr_1.15fr]">
-        <section className="rounded-[2rem] border border-border/60 bg-card/75 p-6 shadow-soft">
+        <section className="section-card px-6 py-6">
           <h2 className="font-display text-2xl font-semibold">Recently Updated Content</h2>
           <div className="mt-6 space-y-4">
-            <article className="rounded-[1.5rem] border border-border/60 bg-background/70 p-4">
+            <article className="metric-card">
               <p className="text-sm font-semibold">Profile</p>
               <p className="mt-2 text-sm text-foreground/68">
                 {formatDateTime(data?.recentlyUpdatedContent.profile?.updatedAt)}
               </p>
             </article>
-            <article className="rounded-[1.5rem] border border-border/60 bg-background/70 p-4">
+            <article className="metric-card">
               <p className="text-sm font-semibold">Hero</p>
               <p className="mt-2 text-sm text-foreground/68">
                 {formatDateTime(data?.recentlyUpdatedContent.hero?.updatedAt)}
               </p>
             </article>
-            <article className="rounded-[1.5rem] border border-border/60 bg-background/70 p-4">
+            <article className="metric-card">
               <p className="text-sm font-semibold">About</p>
               <p className="mt-2 text-sm text-foreground/68">
                 {formatDateTime(data?.recentlyUpdatedContent.about?.updatedAt)}
@@ -132,13 +132,13 @@ export function DashboardOverview() {
           </div>
         </section>
 
-        <section className="rounded-[2rem] border border-border/60 bg-card/75 p-6 shadow-soft">
+        <section className="section-card px-6 py-6">
           <h2 className="font-display text-2xl font-semibold">Recent Administrator Activity</h2>
           <div className="mt-6 space-y-4">
             {(data?.recentAdministratorActivity ?? []).map((entry) => (
               <article
                 key={entry.id}
-                className="rounded-[1.5rem] border border-border/60 bg-background/70 p-4"
+                className="metric-card"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <p className="text-sm font-semibold">
@@ -156,7 +156,7 @@ export function DashboardOverview() {
             ))}
 
             {!query.isLoading && (data?.recentAdministratorActivity?.length ?? 0) === 0 ? (
-              <article className="rounded-[1.5rem] border border-border/60 bg-background/70 p-4 text-sm text-foreground/68">
+              <article className="metric-card text-sm text-foreground/68">
                 No administrator activity has been recorded yet.
               </article>
             ) : null}

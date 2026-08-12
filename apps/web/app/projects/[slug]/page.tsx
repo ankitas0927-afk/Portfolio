@@ -44,29 +44,40 @@ export default async function ProjectDetailsPage({
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+      <div className="page-shell px-6 py-8 sm:px-8 lg:px-10 lg:py-10">
       <SectionHeading
         eyebrow={project.category || 'Project'}
         title={project.title}
         description={project.fullDescription || project.shortDescription}
       />
-      <div className="mt-10 rounded-[2rem] border border-border/60 bg-card/75 p-6 shadow-soft">
+      <div className="section-card mt-10 px-6 py-6">
         <p className="text-xs uppercase tracking-[0.24em] text-accent/70">
           {project.duration || project.status || 'Project'}
         </p>
         <div className="mt-6 flex flex-wrap gap-2">
           {(project.toolsAndTechnologies ?? []).map((tool: string) => (
-            <span key={tool} className="rounded-full border border-border/70 px-3 py-2 text-xs">
+            <span key={tool} className="info-chip text-xs">
               {tool}
             </span>
           ))}
         </div>
+        {project.learningOutcomes?.length ? (
+          <div className="mt-8 grid gap-3">
+            {project.learningOutcomes.map((outcome: string) => (
+              <div key={outcome} className="metric-card text-sm text-foreground/72">
+                {outcome}
+              </div>
+            ))}
+          </div>
+        ) : null}
         {project.githubUrl ? (
           <div className="mt-8">
-            <Link href={project.githubUrl} className="text-sm font-semibold text-accent">
+            <Link href={project.githubUrl} className="ghost-button">
               Open GitHub reference
             </Link>
           </div>
         ) : null}
+      </div>
       </div>
     </div>
   );
