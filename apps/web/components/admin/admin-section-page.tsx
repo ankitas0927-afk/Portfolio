@@ -10,18 +10,11 @@ import { ResumeManager } from '@/components/admin/resume-manager';
 import { ContactManager } from '@/components/admin/contact-manager';
 import { AuditLogList } from '@/components/admin/audit-log-list';
 import { AccountManager } from '@/components/admin/account-manager';
+import { DashboardOverview } from '@/components/admin/dashboard-overview';
 
 export function AdminSectionPage({ section = 'overview' }: { section?: string }) {
   if (section === 'overview') {
-    return (
-      <section className="rounded-[2rem] border border-border/60 bg-card/75 p-6 shadow-soft">
-        <h1 className="font-display text-3xl font-semibold">Dashboard Overview</h1>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-foreground/70">
-          Use the sidebar to manage public portfolio content, private profile details, GridFS media,
-          resume versions, contact messages, and administrator account settings.
-        </p>
-      </section>
-    );
+    return <DashboardOverview />;
   }
 
   if (section === 'profile') {
