@@ -2,7 +2,6 @@ packages:
   - apps/*
   - packages/*
 onlyBuiltDependencies:
-  - bcrypt
   - esbuild
   - mongodb-memory-server
   - sharp

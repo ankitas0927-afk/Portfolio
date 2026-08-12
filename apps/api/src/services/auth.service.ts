@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import type { CookieOptions } from 'express';
 import mongoose from 'mongoose';
 
