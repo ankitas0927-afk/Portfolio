@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import type { FieldConfig } from '@/lib/admin-config';
+import { getApiErrorMessage } from '@/lib/api-error';
 import { DynamicFields, toFormDefaults, toPayload } from '@/components/admin/dynamic-fields';
 import { useAuth } from '@/providers/auth-provider';
 
@@ -48,8 +49,8 @@ export function SingletonEditor({
       toast.success(`${title} saved`);
       void queryClient.invalidateQueries({ queryKey: ['admin-singleton', endpoint] });
     },
-    onError: () => {
-      toast.error(`Unable to save ${title.toLowerCase()}`);
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, `Unable to save ${title.toLowerCase()}`));
     },
   });
 

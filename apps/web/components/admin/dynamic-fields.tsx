@@ -78,6 +78,19 @@ export function toFormDefaults(
   fields: FieldConfig[],
   values?: Record<string, unknown> | null,
 ): Record<string, unknown> {
+  const toScalarInputValue = (value: unknown) => {
+    if (value == null) {
+      return '';
+    }
+
+    if (typeof value === 'string' || typeof value === 'number') {
+      return value;
+    }
+
+    const stringValue = String(value);
+    return stringValue === '[object Object]' ? '' : stringValue;
+  };
+
   return Object.fromEntries(
     fields.map((field) => {
       const value = values?.[field.name];
@@ -87,7 +100,7 @@ export function toFormDefaults(
       if (field.type === 'tags') {
         return [field.name, Array.isArray(value) ? value.join(', ') : (value ?? '')];
       }
-      return [field.name, value ?? ''];
+      return [field.name, toScalarInputValue(value)];
     }),
   );
 }
