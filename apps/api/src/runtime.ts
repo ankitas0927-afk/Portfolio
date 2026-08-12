@@ -8,6 +8,42 @@ import { ensureInitialPortfolioData } from './services/bootstrap.service';
 
 let cachedAppPromise: Promise<Express> | null = null;
 
+function createStartupErrorResponse(error: unknown) {
+  const errorMessage = error instanceof Error ? error.message : 'Unknown startup error';
+  const isDatabaseConnectionError =
+    errorMessage.includes('MongooseServerSelectionError') ||
+    errorMessage.includes('MongoServerSelectionError') ||
+    errorMessage.includes('SSL routines:ssl3_read_bytes:tlsv1 alert internal error') ||
+    errorMessage.includes('ECONNREFUSED') ||
+    errorMessage.includes('querySrv') ||
+    errorMessage.includes('ENOTFOUND');
+
+  if (isDatabaseConnectionError) {
+    return {
+      statusCode: 503,
+      payload: {
+        success: false,
+        error: {
+          code: 'DATABASE_UNAVAILABLE',
+          message:
+            'The portfolio API cannot connect to MongoDB right now. Check MONGODB_URI and, if you use MongoDB Atlas on Vercel, allow connections from 0.0.0.0/0 in Atlas Network Access.',
+        },
+      },
+    };
+  }
+
+  return {
+    statusCode: 500,
+    payload: {
+      success: false,
+      error: {
+        code: 'API_STARTUP_FAILED',
+        message: 'The portfolio API failed to start for this request.',
+      },
+    },
+  };
+}
+
 async function initializePortfolioApi() {
   await connectToDatabase();
 
@@ -22,7 +58,10 @@ async function initializePortfolioApi() {
 }
 
 export function getPortfolioApiApp() {
-  cachedAppPromise ??= initializePortfolioApi();
+  cachedAppPromise ??= initializePortfolioApi().catch((error) => {
+    cachedAppPromise = null;
+    throw error;
+  });
   return cachedAppPromise;
 }
 
@@ -35,7 +74,22 @@ export async function handleNextApiRequest(
   request: IncomingMessage,
   response: ServerResponse,
 ) {
-  const app = await getPortfolioApiApp();
+  let app: Express;
+  try {
+    app = await getPortfolioApiApp();
+  } catch (error) {
+    logger.error({ error }, 'Unable to initialize API runtime');
+
+    if (!response.headersSent) {
+      const startupError = createStartupErrorResponse(error);
+      response.statusCode = startupError.statusCode;
+      response.setHeader('Content-Type', 'application/json; charset=utf-8');
+      response.end(JSON.stringify(startupError.payload));
+      return;
+    }
+
+    throw error;
+  }
 
   await new Promise<void>((resolve, reject) => {
     let settled = false;
