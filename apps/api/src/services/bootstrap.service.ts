@@ -125,6 +125,19 @@ export async function ensureAdminAccount() {
   const configuredEmail = env.ADMIN_EMAIL.toLowerCase();
   const existingAdmin = await AdminModel.findOne({ email: configuredEmail });
   if (existingAdmin) {
+    if (env.ADMIN_RESET_PASSWORD_ON_BOOT) {
+      existingAdmin.name = env.ADMIN_NAME;
+      existingAdmin.passwordHash = await bcrypt.hash(env.ADMIN_INITIAL_PASSWORD, 12);
+      await existingAdmin.save();
+
+      logger.info(
+        { email: configuredEmail },
+        'Administrator password was reset from environment configuration.',
+      );
+
+      return { admin: existingAdmin, created: false, passwordReset: true };
+    }
+
     return { admin: existingAdmin, created: false };
   }
 
@@ -137,7 +150,7 @@ export async function ensureAdminAccount() {
 
   logger.info({ email: configuredEmail }, 'Initial administrator account created');
 
-  return { admin: createdAdmin, created: true };
+  return { admin: createdAdmin, created: true, passwordReset: false };
 }
 
 function getOwnerLocation() {
@@ -578,11 +591,12 @@ export async function ensurePortfolioSeed(adminId: string) {
 }
 
 export async function ensureInitialPortfolioData() {
-  const { admin, created } = await ensureAdminAccount();
+  const { admin, created, passwordReset = false } = await ensureAdminAccount();
   const portfolioResult = await ensurePortfolioSeed(admin._id.toString());
 
   return {
     createdAdmin: created,
+    resetAdminPassword: passwordReset,
     seededPortfolio: portfolioResult.seeded,
     repairedPlaceholders:
       'repairedPlaceholders' in portfolioResult ? portfolioResult.repairedPlaceholders : false,

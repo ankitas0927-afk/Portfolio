@@ -38,6 +38,7 @@ const envSchema = z.object({
   ADMIN_NAME: z.string().trim().min(1),
   ADMIN_EMAIL: z.string().trim().email(),
   ADMIN_INITIAL_PASSWORD: z.string().min(10),
+  ADMIN_RESET_PASSWORD_ON_BOOT: z.coerce.boolean().default(false),
   RESUME_PDF_PATH: z.string().trim().min(1),
   PROFILE_IMAGE_PATH: z.string().trim().optional().default(''),
   OWNER_PUBLIC_EMAIL: z.string().trim().optional().default(''),
