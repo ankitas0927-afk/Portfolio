@@ -3,6 +3,7 @@ import type { CookieOptions } from 'express';
 import mongoose from 'mongoose';
 
 import { env, isProduction } from '../config/env';
+import { logger } from '../config/logger';
 import { AppError } from '../errors/app-error';
 import {
   AdminModel,
@@ -38,6 +39,21 @@ function serializeAdmin(admin: AdminDocument) {
     role: admin.role,
     lastLoginAt: admin.lastLoginAt ?? null,
   };
+}
+
+async function safeCreateAuditLog(input: {
+  adminId?: string | null;
+  action: string;
+  resourceType: string;
+  resourceId?: string | null;
+  requestId: string;
+  metadata?: Record<string, unknown>;
+}) {
+  try {
+    await createAuditLog(input);
+  } catch (error) {
+    logger.warn({ error, action: input.action, requestId: input.requestId }, 'Audit log write failed');
+  }
 }
 
 export function getRefreshCookieOptions(): CookieOptions {
@@ -110,7 +126,7 @@ export async function authenticateAdmin(
   const admin = await AdminModel.findOne({ email: email.toLowerCase() });
 
   if (!admin || !(await bcrypt.compare(password, admin.passwordHash))) {
-    await createAuditLog({
+    await safeCreateAuditLog({
       action: 'failed_login',
       resourceType: 'auth',
       requestId: client.requestId,
@@ -121,7 +137,7 @@ export async function authenticateAdmin(
 
   const session = await issueSession(admin as AdminDocument, client);
 
-  await createAuditLog({
+  await safeCreateAuditLog({
     adminId: admin._id.toString(),
     action: 'login',
     resourceType: 'auth',
@@ -185,7 +201,7 @@ export async function refreshAdminSession(rawCookieToken: string, client: AuthCl
 
   await Promise.all([replacementTokenRecord.save(), tokenRecord.save(), session.save()]);
 
-  await createAuditLog({
+  await safeCreateAuditLog({
     adminId: admin._id.toString(),
     action: 'refresh_session',
     resourceType: 'auth',
@@ -230,7 +246,7 @@ export async function logoutAdmin(rawCookieToken: string | undefined, client: Au
         ),
       ]);
 
-      await createAuditLog({
+      await safeCreateAuditLog({
         adminId: payload.adminId,
         action: 'logout',
         resourceType: 'auth',
@@ -253,7 +269,7 @@ export async function logoutAllSessions(adminId: string, requestId: string) {
     ),
   ]);
 
-  await createAuditLog({
+  await safeCreateAuditLog({
     adminId,
     action: 'logout_all',
     resourceType: 'auth',
@@ -296,7 +312,7 @@ export async function revokeAdminSession(adminId: string, sessionId: string, req
     ),
   ]);
 
-  await createAuditLog({
+  await safeCreateAuditLog({
     adminId,
     action: 'revoke_session',
     resourceType: 'auth',
@@ -326,7 +342,7 @@ export async function changeAdminPassword(
 
   await logoutAllSessions(adminId, requestId);
 
-  await createAuditLog({
+  await safeCreateAuditLog({
     adminId,
     action: 'change_password',
     resourceType: 'auth',
