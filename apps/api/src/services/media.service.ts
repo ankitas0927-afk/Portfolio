@@ -11,12 +11,12 @@ import {
   type MediaAssetDocument,
 } from '../models/index';
 import type { MediaCategory, MediaVariant } from '@ankita-portfolio/shared-types';
-import sharp from 'sharp';
 import { fileTypeFromBuffer } from 'file-type';
 import type { Request, Response } from 'express';
 import mongoose, { Types } from 'mongoose';
 
 import { env } from '../config/env';
+import { logger } from '../config/logger';
 import { createAuditLog } from './audit.service';
 import { createChecksum, createStoredFilename } from '../utils/misc';
 import { buildPublicMediaUrl } from '../utils/public-url';
@@ -60,9 +60,28 @@ const documentMimeTypes = new Set([
 ]);
 const iconMimeTypes = new Set(['image/x-icon']);
 const documentCategoryExtensions = new Set(['pdf', 'doc', 'docx']);
+type SharpModule = {
+  default: typeof import('sharp');
+};
+
+let cachedSharpModulePromise: Promise<SharpModule | null> | null = null;
 
 function getOriginalExtension(fileName: string) {
   return path.extname(fileName).replace(/^\./, '').toLowerCase();
+}
+
+async function getSharpModule() {
+  if (!cachedSharpModulePromise) {
+    cachedSharpModulePromise = (import('sharp') as Promise<SharpModule>).catch((error) => {
+      logger.warn(
+        { error },
+        'Sharp is unavailable in this runtime. Image uploads will be stored without optimization variants.',
+      );
+      return null;
+    });
+  }
+
+  return cachedSharpModulePromise;
 }
 
 async function resolveDetectedFileType(file: Express.Multer.File) {
@@ -222,6 +241,20 @@ async function validateAndTransformFile(input: UploadMediaInput): Promise<Resolv
     };
   }
 
+  const sharpModule = await getSharpModule();
+  if (!sharpModule) {
+    return {
+      extension: detectedExtension,
+      detectedMimeType,
+      bucketName,
+      sanitizedOriginalBuffer: file.buffer,
+      size: file.buffer.length,
+      isImage: true,
+      variants: [],
+    };
+  }
+
+  const sharp = sharpModule.default;
   const sharpOptions = {
     failOnError: true,
     animated: detectedMimeType === 'image/gif',
