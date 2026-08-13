@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { ArrowUpRight, FileText, Languages as LanguagesIcon, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import type {
   EducationRecord,
@@ -145,41 +146,127 @@ export function HomePage({
       </section>
 
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-6 lg:grid-cols-[0.8fr_0.8fr_1.1fr]">
-          <div className="section-card p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">
-              Languages
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {languages.map((language) => (
-                <span key={language.id} className="info-chip">
-                  {language.name}
-                </span>
-              ))}
-            </div>
+        <div className="mb-6 max-w-2xl space-y-4">
+          <div className="premium-pill inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-accent/84">
+            <Sparkles className="h-4 w-4" />
+            Professional Snapshot
           </div>
-          <div className="section-card p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">
-              Interests
+          <div className="space-y-3">
+            <h2 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-[2.35rem]">
+              Essential details presented in a cleaner, more professional format.
+            </h2>
+            <p className="max-w-xl text-sm leading-7 text-foreground/74 sm:text-base">
+              Language comfort, professional interests, and resume access are grouped here as a
+              compact overview for quick review.
             </p>
-            <div className="mt-4 grid gap-2">
-              {interests.map((interest) => (
-                <div key={interest.id} className="metric-card text-sm">
-                  {interest.title}
+          </div>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-[0.8fr_0.95fr_1.15fr] lg:items-start">
+          <div className="section-card self-start p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">
+                  Languages
+                </p>
+                <p className="mt-3 text-sm leading-6 text-foreground/68">
+                  Clear communication support across everyday professional conversations.
+                </p>
+              </div>
+              <span className="premium-pill px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground/68">
+                {languages.length} listed
+              </span>
+            </div>
+            <div className="mt-5 flex flex-wrap gap-3">
+              {languages.length > 0 ? (
+                languages.map((language) => (
+                  <span
+                    key={language.id}
+                    className="inline-flex items-center gap-2 rounded-[1.1rem] border border-border/80 bg-card/96 px-4 py-3 text-sm font-semibold text-foreground shadow-[0_14px_30px_-24px_rgba(11,27,48,0.45)]"
+                  >
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[linear-gradient(135deg,rgba(12,123,119,0.18),rgba(37,99,235,0.16))] text-accent dark:bg-[linear-gradient(135deg,rgba(56,189,248,0.16),rgba(45,212,191,0.16))]">
+                      <LanguagesIcon className="h-4 w-4" />
+                    </span>
+                    {language.name}
+                  </span>
+                ))
+              ) : (
+                <div className="metric-card text-sm text-foreground/70">
+                  Published languages will appear here once they are available.
                 </div>
-              ))}
+              )}
             </div>
           </div>
-          <div className="section-card-strong p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/72">
+
+          <div className="section-card self-start p-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">
+                  Interests
+                </p>
+                <p className="mt-3 text-sm leading-6 text-foreground/68">
+                  Focus areas that reflect long-term curiosity and continued professional growth.
+                </p>
+              </div>
+              <span className="premium-pill px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground/68">
+                {interests.length} themes
+              </span>
+            </div>
+            <div className="mt-5 grid gap-3">
+              {interests.length > 0 ? (
+                interests.map((interest, index) => (
+                  <div key={interest.id} className="metric-card flex items-start gap-3 px-4 py-4">
+                    <span className="inline-flex h-9 w-9 flex-none items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(12,123,119,0.16),rgba(37,99,235,0.16))] text-sm font-semibold text-accent dark:bg-[linear-gradient(135deg,rgba(56,189,248,0.18),rgba(45,212,191,0.16))]">
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold leading-6 text-foreground">
+                        {interest.title}
+                      </p>
+                      <p className="mt-1 text-xs uppercase tracking-[0.2em] text-foreground/46">
+                        Professional interest area
+                      </p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="metric-card text-sm text-foreground/70">
+                  Professional interests will appear here once they are published.
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="section-card-strong self-start p-6 sm:p-7">
+            <div className="premium-pill inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-[0.26em] text-foreground/86">
+              <FileText className="h-4 w-4" />
               Resume
-            </p>
-            <h3 className="mt-4 font-display text-2xl font-semibold text-foreground">
+            </div>
+            <h3 className="mt-5 font-display text-2xl font-semibold text-foreground sm:text-[2rem]">
               {resume?.title ?? 'Current resume'}
             </h3>
-            <p className="mt-3 text-sm leading-7 text-foreground/72">
-              View the latest resume online or download a copy for reference.
+            <p className="mt-3 max-w-xl text-sm leading-7 text-foreground/78">
+              Open the live resume page for a polished browser view or download the latest PDF copy
+              for sharing and review.
             </p>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <div className="premium-outline rounded-[1.35rem] px-4 py-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-foreground/56">
+                  Access
+                </p>
+                <p className="mt-2 text-sm leading-6 text-foreground/74">
+                  Quick viewing for recruiters, collaborators, and hiring teams.
+                </p>
+              </div>
+              <div className="premium-outline rounded-[1.35rem] px-4 py-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-foreground/56">
+                  Format
+                </p>
+                <p className="mt-2 text-sm leading-6 text-foreground/74">
+                  Resume content stays easy to open, download, and share when needed.
+                </p>
+              </div>
+            </div>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link href="/resume" className="ghost-button w-full sm:w-auto">
                 Open resume page
@@ -192,6 +279,7 @@ export function HomePage({
                   className="gradient-button w-full sm:w-auto"
                 >
                   {getResumeDownloadLabel(resume.media)}
+                  <ArrowUpRight className="h-4 w-4" />
                 </a>
               ) : null}
             </div>
