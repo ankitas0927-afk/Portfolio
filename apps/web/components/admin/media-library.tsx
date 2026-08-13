@@ -1,9 +1,12 @@
 'use client';
 
+import type { MediaAssetSummary } from '@ankita-portfolio/shared-types';
 import { useDeferredValue, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
+import { PortfolioImage } from '@/components/common/portfolio-image';
+import { getApiErrorMessage } from '@/lib/api-error';
 import { getAcceptedFileTypes } from '@/lib/media';
 import { formatBytes } from '@/lib/utils';
 import { useAuth } from '@/providers/auth-provider';
@@ -26,10 +29,123 @@ const categoryOptions = [
   'institution-logo',
 ];
 
+type MediaItem = MediaAssetSummary & {
+  altText?: string;
+  caption?: string;
+  publicUrl?: string;
+  sourceAssetId?: string | null;
+};
+
 type MediaCollection = {
-  items: Array<Record<string, unknown>>;
+  items: MediaItem[];
   pagination: { page: number; totalPages: number };
 };
+
+type ImageAssignmentField =
+  | 'profileImageId'
+  | 'heroImageId'
+  | 'aboutImageId'
+  | 'logoId'
+  | 'faviconId'
+  | 'openGraphImageId'
+  | 'defaultOpenGraphImageId';
+
+type ImageAssignmentTarget = {
+  key: ImageAssignmentField;
+  endpoint: 'profile' | 'hero' | 'about' | 'siteSettings' | 'seo';
+  label: string;
+  shortLabel: string;
+  hint: string;
+};
+
+type ImageAssignmentState = Record<ImageAssignmentField, string | null>;
+
+const imageAssignmentTargets: ImageAssignmentTarget[] = [
+  {
+    key: 'profileImageId',
+    endpoint: 'profile',
+    label: 'Use as profile photo',
+    shortLabel: 'Profile',
+    hint: 'Main public profile image used across the portfolio.',
+  },
+  {
+    key: 'heroImageId',
+    endpoint: 'hero',
+    label: 'Use as hero image',
+    shortLabel: 'Hero',
+    hint: 'Primary visual used in the homepage hero section.',
+  },
+  {
+    key: 'aboutImageId',
+    endpoint: 'about',
+    label: 'Use as about image',
+    shortLabel: 'About',
+    hint: 'Image used in the About page story section.',
+  },
+  {
+    key: 'logoId',
+    endpoint: 'siteSettings',
+    label: 'Use as logo',
+    shortLabel: 'Logo',
+    hint: 'Header brand mark shown across the public website.',
+  },
+  {
+    key: 'faviconId',
+    endpoint: 'siteSettings',
+    label: 'Use as favicon',
+    shortLabel: 'Favicon',
+    hint: 'Browser tab icon generated from the database-driven site settings.',
+  },
+  {
+    key: 'openGraphImageId',
+    endpoint: 'siteSettings',
+    label: 'Use as Open Graph image',
+    shortLabel: 'Site OG',
+    hint: 'Default social sharing image stored in website settings.',
+  },
+  {
+    key: 'defaultOpenGraphImageId',
+    endpoint: 'seo',
+    label: 'Use as SEO Open Graph image',
+    shortLabel: 'SEO OG',
+    hint: 'Primary metadata image used by search and social platforms.',
+  },
+];
+
+function formatCategoryLabel(value: string) {
+  return value
+    .split('-')
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(' ');
+}
+
+function readAssignedId(value: unknown) {
+  return typeof value === 'string' && value.trim() ? value : null;
+}
+
+function isPublicImageAsset(item: MediaItem) {
+  return item.isPublic && item.mimeType.startsWith('image/');
+}
+
+function isIconAsset(item: MediaItem) {
+  return item.mimeType === 'image/x-icon' || item.extension.toLowerCase() === 'ico';
+}
+
+function getAssignableTargets(item: MediaItem) {
+  if (!item.mimeType.startsWith('image/')) {
+    return [];
+  }
+
+  if (isIconAsset(item)) {
+    return imageAssignmentTargets.filter((target) => ['logoId', 'faviconId'].includes(target.key));
+  }
+
+  return imageAssignmentTargets;
+}
+
+function getReferenceAssetId(item: MediaItem) {
+  return item.sourceAssetId ?? item.id;
+}
 
 export function MediaLibrary() {
   const { apiRequest } = useAuth();
@@ -52,6 +168,29 @@ export function MediaLibrary() {
         url: '/admin/media',
         params: { page, limit: 8, search: deferredSearch },
       }),
+  });
+
+  const assignmentsQuery = useQuery({
+    queryKey: ['admin-media-assignments'],
+    queryFn: async (): Promise<ImageAssignmentState> => {
+      const [profile, hero, about, siteSettings, seo] = await Promise.all([
+        apiRequest<Record<string, unknown> | null>({ url: '/admin/profile' }),
+        apiRequest<Record<string, unknown> | null>({ url: '/admin/hero' }),
+        apiRequest<Record<string, unknown> | null>({ url: '/admin/about' }),
+        apiRequest<Record<string, unknown> | null>({ url: '/admin/siteSettings' }),
+        apiRequest<Record<string, unknown> | null>({ url: '/admin/seo' }),
+      ]);
+
+      return {
+        profileImageId: readAssignedId(profile?.profileImageId),
+        heroImageId: readAssignedId(hero?.heroImageId),
+        aboutImageId: readAssignedId(about?.aboutImageId),
+        logoId: readAssignedId(siteSettings?.logoId),
+        faviconId: readAssignedId(siteSettings?.faviconId),
+        openGraphImageId: readAssignedId(siteSettings?.openGraphImageId),
+        defaultOpenGraphImageId: readAssignedId(seo?.defaultOpenGraphImageId),
+      };
+    },
   });
 
   const uploadMutation = useMutation({
@@ -91,6 +230,9 @@ export function MediaLibrary() {
       toast.success('Media deleted');
       void queryClient.invalidateQueries({ queryKey: ['admin-media'] });
     },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Unable to delete media right now.'));
+    },
   });
 
   const copyMediaId = async (mediaId: string) => {
@@ -102,6 +244,86 @@ export function MediaLibrary() {
     }
   };
 
+  const assignImageMutation = useMutation({
+    mutationFn: async ({
+      assetId,
+      target,
+      assetIsPublic,
+    }: {
+      assetId: string;
+      target: ImageAssignmentTarget;
+      assetIsPublic: boolean;
+    }) => {
+      if (!assetIsPublic) {
+        await apiRequest({
+          url: `/admin/media/${assetId}`,
+          method: 'PATCH',
+          data: { isPublic: true },
+        });
+      }
+
+      return apiRequest({
+        url: `/admin/${target.endpoint}`,
+        method: 'PATCH',
+        data: { [target.key]: assetId },
+      });
+    },
+    onSuccess: async (_response, variables) => {
+      toast.success(`${variables.target.shortLabel} image updated`);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['admin-media'] }),
+        queryClient.invalidateQueries({ queryKey: ['admin-media-assignments'] }),
+        queryClient.invalidateQueries({ queryKey: ['admin-singleton', variables.target.endpoint] }),
+      ]);
+    },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Unable to apply this image right now.'));
+    },
+  });
+
+  const useEverywhereMutation = useMutation({
+    mutationFn: async ({ assetId, assetIsPublic }: { assetId: string; assetIsPublic: boolean }) => {
+      if (!assetIsPublic) {
+        await apiRequest({
+          url: `/admin/media/${assetId}`,
+          method: 'PATCH',
+          data: { isPublic: true },
+        });
+      }
+
+      await Promise.all([
+        apiRequest({ url: '/admin/profile', method: 'PATCH', data: { profileImageId: assetId } }),
+        apiRequest({ url: '/admin/hero', method: 'PATCH', data: { heroImageId: assetId } }),
+        apiRequest({ url: '/admin/about', method: 'PATCH', data: { aboutImageId: assetId } }),
+        apiRequest({
+          url: '/admin/siteSettings',
+          method: 'PATCH',
+          data: {
+            logoId: assetId,
+            faviconId: assetId,
+            openGraphImageId: assetId,
+          },
+        }),
+        apiRequest({
+          url: '/admin/seo',
+          method: 'PATCH',
+          data: { defaultOpenGraphImageId: assetId },
+        }),
+      ]);
+    },
+    onSuccess: async () => {
+      toast.success('Image applied across profile, branding, and public content');
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['admin-media'] }),
+        queryClient.invalidateQueries({ queryKey: ['admin-media-assignments'] }),
+        queryClient.invalidateQueries({ queryKey: ['admin-singleton'] }),
+      ]);
+    },
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Unable to apply this image across the site right now.'));
+    },
+  });
+
   return (
     <section className="premium-panel space-y-8 p-6">
       <div>
@@ -110,7 +332,8 @@ export function MediaLibrary() {
           Uploads are processed in memory, stored in GridFS, and never written to a local uploads directory.
         </p>
         <p className="mt-2 text-xs uppercase tracking-[0.18em] text-foreground/48">
-          Upload a file here, then copy its media ID into profile, hero, about, project, SEO, or site settings fields.
+          Upload once, assign instantly, and keep logo, favicon, profile, hero, about, and SEO images fully synced
+          from the database.
         </p>
       </div>
 
@@ -179,33 +402,173 @@ export function MediaLibrary() {
         </form>
 
         <div className="space-y-4">
-          <input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search media"
-            className="glass-input rounded-full"
-          />
+          <div className="section-card space-y-4 px-5 py-5">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <h3 className="font-display text-xl font-semibold">Stored Assets</h3>
+                <p className="mt-1 text-sm text-foreground/62">
+                  Public-facing image assignments update the database and are fetched by both admin and public pages.
+                </p>
+              </div>
+              <input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Search media"
+                className="glass-input rounded-full lg:max-w-xs"
+              />
+            </div>
+            <div className="flex flex-wrap gap-2 text-xs text-foreground/56">
+              <span className="rounded-full border border-border/60 bg-background/70 px-3 py-1.5">
+                Public image slots are auto-published when assigned
+              </span>
+              <span className="rounded-full border border-border/60 bg-background/70 px-3 py-1.5">
+                Current usage is shown on each media card
+              </span>
+            </div>
+          </div>
+
           {(query.data?.items ?? []).map((item) => {
-            const metaLabel = `${String(item.category)} | ${formatBytes(Number(item.size ?? 0))}`;
+            const metaLabel = `${formatCategoryLabel(item.category)} | ${formatBytes(item.size)}`;
+            const referenceAssetId = getReferenceAssetId(item);
+            const assignableTargets = getAssignableTargets(item);
+            const activeAssignments = assignableTargets.filter(
+              (target) =>
+                assignmentsQuery.data?.[target.key] === item.id ||
+                assignmentsQuery.data?.[target.key] === referenceAssetId,
+            );
+            const showImagePreview = isPublicImageAsset(item);
+            const showUseEverywhere = !isIconAsset(item) && assignableTargets.length > 0;
 
             return (
-              <article key={String(item.id)} className="section-card hover-lift px-5 py-5">
-                <p className="font-semibold text-foreground">{String(item.originalName)}</p>
-                <p className="mt-2 text-xs uppercase tracking-[0.22em] text-foreground/45">{metaLabel}</p>
-                <p className="mt-3 break-all text-xs text-foreground/58">
-                  Media ID: {String(item.id)}
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2">
+              <article key={item.id} className="section-card hover-lift space-y-5 px-5 py-5">
+                <div className="grid gap-5 lg:grid-cols-[minmax(0,160px)_1fr]">
+                  <div className="space-y-3">
+                    <div className="overflow-hidden rounded-[1.5rem] border border-border/70 bg-background/75">
+                      {showImagePreview ? (
+                        <PortfolioImage
+                          src={item.publicUrl}
+                          alt={item.altText?.trim() || item.originalName}
+                          width={item.width ?? 360}
+                          height={item.height ?? 360}
+                          className="aspect-square w-full object-cover"
+                          sizes="160px"
+                        />
+                      ) : (
+                        <div className="flex aspect-square items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.18),_transparent_52%),linear-gradient(135deg,rgba(255,255,255,0.6),rgba(191,219,254,0.25))] px-4 text-center text-xs font-semibold uppercase tracking-[0.24em] text-foreground/58 dark:bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.16),_transparent_52%),linear-gradient(135deg,rgba(15,23,42,0.88),rgba(30,41,59,0.86))]">
+                          {item.extension.toUpperCase()}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.2em] text-foreground/48">
+                      <span className="rounded-full border border-border/60 bg-background/70 px-3 py-1.5">
+                        {item.isPublic ? 'Public' : 'Private'}
+                      </span>
+                      <span className="rounded-full border border-border/60 bg-background/70 px-3 py-1.5">
+                        {item.variant ?? 'original'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold text-foreground">{item.originalName}</p>
+                        <p className="mt-2 text-xs uppercase tracking-[0.22em] text-foreground/45">{metaLabel}</p>
+                        {item.caption ? (
+                          <p className="mt-3 text-sm leading-6 text-foreground/68">{item.caption}</p>
+                        ) : null}
+                        {item.altText ? (
+                          <p className="mt-2 text-xs text-foreground/50">Alt text: {item.altText}</p>
+                        ) : null}
+                      </div>
+                      {activeAssignments.length > 0 ? (
+                        <div className="flex flex-wrap justify-end gap-2">
+                          {activeAssignments.map((target) => (
+                            <span
+                              key={target.key}
+                              className="rounded-full border border-sky-200/80 bg-sky-50/85 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-700 dark:border-sky-400/20 dark:bg-sky-400/10 dark:text-sky-200"
+                            >
+                              In use: {target.shortLabel}
+                            </span>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <p className="mt-4 break-all text-xs text-foreground/58">Media ID: {item.id}</p>
+                    {item.sourceAssetId ? (
+                      <p className="mt-1 break-all text-xs text-foreground/44">
+                        Assignment source ID: {item.sourceAssetId}
+                      </p>
+                    ) : null}
+
+                    {assignableTargets.length > 0 ? (
+                      <div className="mt-5 space-y-3">
+                        <div className="flex flex-wrap gap-2">
+                          {assignableTargets.map((target) => {
+                            const isActive =
+                              assignmentsQuery.data?.[target.key] === item.id ||
+                              assignmentsQuery.data?.[target.key] === referenceAssetId;
+
+                            return (
+                              <button
+                                key={target.key}
+                                type="button"
+                                onClick={() =>
+                                  assignImageMutation.mutate({
+                                    assetId: referenceAssetId,
+                                    target,
+                                    assetIsPublic: item.isPublic,
+                                  })
+                                }
+                                disabled={assignImageMutation.isPending || useEverywhereMutation.isPending}
+                                className={
+                                  isActive
+                                    ? 'rounded-full border border-sky-300 bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-700 transition hover:-translate-y-0.5 dark:border-sky-400/30 dark:bg-sky-400/10 dark:text-sky-200'
+                                    : 'ghost-button px-3 py-2 text-xs'
+                                }
+                                title={target.hint}
+                              >
+                                {isActive ? `${target.shortLabel} active` : target.label}
+                              </button>
+                            );
+                          })}
+                          {showUseEverywhere ? (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                useEverywhereMutation.mutate({
+                                  assetId: referenceAssetId,
+                                  assetIsPublic: item.isPublic,
+                                })
+                              }
+                              disabled={assignImageMutation.isPending || useEverywhereMutation.isPending}
+                              className="gradient-button px-4 py-2.5 text-xs shadow-[0_18px_36px_-24px_rgba(37,99,235,0.9)]"
+                            >
+                              {useEverywhereMutation.isPending ? 'Applying...' : 'Use everywhere'}
+                            </button>
+                          ) : null}
+                        </div>
+                        <p className="text-xs leading-6 text-foreground/48">
+                          Assigning to public slots automatically marks the file as public so it can be fetched by the
+                          live portfolio.
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2 border-t border-border/60 pt-4">
                   <button
                     type="button"
-                    onClick={() => copyMediaId(String(item.id))}
+                    onClick={() => copyMediaId(item.id)}
                     className="ghost-button px-3 py-2 text-xs"
                   >
                     Copy ID
                   </button>
-                  {item.isPublic ? (
+                  {item.isPublic && item.publicUrl ? (
                     <a
-                      href={`${webEnv.browserApiBaseUrl}/public/media/${String(item.id)}`}
+                      href={item.publicUrl || `${webEnv.browserApiBaseUrl}/public/media/${item.id}`}
                       target="_blank"
                       rel="noreferrer"
                       className="ghost-button px-3 py-2 text-xs"
@@ -215,7 +578,7 @@ export function MediaLibrary() {
                   ) : null}
                   <button
                     type="button"
-                    onClick={() => deleteMutation.mutate(String(item.id))}
+                    onClick={() => deleteMutation.mutate(item.id)}
                     className="rounded-full border border-rose-200/80 bg-rose-50/80 px-3 py-2 text-xs font-semibold text-rose-600 transition hover:-translate-y-0.5 dark:bg-rose-500/10"
                   >
                     Delete
