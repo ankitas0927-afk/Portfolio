@@ -108,16 +108,7 @@ export default async function AboutPage() {
           </div>
         </div>
 
-        <section className="mt-10 space-y-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <div className="premium-pill inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-accent/82">
-                <BarChart3 className="h-4 w-4" />
-                Quick Stats
-              </div>
-            </div>
-          </div>
-
+        <section className="mt-10">
           <div className="grid gap-4 md:grid-cols-3">
             {quickStats.map((stat, index) => {
               const Icon = stat.icon;
