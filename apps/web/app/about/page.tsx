@@ -110,15 +110,11 @@ export default async function AboutPage() {
 
         <section className="mt-10 space-y-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div className="space-y-2">
+            <div>
               <div className="premium-pill inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-accent/82">
                 <BarChart3 className="h-4 w-4" />
                 Quick Stats
               </div>
-              <p className="max-w-2xl text-sm leading-7 text-foreground/70">
-                A compact snapshot of published portfolio scale, experience, and current
-                availability, all fetched from the database.
-              </p>
             </div>
           </div>
 
