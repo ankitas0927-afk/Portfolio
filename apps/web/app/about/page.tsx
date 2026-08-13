@@ -1,12 +1,18 @@
 import { SectionHeading } from '@/components/common/section-heading';
 import { PortfolioImage } from '@/components/common/portfolio-image';
 import { DEFAULT_SITE_DESCRIPTION, DEFAULT_SITE_NAME } from '@/lib/default-site-copy';
-import { getPublicAbout, getPublicProfile } from '@/services/public';
+import { getTotalExperienceLabel } from '@/lib/experience';
+import { getPublicAbout, getPublicExperience, getPublicProfile } from '@/services/public';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AboutPage() {
-  const [about, profile] = await Promise.all([getPublicAbout(), getPublicProfile()]);
+  const [about, profile, experience] = await Promise.all([
+    getPublicAbout(),
+    getPublicProfile(),
+    getPublicExperience(),
+  ]);
+  const overallExperienceLabel = getTotalExperienceLabel(experience);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
@@ -26,6 +32,7 @@ export default async function AboutPage() {
         />
         <div className="section-card space-y-6 px-6 py-6">
           <div className="flex flex-wrap gap-3">
+            {overallExperienceLabel ? <span className="info-chip">{overallExperienceLabel}</span> : null}
             <span className="info-chip">{about?.currentLocation ?? profile?.generalLocation ?? 'Location available'}</span>
             <span className="info-chip">{about?.availabilityLabel ?? 'Open to opportunities'}</span>
           </div>

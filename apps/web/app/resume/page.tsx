@@ -1,12 +1,14 @@
 import { SectionHeading } from '@/components/common/section-heading';
+import { getTotalExperienceLabel } from '@/lib/experience';
 import { canPreviewResumeInline, getResumeDownloadLabel } from '@/lib/media';
-import { getPublicResume } from '@/services/public';
+import { getPublicExperience, getPublicResume } from '@/services/public';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ResumePage() {
-  const resume = await getPublicResume();
+  const [resume, experience] = await Promise.all([getPublicResume(), getPublicExperience()]);
   const supportsInlinePreview = canPreviewResumeInline(resume?.media);
+  const overallExperienceLabel = getTotalExperienceLabel(experience);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
@@ -17,6 +19,11 @@ export default async function ResumePage() {
         description="Review the latest resume and download a copy whenever needed."
       />
       <div className="section-card-strong mt-10 px-6 py-6">
+        {overallExperienceLabel ? (
+          <div className="mb-6 flex flex-wrap gap-3">
+            <span className="info-chip">{overallExperienceLabel}</span>
+          </div>
+        ) : null}
         <div className="mb-6 flex flex-wrap gap-3">
           {resume?.downloadUrl ? (
             <a

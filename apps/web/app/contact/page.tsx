@@ -20,16 +20,23 @@ import {
   DEFAULT_SITE_NAME,
   DEFAULT_SITE_TAGLINE,
 } from '@/lib/default-site-copy';
+import { getTotalExperienceLabel } from '@/lib/experience';
 import { getResumeDownloadLabel } from '@/lib/media';
-import { getPublicProfile, getPublicResume, getPublicSocialLinks } from '@/services/public';
+import {
+  getPublicExperience,
+  getPublicProfile,
+  getPublicResume,
+  getPublicSocialLinks,
+} from '@/services/public';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ContactPage() {
-  const [profile, resume, socialLinks] = await Promise.all([
+  const [profile, resume, socialLinks, experience] = await Promise.all([
     getPublicProfile(),
     getPublicResume(),
     getPublicSocialLinks(),
+    getPublicExperience(),
   ]);
 
   const displayName = profile?.fullName ?? DEFAULT_SITE_NAME;
@@ -39,6 +46,7 @@ export default async function ContactPage() {
   const location = profile?.generalLocation ?? DEFAULT_LOCATION;
   const introduction = profile?.professionalSummary ?? DEFAULT_SITE_DESCRIPTION;
   const profileTags = (profile?.rotatingTitles ?? []).slice(0, 4);
+  const overallExperienceLabel = getTotalExperienceLabel(experience);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
@@ -55,6 +63,11 @@ export default async function ContactPage() {
             />
 
             <div className="flex flex-wrap gap-3">
+              {overallExperienceLabel ? (
+                <span className="premium-pill px-4 py-2 text-sm font-medium text-foreground/76">
+                  {overallExperienceLabel}
+                </span>
+              ) : null}
               {profileTags.length > 0 ? (
                 profileTags.map((tag) => (
                   <span

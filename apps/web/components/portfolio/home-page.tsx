@@ -21,6 +21,11 @@ import {
   DEFAULT_SITE_NAME,
   DEFAULT_SITE_TAGLINE,
 } from '@/lib/default-site-copy';
+import {
+  getExperienceDateRangeLabel,
+  getExperienceDurationLabel,
+  getTotalExperienceLabel,
+} from '@/lib/experience';
 import { getResumeDownloadLabel } from '@/lib/media';
 
 type HomePageProps = {
@@ -74,6 +79,10 @@ export function HomePage({
 }: HomePageProps) {
   const heroHighlights = hero?.highlights ?? [];
   const keyStrengths = about?.keyStrengths ?? [];
+  const overallExperienceLabel = getTotalExperienceLabel(experience);
+  const displayHighlights = overallExperienceLabel
+    ? Array.from(new Set([overallExperienceLabel, ...heroHighlights]))
+    : heroHighlights;
 
   return (
     <div className="space-y-24 pb-20">
@@ -99,9 +108,9 @@ export function HomePage({
           <motion.p variants={reveal} className="max-w-2xl text-lg leading-9 text-foreground/72">
             {hero?.subheading ?? profile?.professionalSummary ?? DEFAULT_SITE_DESCRIPTION}
           </motion.p>
-          {heroHighlights.length > 0 ? (
+          {displayHighlights.length > 0 ? (
             <motion.div variants={reveal} className="flex flex-wrap gap-3">
-              {heroHighlights.map((item) => (
+              {displayHighlights.map((item) => (
                 <span
                   key={item}
                   className="rounded-full border border-border/70 bg-card/80 px-4 py-2 text-sm text-foreground/72 shadow-soft"
@@ -226,7 +235,11 @@ export function HomePage({
             items={experience.map((item) => ({
               title: item.jobTitle,
               subtitle: item.organisation,
-              meta: item.approximateDuration || item.location || '',
+              meta:
+                getExperienceDurationLabel(item) ||
+                getExperienceDateRangeLabel(item) ||
+                item.location ||
+                '',
               body: item.professionalSummary || '',
             }))}
           />

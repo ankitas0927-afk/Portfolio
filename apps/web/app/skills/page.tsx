@@ -1,11 +1,13 @@
 import { SectionHeading } from '@/components/common/section-heading';
-import { getPublicSkills } from '@/services/public';
+import { getTotalExperienceLabel } from '@/lib/experience';
+import { getPublicExperience, getPublicSkills } from '@/services/public';
 
 export const dynamic = 'force-dynamic';
 
 export default async function SkillsPage() {
-  const skills = await getPublicSkills();
+  const [skills, experience] = await Promise.all([getPublicSkills(), getPublicExperience()]);
   const hasContent = skills.categories.length > 0 || skills.personalSkills.length > 0;
+  const overallExperienceLabel = getTotalExperienceLabel(experience);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
@@ -15,6 +17,11 @@ export default async function SkillsPage() {
         title="Technical skills and personal strengths"
         description="Technical capability, software familiarity, and personal strengths presented with clarity."
       />
+      {overallExperienceLabel ? (
+        <div className="mt-6 flex flex-wrap gap-3">
+          <span className="info-chip">{overallExperienceLabel}</span>
+        </div>
+      ) : null}
 
       {hasContent ? (
         <div className="mt-12 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">

@@ -1,12 +1,17 @@
 import Link from 'next/link';
 
 import { SectionHeading } from '@/components/common/section-heading';
-import { getPublicProjects } from '@/services/public';
+import { getTotalExperienceLabel } from '@/lib/experience';
+import { getPublicExperience, getPublicProjects } from '@/services/public';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ProjectsPage() {
-  const projects = await getPublicProjects();
+  const [projects, experience] = await Promise.all([
+    getPublicProjects(),
+    getPublicExperience(),
+  ]);
+  const overallExperienceLabel = getTotalExperienceLabel(experience);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
@@ -16,6 +21,11 @@ export default async function ProjectsPage() {
         title="Published projects"
         description="A selection of practical work, case studies, and published project highlights."
       />
+      {overallExperienceLabel ? (
+        <div className="mt-6 flex flex-wrap gap-3">
+          <span className="info-chip">{overallExperienceLabel}</span>
+        </div>
+      ) : null}
       <div className="mt-12 grid gap-6 lg:grid-cols-2">
         {projects.map((project) => (
           <article key={project.id} className="section-card hover-lift px-6 py-6">

@@ -19,6 +19,10 @@ import { toast } from 'sonner';
 
 import { collectionFields } from '@/lib/admin-config';
 import { getApiErrorMessage } from '@/lib/api-error';
+import {
+  calculateExperienceDuration,
+  formatExperienceDate,
+} from '@/lib/experience';
 import { formatLabel } from '@/lib/utils';
 import { toFormDefaults, toPayload } from '@/components/admin/dynamic-fields';
 import { useAuth } from '@/providers/auth-provider';
@@ -48,83 +52,6 @@ function splitCommaValues(value: unknown) {
     .split(',')
     .map((item) => item.trim())
     .filter(Boolean);
-}
-
-function parseExperienceDate(rawValue: string) {
-  const value = rawValue.trim();
-  if (!value) {
-    return null;
-  }
-
-  if (/^\d{4}$/.test(value)) {
-    return new Date(Date.UTC(Number(value), 0, 1));
-  }
-
-  if (/^\d{4}-\d{2}$/.test(value)) {
-    const [year, month] = value.split('-').map(Number);
-    return new Date(Date.UTC(year, month - 1, 1));
-  }
-
-  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-    const [year, month, day] = value.split('-').map(Number);
-    return new Date(Date.UTC(year, month - 1, day));
-  }
-
-  const parsed = Date.parse(value);
-  if (Number.isNaN(parsed)) {
-    return null;
-  }
-
-  return new Date(parsed);
-}
-
-function formatDurationPart(value: number, unit: 'year' | 'month') {
-  return `${value} ${unit}${value === 1 ? '' : 's'}`;
-}
-
-function calculateApproximateDuration(startDate: string, endDate: string, isCurrentPosition: boolean) {
-  const start = parseExperienceDate(startDate);
-  const end = parseExperienceDate(endDate);
-
-  if (!start) {
-    return '';
-  }
-
-  const comparisonDate = isCurrentPosition ? new Date() : end;
-  if (!comparisonDate) {
-    return '';
-  }
-
-  const totalMonths =
-    (comparisonDate.getUTCFullYear() - start.getUTCFullYear()) * 12 +
-    (comparisonDate.getUTCMonth() - start.getUTCMonth()) +
-    1;
-
-  if (totalMonths <= 0) {
-    return '';
-  }
-
-  const years = Math.floor(totalMonths / 12);
-  const months = totalMonths % 12;
-  const parts = [
-    years > 0 ? formatDurationPart(years, 'year') : null,
-    months > 0 ? formatDurationPart(months, 'month') : null,
-  ].filter(Boolean);
-
-  return parts.join(' ');
-}
-
-function formatDisplayDate(value: string) {
-  const parsed = parseExperienceDate(value);
-  if (!parsed) {
-    return value;
-  }
-
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'UTC',
-  }).format(parsed);
 }
 
 function getStatusChipClassName(status: string) {
@@ -259,7 +186,7 @@ export function ExperienceManager() {
   const isCurrentPosition = Boolean(isCurrentPositionValue);
   const publicationStatus = getStringValue(publicationStatusValue) || 'draft';
   const isFeatured = Boolean(featuredValue);
-  const calculatedDuration = calculateApproximateDuration(startDate, endDate, isCurrentPosition);
+  const calculatedDuration = calculateExperienceDuration(startDate, endDate, isCurrentPosition);
   const savedDuration = getStringValue(approximateDurationValue);
   const previewDuration = calculatedDuration || savedDuration || 'Select dates to calculate duration';
   const responsibilityCount = splitCommaValues(responsibilitiesValue).length;
@@ -515,9 +442,9 @@ export function ExperienceManager() {
                     ) : null}
                     {item.startDate ? (
                       <span className="info-chip">
-                        {formatDisplayDate(item.startDate)}
+                        {formatExperienceDate(item.startDate)}
                         {item.endDate
-                          ? ` - ${formatDisplayDate(item.endDate)}`
+                          ? ` - ${formatExperienceDate(item.endDate)}`
                           : item.isCurrentPosition
                             ? ' - Present'
                             : ''}
@@ -912,7 +839,7 @@ export function ExperienceManager() {
                             </p>
                             <p className="mt-3 text-sm font-semibold text-foreground">
                               {startDate
-                                ? `${formatDisplayDate(startDate)}${endDate ? ` - ${formatDisplayDate(endDate)}` : isCurrentPosition ? ' - Present' : ''}`
+                                ? `${formatExperienceDate(startDate)}${endDate ? ` - ${formatExperienceDate(endDate)}` : isCurrentPosition ? ' - Present' : ''}`
                                 : 'Add start and end dates to preview the timeline'}
                             </p>
                           </div>
