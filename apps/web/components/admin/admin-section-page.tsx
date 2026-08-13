@@ -11,6 +11,7 @@ import { ContactManager } from '@/components/admin/contact-manager';
 import { AuditLogList } from '@/components/admin/audit-log-list';
 import { AccountManager } from '@/components/admin/account-manager';
 import { DashboardOverview } from '@/components/admin/dashboard-overview';
+import { ExperienceManager } from '@/components/admin/experience-manager';
 
 export function AdminSectionPage({ section = 'overview' }: { section?: string }) {
   if (section === 'overview') {
@@ -38,7 +39,11 @@ export function AdminSectionPage({ section = 'overview' }: { section?: string })
     return <SingletonEditor title="About Section" endpoint="about" fields={singletonFields.about} />;
   }
 
-  if (section === 'experience' || section === 'education' || section === 'training') {
+  if (section === 'experience') {
+    return <ExperienceManager />;
+  }
+
+  if (section === 'education' || section === 'training') {
     return (
       <CollectionManager
         title={formatLabel(section)}
