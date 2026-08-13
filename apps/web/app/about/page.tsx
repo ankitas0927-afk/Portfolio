@@ -108,29 +108,30 @@ export default async function AboutPage() {
           </div>
         </div>
 
-        <section className="mt-10">
-          <div className="grid gap-4 md:grid-cols-3">
-            {quickStats.map((stat, index) => {
+        <section className="relative z-10 mt-14 border-t border-border/60 pt-10">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {quickStats.map((stat) => {
               const Icon = stat.icon;
 
               return (
                 <article
                   key={stat.title}
-                  className="metric-card hover-lift reveal-up px-5 py-5"
-                  style={{ animationDelay: `${120 + index * 90}ms` }}
+                  className="section-card hover-lift h-full px-5 py-5"
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="inline-flex h-11 w-11 items-center justify-center rounded-[1.1rem] bg-[linear-gradient(135deg,rgba(12,123,119,0.16),rgba(37,99,235,0.16))] text-accent dark:bg-[linear-gradient(135deg,rgba(56,189,248,0.16),rgba(45,212,191,0.16))]">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-[1.1rem] bg-[linear-gradient(135deg,rgba(12,123,119,0.16),rgba(37,99,235,0.16))] text-accent dark:bg-[linear-gradient(135deg,rgba(56,189,248,0.16),rgba(45,212,191,0.16))]">
                       <Icon className="h-5 w-5" />
                     </div>
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground/44">
+                    <p className="premium-pill px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground/56">
                       {stat.title}
                     </p>
                   </div>
-                  <p className="mt-5 text-xl font-semibold leading-8 text-foreground">
-                    {stat.value}
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-foreground/68">{stat.description}</p>
+                  <div className="mt-5 space-y-3">
+                    <p className="text-balance text-2xl font-semibold leading-9 text-foreground">
+                      {stat.value}
+                    </p>
+                    <p className="text-sm leading-6 text-foreground/68">{stat.description}</p>
+                  </div>
                 </article>
               );
             })}
@@ -165,8 +166,7 @@ export default async function AboutPage() {
               education.map((item, index) => (
                 <article
                   key={item.id}
-                  className="section-card hover-lift reveal-up overflow-hidden px-5 py-5 sm:px-6 sm:py-6"
-                  style={{ animationDelay: `${220 + index * 90}ms` }}
+                  className="section-card hover-lift overflow-hidden px-5 py-5 sm:px-6 sm:py-6"
                 >
                   <div className="grid gap-5 lg:grid-cols-[auto_1fr] lg:items-start">
                     <div className="flex items-center gap-4 lg:block">
