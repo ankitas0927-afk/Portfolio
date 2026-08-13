@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LoaderCircle, SendHorizonal, ShieldCheck, Sparkles } from 'lucide-react';
+import { LoaderCircle, SendHorizonal } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -62,22 +62,6 @@ export function ContactForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-5">
-      <div className="premium-outline rounded-[1.5rem] px-4 py-4 text-sm leading-7 text-foreground/72">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="premium-pill inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-[0.26em] text-accent/82">
-            <Sparkles className="h-4 w-4" />
-            Professional Enquiry
-          </span>
-          <span className="premium-pill inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-[0.26em] text-foreground/62">
-            <ShieldCheck className="h-4 w-4 text-accent/80" />
-            Confidential Handling
-          </span>
-        </div>
-        <p className="mt-4">
-          Please include enough detail to support a thoughtful and relevant response.
-        </p>
-      </div>
-
       <div className="grid gap-4 md:grid-cols-2">
         <FieldBlock
           id="fullName"

@@ -5,7 +5,6 @@ import {
   FileText,
   Mail,
   MapPin,
-  MessageSquareText,
   Phone,
   Sparkles,
 } from 'lucide-react';
@@ -16,7 +15,6 @@ import { SectionHeading } from '@/components/common/section-heading';
 import { ContactForm } from '@/components/forms/contact-form';
 import {
   DEFAULT_LOCATION,
-  DEFAULT_SITE_DESCRIPTION,
   DEFAULT_SITE_NAME,
   DEFAULT_SITE_TAGLINE,
 } from '@/lib/default-site-copy';
@@ -44,7 +42,6 @@ export default async function ContactPage() {
   const email = profile?.publicEmail ?? null;
   const phone = profile?.publicPhone ?? null;
   const location = profile?.generalLocation ?? DEFAULT_LOCATION;
-  const introduction = profile?.professionalSummary ?? DEFAULT_SITE_DESCRIPTION;
   const profileTags = (profile?.rotatingTitles ?? []).slice(0, 4);
   const overallExperienceLabel = getTotalExperienceLabel(experience);
 
@@ -59,7 +56,6 @@ export default async function ContactPage() {
             <SectionHeading
               eyebrow="Contact"
               title="Get in touch for professional opportunities."
-              description={introduction}
             />
 
             <div className="flex flex-wrap gap-3">
@@ -183,26 +179,26 @@ export default async function ContactPage() {
                 />
 
                 <div className="space-y-4">
-                  <div className="premium-pill inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-accent/82">
-                    <MessageSquareText className="h-4 w-4" />
-                    Professional Outreach
-                  </div>
-                  <p className="font-display text-2xl font-semibold text-foreground">
-                    A clear message leads to a stronger conversation.
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent/80">
+                    Professional Contact
                   </p>
-                  <ul className="space-y-3 text-sm leading-7 text-foreground/72">
-                    <li>Share the role, organization, or project you would like to discuss.</li>
-                    <li>Include timing, expectations, or relevant context where helpful.</li>
-                    <li>
-                      Mention the most useful next step, such as a reply, call, or document review.
-                    </li>
-                  </ul>
+                  <p className="font-display text-2xl font-semibold text-foreground">
+                    Connect directly for roles, projects, or professional conversations.
+                  </p>
+                  <div className="grid gap-3">
+                    <div className="premium-outline rounded-[1.35rem] px-4 py-4 text-sm leading-6 text-foreground/72">
+                      Resume links and direct contact options are available here for quick follow-up.
+                    </div>
+                    <div className="premium-outline rounded-[1.35rem] px-4 py-4 text-sm leading-6 text-foreground/72">
+                      Reach out by email, phone, or the contact form depending on what is most convenient.
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="premium-panel p-6">
-              <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+              <div className="mb-6">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent/80">
                     Contact Form
@@ -210,14 +206,6 @@ export default async function ContactPage() {
                   <h3 className="mt-3 font-display text-2xl font-semibold text-foreground">
                     Send a professional enquiry
                   </h3>
-                  <p className="mt-2 max-w-xl text-sm leading-7 text-foreground/72">
-                    Use the form below to introduce yourself, share context, and outline the purpose
-                    of your message.
-                  </p>
-                </div>
-
-                <div className="premium-outline rounded-[1.35rem] px-4 py-3 text-sm leading-6 text-foreground/70">
-                  A clear subject line and concise summary help keep communication efficient.
                 </div>
               </div>
 
