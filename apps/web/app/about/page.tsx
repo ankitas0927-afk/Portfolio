@@ -78,33 +78,6 @@ export default async function AboutPage() {
                 <span className="info-chip">{availabilityLabel}</span>
               </div>
             </div>
-
-            <div className="grid gap-3 sm:grid-cols-3">
-              {quickStats.map((stat, index) => {
-                const Icon = stat.icon;
-
-                return (
-                  <article
-                    key={stat.title}
-                    className="metric-card hover-lift reveal-up min-h-[10.5rem] px-4 py-4"
-                    style={{ animationDelay: `${index * 90}ms` }}
-                  >
-                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(12,123,119,0.16),rgba(37,99,235,0.16))] text-accent dark:bg-[linear-gradient(135deg,rgba(56,189,248,0.16),rgba(45,212,191,0.16))]">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <p className="mt-4 text-xs font-semibold uppercase tracking-[0.22em] text-foreground/48">
-                      {stat.title}
-                    </p>
-                    <p className="mt-2 text-lg font-semibold leading-7 text-foreground">
-                      {stat.value}
-                    </p>
-                    <p className="mt-2 text-sm leading-6 text-foreground/68">
-                      {stat.description}
-                    </p>
-                  </article>
-                );
-              })}
-            </div>
           </div>
 
           <div className="section-card space-y-6 px-6 py-6">
@@ -122,7 +95,7 @@ export default async function AboutPage() {
                 <div
                   key={strength}
                   className="metric-card hover-lift reveal-up text-sm"
-                  style={{ animationDelay: `${120 + index * 80}ms` }}
+                  style={{ animationDelay: `${index * 80}ms` }}
                 >
                   {strength}
                 </div>
@@ -135,34 +108,78 @@ export default async function AboutPage() {
           </div>
         </div>
 
-        <div className="mt-14 border-t border-border/60 pt-12">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="max-w-3xl space-y-3">
-              <div className="premium-pill inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-[0.26em] text-accent/82">
-                <GraduationCap className="h-4 w-4" />
-                Education
+        <section className="mt-10 space-y-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="space-y-2">
+              <div className="premium-pill inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-accent/82">
+                <BarChart3 className="h-4 w-4" />
+                Quick Stats
               </div>
-              <h2 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-[2.4rem]">
-                Academic background presented as a stronger professional timeline.
-              </h2>
-              <p className="text-sm leading-7 text-foreground/72 sm:text-base">
-                Every education item below is fetched from the published database and displayed in
-                sequence for a clearer, more polished profile story.
+              <p className="max-w-2xl text-sm leading-7 text-foreground/70">
+                A compact snapshot of published portfolio scale, experience, and current
+                availability, all fetched from the database.
               </p>
-            </div>
-
-            <div className="premium-outline rounded-[1.35rem] px-4 py-3 text-sm leading-6 text-foreground/70">
-              {education.length} education record{education.length === 1 ? '' : 's'} published
             </div>
           </div>
 
-          <div className="mt-10 space-y-5">
+          <div className="grid gap-4 md:grid-cols-3">
+            {quickStats.map((stat, index) => {
+              const Icon = stat.icon;
+
+              return (
+                <article
+                  key={stat.title}
+                  className="metric-card hover-lift reveal-up px-5 py-5"
+                  style={{ animationDelay: `${120 + index * 90}ms` }}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="inline-flex h-11 w-11 items-center justify-center rounded-[1.1rem] bg-[linear-gradient(135deg,rgba(12,123,119,0.16),rgba(37,99,235,0.16))] text-accent dark:bg-[linear-gradient(135deg,rgba(56,189,248,0.16),rgba(45,212,191,0.16))]">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground/44">
+                      {stat.title}
+                    </p>
+                  </div>
+                  <p className="mt-5 text-xl font-semibold leading-8 text-foreground">
+                    {stat.value}
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-foreground/68">{stat.description}</p>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="mt-14 border-t border-border/60 pt-12">
+          <div className="premium-panel px-5 py-6 sm:px-6 lg:px-7">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-3xl space-y-3">
+                <div className="premium-pill inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-[0.26em] text-accent/82">
+                  <GraduationCap className="h-4 w-4" />
+                  Education
+                </div>
+                <h2 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-[2.4rem]">
+                  Academic background presented as a clear, professional timeline.
+                </h2>
+                <p className="text-sm leading-7 text-foreground/72 sm:text-base">
+                  Every education item below is fetched from the published database and arranged
+                  one by one with cleaner spacing, clearer hierarchy, and stronger visual rhythm.
+                </p>
+              </div>
+
+              <div className="premium-outline rounded-[1.35rem] px-4 py-3 text-sm leading-6 text-foreground/70 lg:max-w-[14rem]">
+                {education.length} education record{education.length === 1 ? '' : 's'} published
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 space-y-5">
             {education.length > 0 ? (
               education.map((item, index) => (
                 <article
                   key={item.id}
-                  className="section-card hover-lift reveal-up overflow-hidden px-6 py-6"
-                  style={{ animationDelay: `${180 + index * 90}ms` }}
+                  className="section-card hover-lift reveal-up overflow-hidden px-5 py-5 sm:px-6 sm:py-6"
+                  style={{ animationDelay: `${220 + index * 90}ms` }}
                 >
                   <div className="grid gap-5 lg:grid-cols-[auto_1fr] lg:items-start">
                     <div className="flex items-center gap-4 lg:block">
@@ -172,7 +189,7 @@ export default async function AboutPage() {
                     </div>
 
                     <div className="space-y-4">
-                      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                         <div className="space-y-2">
                           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">
                             {[item.startDate, item.completionDate].filter(Boolean).join(' - ') ||
@@ -186,7 +203,7 @@ export default async function AboutPage() {
                           </p>
                         </div>
 
-                        <div className="flex flex-wrap gap-2 lg:max-w-[18rem] lg:justify-end">
+                        <div className="flex flex-wrap gap-2 xl:max-w-[18rem] xl:justify-end">
                           {item.fieldOfStudy ? (
                             <span className="info-chip">{item.fieldOfStudy}</span>
                           ) : null}
@@ -242,7 +259,7 @@ export default async function AboutPage() {
               </div>
             )}
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );
