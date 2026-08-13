@@ -31,7 +31,13 @@ export function PortfolioImage({
           'relative overflow-hidden rounded-[2rem] border border-dashed border-border/60 bg-[radial-gradient(circle_at_top,_rgba(13,148,136,0.15),_transparent_50%),linear-gradient(135deg,_rgba(15,118,110,0.12),_rgba(29,78,216,0.08))]',
           className,
         )}
-      />
+      >
+        <div className="flex h-full min-h-[12rem] items-center justify-center px-4">
+          <span className="premium-pill px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-foreground/62">
+            Portfolio image
+          </span>
+        </div>
+      </div>
     );
   }
 

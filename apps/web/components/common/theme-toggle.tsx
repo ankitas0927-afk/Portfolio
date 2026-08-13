@@ -15,7 +15,14 @@ export function ThemeToggle({ className }: { className?: string }) {
   }, []);
 
   if (!mounted) {
-    return <div className={cn('h-10 w-10 rounded-full border border-border/60', className)} />;
+    return (
+      <div
+        className={cn(
+          'h-11 w-11 rounded-[1rem] border border-border/70 bg-card/80 shadow-[0_12px_26px_-18px_rgba(11,27,48,0.45)]',
+          className,
+        )}
+      />
+    );
   }
 
   const isDark = resolvedTheme === 'dark';
@@ -25,7 +32,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       type="button"
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       className={cn(
-        'inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/70 bg-card/90 text-foreground transition hover:border-accent hover:text-accent',
+        'inline-flex h-11 w-11 items-center justify-center rounded-[1rem] border border-border/80 bg-card/95 text-foreground shadow-[0_12px_28px_-18px_rgba(11,27,48,0.42)] transition hover:-translate-y-0.5 hover:border-accent/80 hover:text-accent',
         className,
       )}
       aria-label="Toggle theme"

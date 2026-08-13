@@ -50,7 +50,7 @@ export default async function ContactPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-      <section className="relative overflow-hidden rounded-[2.4rem] border border-border/60 bg-[linear-gradient(135deg,rgba(255,255,255,0.82),rgba(236,245,255,0.66))] px-6 py-10 shadow-soft dark:bg-[linear-gradient(135deg,rgba(11,21,36,0.88),rgba(9,19,33,0.78))] sm:px-8 lg:px-10">
+      <section className="page-shell relative px-6 py-8 sm:px-8 sm:py-10 lg:px-10">
         <div className="pointer-events-none absolute -left-16 top-16 h-40 w-40 rounded-full bg-[radial-gradient(circle,rgba(37,99,235,0.2),transparent_72%)] blur-3xl" />
         <div className="pointer-events-none absolute -right-12 bottom-8 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(45,212,191,0.22),transparent_72%)] blur-3xl" />
 
@@ -132,7 +132,7 @@ export default async function ContactPage() {
                 <div className="flex flex-wrap gap-3">
                   <Link
                     href="/resume"
-                    className="hover-lift inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] px-5 py-3 text-sm font-semibold text-white shadow-soft"
+                    className="gradient-button w-full sm:w-auto"
                   >
                     Open Resume
                     <FileText className="h-4 w-4" />
@@ -142,7 +142,7 @@ export default async function ContactPage() {
                       href={resume.downloadUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="hover-lift premium-pill inline-flex items-center gap-2 px-5 py-3 text-sm font-semibold text-foreground/82"
+                      className="ghost-button w-full sm:w-auto"
                     >
                       {getResumeDownloadLabel(resume.media)}
                       <ArrowUpRight className="h-4 w-4" />
@@ -172,13 +172,13 @@ export default async function ContactPage() {
 
           <div className="grid gap-6">
             <div className="premium-panel p-5">
-              <div className="grid gap-5 sm:grid-cols-[0.9fr_1.1fr] sm:items-center">
+              <div className="grid gap-5 sm:grid-cols-[0.95fr_1.05fr] sm:items-center">
                 <PortfolioImage
                   src={profile?.profileImage?.publicUrl}
                   alt={displayName}
                   width={profile?.profileImage?.width ?? 520}
                   height={profile?.profileImage?.height ?? 620}
-                  className="h-[260px] w-full rounded-[1.75rem] object-cover object-top"
+                  className="h-[220px] w-full rounded-[1.75rem] object-cover object-top sm:h-[260px]"
                   sizes="(max-width: 640px) 100vw, 18rem"
                 />
 

@@ -21,8 +21,7 @@ const contactFormSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
-const inputClassName =
-  'w-full rounded-[1.35rem] border border-border/70 bg-background/75 px-4 py-3.5 text-sm text-foreground outline-none transition focus:border-accent focus:bg-background';
+const inputClassName = 'glass-input text-sm';
 
 export function ContactForm() {
   const form = useForm<ContactFormValues>({
@@ -159,7 +158,7 @@ export function ContactForm() {
           id="message"
           rows={7}
           placeholder="Write your message with enough context to make a thoughtful reply easier."
-          className={cn(inputClassName, 'resize-y')}
+          className={cn(inputClassName, 'min-h-[11rem] resize-y')}
           aria-invalid={Boolean(form.formState.errors.message)}
           {...form.register('message')}
         />
@@ -173,7 +172,7 @@ export function ContactForm() {
         <button
           type="submit"
           disabled={form.formState.isSubmitting}
-          className="hover-lift inline-flex items-center justify-center gap-2 rounded-full bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] px-6 py-3 text-sm font-semibold text-white shadow-soft transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-70"
+          className="gradient-button w-full sm:w-auto disabled:cursor-not-allowed disabled:opacity-70"
         >
           {form.formState.isSubmitting ? (
             <LoaderCircle className="h-4 w-4 animate-spin" />

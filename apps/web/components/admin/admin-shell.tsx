@@ -32,9 +32,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[300px_1fr] lg:px-8">
-      <aside className="premium-panel shine-sweep p-5 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-auto">
-        <div className="flex items-center justify-between">
+    <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[280px_1fr] lg:gap-8 lg:px-8">
+      <aside className="premium-panel shine-sweep p-4 sm:p-5 lg:sticky lg:top-28 lg:max-h-[calc(100vh-8rem)] lg:overflow-auto">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="premium-pill inline-flex items-center gap-2 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-accent/82">
               Dashboard
@@ -44,11 +44,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </div>
           <ThemeToggle />
         </div>
-        <nav className="mt-6 grid gap-2">
+        <nav className="mt-6 flex gap-2 overflow-x-auto pb-1 lg:grid lg:overflow-visible lg:pb-0">
           <Link
             href="/admin"
             className={cn(
-              'rounded-[1.25rem] px-4 py-3 text-sm font-medium transition',
+              'inline-flex min-w-fit whitespace-nowrap rounded-[1.15rem] px-4 py-3 text-sm font-medium transition',
               pathname === '/admin'
                 ? 'bg-background text-accent shadow-[0_18px_36px_-28px_rgba(29,78,216,0.85)]'
                 : 'text-foreground/72 hover:bg-background/70 hover:text-accent',
@@ -61,7 +61,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               key={item.slug}
               href={`/admin/${item.slug}`}
               className={cn(
-                'rounded-[1.25rem] px-4 py-3 text-sm font-medium transition',
+                'inline-flex min-w-fit whitespace-nowrap rounded-[1.15rem] px-4 py-3 text-sm font-medium transition',
                 pathname === `/admin/${item.slug}`
                   ? 'bg-background text-accent shadow-[0_18px_36px_-28px_rgba(29,78,216,0.85)]'
                   : 'text-foreground/72 hover:bg-background/70 hover:text-accent',
@@ -77,7 +77,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             await logout();
             router.replace('/admin/login');
           }}
-          className="ghost-button mt-6 w-full"
+          className="ghost-button mt-5 lg:w-full"
         >
           Logout
         </button>

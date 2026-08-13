@@ -18,24 +18,24 @@ export default async function ResumePage() {
         title={resume?.title ?? 'Current Resume'}
         description="Review the latest resume and download a copy whenever needed."
       />
-      <div className="section-card-strong mt-10 px-6 py-6">
+      <div className="section-card-strong mt-10 px-5 py-5 sm:px-6 sm:py-6">
         {overallExperienceLabel ? (
           <div className="mb-6 flex flex-wrap gap-3">
             <span className="info-chip">{overallExperienceLabel}</span>
           </div>
         ) : null}
-        <div className="mb-6 flex flex-wrap gap-3">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           {resume?.downloadUrl ? (
             <a
               href={resume.downloadUrl}
               target="_blank"
               rel="noreferrer"
-              className="gradient-button"
+              className="gradient-button w-full sm:w-auto"
             >
               {getResumeDownloadLabel(resume.media)}
             </a>
           ) : null}
-          <a href="#resume-preview" className="ghost-button">
+          <a href="#resume-preview" className="ghost-button w-full sm:w-auto">
             Jump to preview
           </a>
         </div>
@@ -44,7 +44,7 @@ export default async function ResumePage() {
             id="resume-preview"
             title="Resume preview"
             src={resume.previewUrl}
-            className="h-[80vh] w-full rounded-[1.75rem] border border-white/15 bg-background/90 shadow-[0_24px_60px_rgba(7,20,36,0.18)]"
+            className="h-[62vh] min-h-[420px] w-full rounded-[1.75rem] border border-white/15 bg-background/90 shadow-[0_24px_60px_rgba(7,20,36,0.18)] sm:h-[72vh] lg:h-[80vh]"
           />
         ) : resume?.downloadUrl ? (
           <div id="resume-preview" className="rounded-[1.5rem] border border-dashed border-border/60 bg-background/70 p-8 text-sm leading-8 text-foreground/72">

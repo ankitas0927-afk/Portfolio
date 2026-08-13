@@ -85,52 +85,46 @@ export function HomePage({
     : heroHighlights;
 
   return (
-    <div className="space-y-24 pb-20">
-      <section className="mx-auto grid max-w-7xl gap-12 px-4 pt-16 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8 lg:pt-24">
+    <div className="space-y-20 pb-16 sm:space-y-24 sm:pb-20">
+      <section className="mx-auto grid max-w-7xl gap-10 px-4 pt-14 sm:px-6 lg:grid-cols-[1.16fr_0.84fr] lg:items-center lg:px-8 lg:pt-20">
         <motion.div
-          className="space-y-8"
+          className="space-y-6 sm:space-y-8"
           initial="hidden"
           animate="visible"
           variants={{ visible: { transition: { staggerChildren: 0.08 } } }}
         >
           <motion.p
             variants={reveal}
-            className="text-sm font-semibold uppercase tracking-[0.32em] text-accent/80"
+            className="text-[0.72rem] font-semibold uppercase tracking-[0.32em] text-accent/85 sm:text-sm"
           >
             {hero?.eyebrow ?? 'Professional Profile'}
           </motion.p>
           <motion.h1
             variants={reveal}
-            className="max-w-4xl font-display text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl"
+            className="max-w-4xl text-balance font-display text-4xl font-semibold leading-tight tracking-tight text-foreground sm:text-5xl xl:text-[4.35rem]"
           >
             {hero?.heading ?? profile?.fullName ?? DEFAULT_SITE_NAME}
           </motion.h1>
-          <motion.p variants={reveal} className="max-w-2xl text-lg leading-9 text-foreground/72">
+          <motion.p
+            variants={reveal}
+            className="max-w-2xl text-base leading-8 text-foreground/78 sm:text-lg sm:leading-9"
+          >
             {hero?.subheading ?? profile?.professionalSummary ?? DEFAULT_SITE_DESCRIPTION}
           </motion.p>
           {displayHighlights.length > 0 ? (
             <motion.div variants={reveal} className="flex flex-wrap gap-3">
               {displayHighlights.map((item) => (
-                <span
-                  key={item}
-                  className="rounded-full border border-border/70 bg-card/80 px-4 py-2 text-sm text-foreground/72 shadow-soft"
-                >
+                <span key={item} className="info-chip">
                   {item}
                 </span>
               ))}
             </motion.div>
           ) : null}
-          <motion.div variants={reveal} className="flex flex-wrap gap-4">
-            <Link
-              href={hero?.ctaPrimaryHref ?? '/resume'}
-              className="rounded-full bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] px-6 py-3 text-sm font-semibold text-white shadow-soft transition hover:opacity-95"
-            >
+          <motion.div variants={reveal} className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
+            <Link href={hero?.ctaPrimaryHref ?? '/resume'} className="gradient-button w-full sm:w-auto">
               {hero?.ctaPrimaryLabel ?? 'View Resume'}
             </Link>
-            <Link
-              href={hero?.ctaSecondaryHref ?? '/contact'}
-              className="rounded-full border border-border/70 bg-card/80 px-6 py-3 text-sm font-semibold text-foreground transition hover:border-accent hover:text-accent"
-            >
+            <Link href={hero?.ctaSecondaryHref ?? '/contact'} className="ghost-button w-full sm:w-auto">
               {hero?.ctaSecondaryLabel ?? 'Contact'}
             </Link>
           </motion.div>
@@ -140,13 +134,13 @@ export function HomePage({
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, delay: 0.12 }}
-          className="relative min-h-[420px] rounded-[2rem] border border-border/60 bg-[radial-gradient(circle_at_top,_rgba(13,148,136,0.18),_transparent_52%),linear-gradient(145deg,_rgba(255,255,255,0.92),_rgba(240,249,255,0.85))] p-5 shadow-soft dark:bg-[radial-gradient(circle_at_top,_rgba(13,148,136,0.25),_transparent_52%),linear-gradient(145deg,_rgba(12,18,31,0.95),_rgba(14,25,40,0.9))]"
+          className="section-card-strong relative min-h-[340px] p-4 sm:min-h-[420px] sm:p-5 lg:p-6"
         >
-          <div className="absolute inset-x-7 top-6 flex items-center justify-between rounded-full border border-border/60 bg-background/90 px-4 py-3 text-xs uppercase tracking-[0.24em] text-foreground/55">
+          <div className="absolute inset-x-4 top-4 flex flex-col gap-2 rounded-[1.25rem] border border-white/20 bg-background/88 px-4 py-3 text-[11px] uppercase tracking-[0.24em] text-foreground/62 sm:inset-x-6 sm:top-6 sm:flex-row sm:items-center sm:justify-between sm:rounded-full">
             <span>{profile?.fullName ?? DEFAULT_SITE_NAME}</span>
             <span>{profile?.generalLocation ?? DEFAULT_LOCATION}</span>
           </div>
-          <div className="pt-16">
+          <div className="pt-20 sm:pt-16">
             <PortfolioImage
               src={hero?.heroImage?.publicUrl ?? profile?.profileImage?.publicUrl}
               alt={
@@ -155,7 +149,7 @@ export function HomePage({
               width={hero?.heroImage?.width ?? profile?.profileImage?.width ?? 720}
               height={hero?.heroImage?.height ?? profile?.profileImage?.height ?? 720}
               priority
-              className="mx-auto h-[360px] w-full max-w-sm rounded-[1.75rem] object-cover object-top shadow-soft"
+              className="mx-auto h-[260px] w-full max-w-md rounded-[1.55rem] object-cover object-top shadow-[0_26px_56px_-28px_rgba(11,27,48,0.68)] sm:h-[340px] lg:h-[420px]"
               sizes="(max-width: 1024px) 100vw, 28rem"
             />
           </div>
@@ -166,10 +160,12 @@ export function HomePage({
         <SectionHeading
           eyebrow="About"
           title="Professional background, strengths, and direction."
-          description={about?.fullBiography ?? profile?.professionalSummary ?? DEFAULT_SITE_DESCRIPTION}
+          description={
+            about?.fullBiography ?? profile?.professionalSummary ?? DEFAULT_SITE_DESCRIPTION
+          }
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-[2rem] border border-border/60 bg-card/75 p-6 shadow-soft">
+          <div className="section-card p-6">
             <dl className="grid gap-4 sm:grid-cols-2">
               <div>
                 <dt className="text-xs uppercase tracking-[0.24em] text-foreground/45">
@@ -204,13 +200,10 @@ export function HomePage({
               </div>
             </dl>
           </div>
-          <div className="grid gap-3 rounded-[2rem] border border-border/60 bg-background/80 p-6 shadow-soft">
+          <div className="section-card grid gap-3 p-6">
             {keyStrengths.length > 0 ? (
               keyStrengths.map((strength) => (
-                <div
-                  key={strength}
-                  className="rounded-2xl border border-border/60 bg-card/80 px-4 py-3 text-sm text-foreground/74"
-                >
+                <div key={strength} className="metric-card text-sm text-foreground/80">
                   {strength}
                 </div>
               ))
@@ -271,25 +264,19 @@ export function HomePage({
           description="Technical ability and personal strengths presented with clarity and balance."
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-4 rounded-[2rem] border border-border/60 bg-card/70 p-6 shadow-soft">
+          <div className="section-card space-y-4 p-6">
             {skills.categories.map((category) => {
               const categorySkills = skills.skills.filter(
                 (skill) => skill.categoryId === category.id,
               );
               return (
-                <div
-                  key={category.id}
-                  className="rounded-[1.5rem] border border-border/50 bg-background/70 p-5"
-                >
+                <div key={category.id} className="metric-card">
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">
                     {category.name}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-2">
                     {categorySkills.map((skill) => (
-                      <span
-                        key={skill.id}
-                        className="rounded-full border border-border/70 px-3 py-2 text-sm text-foreground/75"
-                      >
+                      <span key={skill.id} className="info-chip">
                         {skill.name}
                       </span>
                     ))}
@@ -298,16 +285,13 @@ export function HomePage({
               );
             })}
           </div>
-          <div className="rounded-[2rem] border border-border/60 bg-background/70 p-6 shadow-soft">
+          <div className="section-card p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">
               Personal strengths
             </p>
             <div className="mt-4 grid gap-3">
               {skills.personalSkills.map((skill) => (
-                <div
-                  key={skill.id}
-                  className="rounded-2xl border border-border/60 bg-card/80 px-4 py-3"
-                >
+                <div key={skill.id} className="metric-card">
                   {skill.title}
                 </div>
               ))}
@@ -324,10 +308,7 @@ export function HomePage({
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
           {featuredProjects.map((project) => (
-            <article
-              key={project.id}
-              className="rounded-[2rem] border border-border/60 bg-card/75 p-6 shadow-soft"
-            >
+            <article key={project.id} className="section-card hover-lift p-6">
               <p className="text-xs uppercase tracking-[0.24em] text-accent/72">
                 {project.category || 'Project'}
               </p>
@@ -339,17 +320,14 @@ export function HomePage({
               </p>
               <div className="mt-5 flex flex-wrap gap-2">
                 {(project.toolsAndTechnologies ?? []).map((tool: string) => (
-                  <span
-                    key={tool}
-                    className="rounded-full border border-border/70 px-3 py-1.5 text-xs text-foreground/68"
-                  >
+                  <span key={tool} className="info-chip text-xs">
                     {tool}
                   </span>
                 ))}
               </div>
               <Link
                 href={`/projects/${project.slug}`}
-                className="mt-6 inline-flex text-sm font-semibold text-accent transition hover:text-accentSecondary"
+                className="ghost-button mt-6 sm:w-auto"
               >
                 Explore project details
               </Link>
@@ -365,37 +343,31 @@ export function HomePage({
           description="A broader view of communication, interests, and supporting professional material."
         />
         <div className="mt-10 grid gap-6 lg:grid-cols-[0.8fr_0.8fr_1.1fr]">
-          <div className="rounded-[2rem] border border-border/60 bg-card/70 p-6 shadow-soft">
+          <div className="section-card p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">
               Languages
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
               {languages.map((language) => (
-                <span
-                  key={language.id}
-                  className="rounded-full border border-border/70 px-3 py-2 text-sm"
-                >
+                <span key={language.id} className="info-chip">
                   {language.name}
                 </span>
               ))}
             </div>
           </div>
-          <div className="rounded-[2rem] border border-border/60 bg-card/70 p-6 shadow-soft">
+          <div className="section-card p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">
               Interests
             </p>
             <div className="mt-4 grid gap-2">
               {interests.map((interest) => (
-                <div
-                  key={interest.id}
-                  className="rounded-2xl border border-border/60 bg-background/70 px-4 py-3 text-sm"
-                >
+                <div key={interest.id} className="metric-card text-sm">
                   {interest.title}
                 </div>
               ))}
             </div>
           </div>
-          <div className="rounded-[2rem] border border-border/60 bg-[linear-gradient(145deg,rgba(15,118,110,0.12),rgba(29,78,216,0.08))] p-6 shadow-soft">
+          <div className="section-card-strong p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/72">
               Resume
             </p>
@@ -405,11 +377,8 @@ export function HomePage({
             <p className="mt-3 text-sm leading-7 text-foreground/72">
               View the latest resume online or download a copy for reference.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                href="/resume"
-                className="rounded-full bg-card px-5 py-3 text-sm font-semibold text-foreground shadow-soft"
-              >
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Link href="/resume" className="ghost-button w-full sm:w-auto">
                 Open resume page
               </Link>
               {resume?.downloadUrl ? (
@@ -417,7 +386,7 @@ export function HomePage({
                   href={resume.downloadUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-full border border-border/70 px-5 py-3 text-sm font-semibold text-foreground/78"
+                  className="gradient-button w-full sm:w-auto"
                 >
                   {getResumeDownloadLabel(resume.media)}
                 </a>
@@ -438,14 +407,11 @@ function SummaryColumn({
   items: Array<{ title: string; subtitle: string; meta: string; body: string }>;
 }) {
   return (
-    <div className="rounded-[2rem] border border-border/60 bg-card/70 p-6 shadow-soft">
+    <div className="section-card p-6">
       <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">{title}</p>
       <div className="mt-5 space-y-4">
         {items.map((item) => (
-          <article
-            key={`${item.title}-${item.subtitle}`}
-            className="rounded-[1.5rem] border border-border/60 bg-background/75 p-5"
-          >
+          <article key={`${item.title}-${item.subtitle}`} className="metric-card">
             <p className="font-semibold text-foreground">{item.title}</p>
             <p className="mt-1 text-sm text-foreground/68">{item.subtitle}</p>
             {item.meta ? (

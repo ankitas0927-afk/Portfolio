@@ -75,21 +75,21 @@ export function SiteFooter({
               <div className="flex flex-wrap gap-3">
                 <Link
                   href="/contact"
-                  className="hover-lift inline-flex items-center gap-2 rounded-full bg-[linear-gradient(135deg,var(--accent),var(--accent-secondary))] px-6 py-3 text-sm font-semibold text-white shadow-soft"
+                  className="gradient-button w-full sm:w-auto"
                 >
                   Contact
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
                 <Link
                   href="/resume"
-                  className="hover-lift premium-pill inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-foreground/82"
+                  className="ghost-button w-full sm:w-auto"
                 >
                   View Resume
                   <FileText className="h-4 w-4" />
                 </Link>
                 <Link
                   href="/admin/login"
-                  className="hover-lift premium-pill inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-foreground/82"
+                  className="ghost-button w-full sm:w-auto"
                 >
                   Admin Login
                   <ArrowUpRight className="h-4 w-4" />
