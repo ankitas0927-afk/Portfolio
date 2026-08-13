@@ -14,18 +14,12 @@ import type {
 
 import type { PublicResumeBundle, PublicSkillsBundle } from '@/services/public';
 import { PortfolioImage } from '@/components/common/portfolio-image';
-import { SectionHeading } from '@/components/common/section-heading';
 import {
   DEFAULT_LOCATION,
   DEFAULT_SITE_DESCRIPTION,
   DEFAULT_SITE_NAME,
-  DEFAULT_SITE_TAGLINE,
 } from '@/lib/default-site-copy';
-import {
-  getExperienceDateRangeLabel,
-  getExperienceDurationLabel,
-  getTotalExperienceLabel,
-} from '@/lib/experience';
+import { getTotalExperienceLabel } from '@/lib/experience';
 import { getResumeDownloadLabel } from '@/lib/media';
 
 type HomePageProps = {
@@ -67,18 +61,12 @@ const reveal = {
 export function HomePage({
   profile,
   hero,
-  about,
   experience,
-  education,
-  training,
-  skills,
-  featuredProjects,
   languages,
   interests,
   resume,
 }: HomePageProps) {
   const heroHighlights = hero?.highlights ?? [];
-  const keyStrengths = about?.keyStrengths ?? [];
   const overallExperienceLabel = getTotalExperienceLabel(experience);
   const displayHighlights = overallExperienceLabel
     ? Array.from(new Set([overallExperienceLabel, ...heroHighlights]))
@@ -157,192 +145,7 @@ export function HomePage({
       </section>
 
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          eyebrow="About"
-          title="Professional background, strengths, and direction."
-          description={
-            about?.fullBiography ?? profile?.professionalSummary ?? DEFAULT_SITE_DESCRIPTION
-          }
-        />
-        <div className="mt-10 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="section-card p-6">
-            <dl className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <dt className="text-xs uppercase tracking-[0.24em] text-foreground/45">
-                  Employment focus
-                </dt>
-                <dd className="mt-2 text-base text-foreground/78">
-                  {about?.preferredEmploymentArea ??
-                    'Professional focus details will appear here once the public profile is available.'}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-[0.24em] text-foreground/45">
-                  Availability
-                </dt>
-                <dd className="mt-2 text-base text-foreground/78">
-                  {about?.availabilityLabel ?? 'Open to suitable opportunities'}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-[0.24em] text-foreground/45">Location</dt>
-                <dd className="mt-2 text-base text-foreground/78">
-                  {about?.currentLocation ?? profile?.generalLocation ?? DEFAULT_LOCATION}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-[0.24em] text-foreground/45">
-                  Current role
-                </dt>
-                <dd className="mt-2 text-base text-foreground/78">
-                  {profile?.professionalTitle ?? DEFAULT_SITE_TAGLINE}
-                </dd>
-              </div>
-            </dl>
-          </div>
-          <div className="section-card grid gap-3 p-6">
-            {keyStrengths.length > 0 ? (
-              keyStrengths.map((strength) => (
-                <div key={strength} className="metric-card text-sm text-foreground/80">
-                  {strength}
-                </div>
-              ))
-            ) : (
-              <div className="rounded-2xl border border-dashed border-border/60 bg-card/80 px-4 py-4 text-sm text-foreground/68">
-                Core strengths will appear here once they are published from the database.
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          eyebrow="Experience"
-          title="Experience, education, and training highlights"
-          description="A concise view of professional responsibility, academic preparation, and practical exposure."
-        />
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
-          <SummaryColumn
-            title="Experience"
-            items={experience.map((item) => ({
-              title: item.jobTitle,
-              subtitle: item.organisation,
-              meta:
-                getExperienceDurationLabel(item) ||
-                getExperienceDateRangeLabel(item) ||
-                item.location ||
-                '',
-              body: item.professionalSummary || '',
-            }))}
-          />
-          <SummaryColumn
-            title="Education"
-            items={education.map((item) => ({
-              title: item.qualification,
-              subtitle: item.institution,
-              meta: [item.startDate, item.completionDate].filter(Boolean).join(' - '),
-              body: item.fieldOfStudy || '',
-            }))}
-          />
-          <SummaryColumn
-            title="Training"
-            items={training.map((item) => ({
-              title: item.trainingTitle || item.trainingType || 'Professional training',
-              subtitle: item.organisation,
-              meta: item.duration || [item.startDate, item.endDate].filter(Boolean).join(' - '),
-              body: item.description || '',
-            }))}
-          />
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          eyebrow="Skills"
-          title="Capabilities and core strengths"
-          description="Technical ability and personal strengths presented with clarity and balance."
-        />
-        <div className="mt-10 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="section-card space-y-4 p-6">
-            {skills.categories.map((category) => {
-              const categorySkills = skills.skills.filter(
-                (skill) => skill.categoryId === category.id,
-              );
-              return (
-                <div key={category.id} className="metric-card">
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">
-                    {category.name}
-                  </p>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {categorySkills.map((skill) => (
-                      <span key={skill.id} className="info-chip">
-                        {skill.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <div className="section-card p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">
-              Personal strengths
-            </p>
-            <div className="mt-4 grid gap-3">
-              {skills.personalSkills.map((skill) => (
-                <div key={skill.id} className="metric-card">
-                  {skill.title}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          eyebrow="Projects"
-          title="Selected projects and practical work"
-          description="A focused collection of published work, case studies, and learning-led contributions."
-        />
-        <div className="mt-10 grid gap-6 lg:grid-cols-2">
-          {featuredProjects.map((project) => (
-            <article key={project.id} className="section-card hover-lift p-6">
-              <p className="text-xs uppercase tracking-[0.24em] text-accent/72">
-                {project.category || 'Project'}
-              </p>
-              <h3 className="mt-4 font-display text-2xl font-semibold text-foreground">
-                {project.title}
-              </h3>
-              <p className="mt-3 text-sm leading-7 text-foreground/72">
-                {project.shortDescription}
-              </p>
-              <div className="mt-5 flex flex-wrap gap-2">
-                {(project.toolsAndTechnologies ?? []).map((tool: string) => (
-                  <span key={tool} className="info-chip text-xs">
-                    {tool}
-                  </span>
-                ))}
-              </div>
-              <Link
-                href={`/projects/${project.slug}`}
-                className="ghost-button mt-6 sm:w-auto"
-              >
-                Explore project details
-              </Link>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          eyebrow="Additional"
-          title="Languages, interests, and resume"
-          description="A broader view of communication, interests, and supporting professional material."
-        />
-        <div className="mt-10 grid gap-6 lg:grid-cols-[0.8fr_0.8fr_1.1fr]">
+        <div className="grid gap-6 lg:grid-cols-[0.8fr_0.8fr_1.1fr]">
           <div className="section-card p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">
               Languages
@@ -395,36 +198,6 @@ export function HomePage({
           </div>
         </div>
       </section>
-    </div>
-  );
-}
-
-function SummaryColumn({
-  title,
-  items,
-}: {
-  title: string;
-  items: Array<{ title: string; subtitle: string; meta: string; body: string }>;
-}) {
-  return (
-    <div className="section-card p-6">
-      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent/70">{title}</p>
-      <div className="mt-5 space-y-4">
-        {items.map((item) => (
-          <article key={`${item.title}-${item.subtitle}`} className="metric-card">
-            <p className="font-semibold text-foreground">{item.title}</p>
-            <p className="mt-1 text-sm text-foreground/68">{item.subtitle}</p>
-            {item.meta ? (
-              <p className="mt-2 text-xs uppercase tracking-[0.22em] text-foreground/42">
-                {item.meta}
-              </p>
-            ) : null}
-            {item.body ? (
-              <p className="mt-3 text-sm leading-7 text-foreground/72">{item.body}</p>
-            ) : null}
-          </article>
-        ))}
-      </div>
     </div>
   );
 }

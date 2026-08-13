@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react';
 import { HomePage } from '@/components/portfolio/home-page';
 
 describe('HomePage', () => {
-  it('renders key public sections', () => {
+  it('renders the public hero and resume actions', () => {
     render(
       <HomePage
         profile={{
@@ -62,8 +62,10 @@ describe('HomePage', () => {
       />,
     );
 
-    expect(screen.getByRole('heading', { name: /Research Analyst and Pharmacy Graduate/i })).toBeInTheDocument();
-    expect(screen.getByText('Project One')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: /Research Analyst and Pharmacy Graduate/i }),
+    ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /View Resume/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Open resume page/i })).toBeInTheDocument();
   });
 });
