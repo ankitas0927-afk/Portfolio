@@ -26,11 +26,15 @@ export function CollectionManager({
   endpoint,
   fields,
   description,
+  actionLabel = 'Add new',
+  extraInvalidateQueryKeys = [],
 }: {
   title: string;
   endpoint: string;
   fields: FieldConfig[];
   description?: string;
+  actionLabel?: string;
+  extraInvalidateQueryKeys?: Array<readonly unknown[]>;
 }) {
   const { apiRequest } = useAuth();
   const queryClient = useQueryClient();
@@ -42,6 +46,16 @@ export function CollectionManager({
   const form = useForm<Record<string, unknown>>({
     defaultValues: toFormDefaults(fields),
   });
+
+  const invalidateRelatedQueries = async () => {
+    await Promise.all(
+      extraInvalidateQueryKeys.map((queryKey) =>
+        queryClient.invalidateQueries({
+          queryKey: [...queryKey],
+        }),
+      ),
+    );
+  };
 
   const query = useQuery({
     queryKey: ['admin-collection', endpoint, page, deferredSearch],
@@ -68,6 +82,7 @@ export function CollectionManager({
       toast.success(`${title} saved`);
       resetForCreate();
       void queryClient.invalidateQueries({ queryKey: ['admin-collection', endpoint] });
+      void invalidateRelatedQueries();
     },
     onError: (error) => {
       toast.error(getApiErrorMessage(error, `Unable to save ${title.toLowerCase()}`));
@@ -79,6 +94,7 @@ export function CollectionManager({
     onSuccess: () => {
       toast.success(`${title} item deleted`);
       void queryClient.invalidateQueries({ queryKey: ['admin-collection', endpoint] });
+      void invalidateRelatedQueries();
     },
     onError: () => {
       toast.error(`Unable to delete ${title.toLowerCase()} item`);
@@ -94,6 +110,7 @@ export function CollectionManager({
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['admin-collection', endpoint] });
+      void invalidateRelatedQueries();
     },
   });
 
@@ -123,7 +140,7 @@ export function CollectionManager({
             onClick={resetForCreate}
             className="ghost-button"
           >
-            Add new
+            {actionLabel}
           </button>
         </div>
       </div>
