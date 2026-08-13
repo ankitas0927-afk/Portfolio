@@ -38,12 +38,12 @@ export default async function ContactPage() {
   const overallExperienceLabel = getTotalExperienceLabel(experience);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-14 lg:px-8 lg:py-16">
-      <section className="page-shell relative px-5 py-6 sm:px-8 sm:py-8 lg:px-10">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
+      <section className="page-shell relative px-5 py-6 sm:px-7 sm:py-7 lg:px-8">
         <div className="pointer-events-none absolute -left-16 top-16 h-40 w-40 rounded-full bg-[radial-gradient(circle,rgba(37,99,235,0.2),transparent_72%)] blur-3xl" />
         <div className="pointer-events-none absolute -right-12 bottom-8 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgba(45,212,191,0.22),transparent_72%)] blur-3xl" />
 
-        <div className="grid gap-6 xl:grid-cols-[1.08fr_0.92fr] xl:items-start">
+        <div className="grid gap-6 xl:grid-cols-[1fr_0.96fr] xl:items-start">
           <div className="space-y-6">
             <SectionHeading eyebrow="Contact" title="Get in touch for professional opportunities." />
 
@@ -102,121 +102,121 @@ export default async function ContactPage() {
                 description="Well-structured messages are easier to review and respond to promptly."
               />
             </div>
-          </div>
 
-          <div className="premium-panel p-5 sm:p-6">
-            <div className="grid gap-5 sm:grid-cols-[170px_1fr] sm:items-start">
-              <PortfolioImage
-                src={profile?.profileImage?.publicUrl}
-                alt={displayName}
-                width={profile?.profileImage?.width ?? 520}
-                height={profile?.profileImage?.height ?? 620}
-                className="h-[220px] w-full rounded-[1.75rem] object-cover object-top sm:h-[240px]"
-                sizes="(max-width: 640px) 100vw, 170px"
-              />
-
-              <div className="space-y-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent/80">
-                  Professional Contact
-                </p>
-                <p className="font-display text-2xl font-semibold text-foreground">
-                  Connect directly for roles, projects, or professional conversations.
-                </p>
-                <div className="grid gap-3">
-                  <div className="premium-outline rounded-[1.35rem] px-4 py-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-foreground/50">
-                      Name
-                    </p>
-                    <p className="mt-2 text-base font-semibold text-foreground">{displayName}</p>
-                  </div>
-
-                  <div className="premium-outline rounded-[1.35rem] px-4 py-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-foreground/50">
-                      Role Focus
-                    </p>
-                    <p className="mt-2 text-sm leading-6 text-foreground/72">{title}</p>
-                  </div>
+            <div className="premium-panel px-5 py-5 sm:px-6">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent/80">
+                    Highlights
+                  </p>
+                  <p className="max-w-2xl text-sm leading-7 text-foreground/72">
+                    Resume access and portfolio links are available here for quick follow-up.
+                  </p>
                 </div>
 
-                <div className="flex flex-wrap gap-3 pt-1">
-                  {location ? (
-                    <span className="premium-pill px-4 py-2 text-sm font-medium text-foreground/72">
-                      {location}
-                    </span>
-                  ) : null}
-                  {overallExperienceLabel ? (
-                    <span className="premium-pill px-4 py-2 text-sm font-medium text-foreground/72">
-                      {overallExperienceLabel}
-                    </span>
+                <div className="flex flex-wrap gap-3">
+                  <Link href="/resume" className="gradient-button w-full sm:w-auto">
+                    Open Resume
+                    <FileText className="h-4 w-4" />
+                  </Link>
+                  {resume?.downloadUrl ? (
+                    <a
+                      href={resume.downloadUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="ghost-button w-full sm:w-auto"
+                    >
+                      {getResumeDownloadLabel(resume.media)}
+                      <ArrowUpRight className="h-4 w-4" />
+                    </a>
                   ) : null}
                 </div>
               </div>
+
+              {socialLinks.length > 0 ? (
+                <div className="mt-5 flex flex-wrap gap-3">
+                  {socialLinks.map((link) => (
+                    <a
+                      key={link.id}
+                      href={link.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="hover-lift premium-pill inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-foreground/78 transition hover:text-accent"
+                    >
+                      <Sparkles className="h-4 w-4 text-accent/82" />
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              ) : null}
             </div>
           </div>
-        </div>
 
-        <div className="mt-8 grid gap-6 xl:grid-cols-[0.92fr_1.08fr] xl:items-start">
-          <div className="premium-panel px-5 py-5 sm:px-6">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent/80">
-                  Highlights
-                </p>
-                <p className="max-w-2xl text-sm leading-7 text-foreground/72">
-                  Resume access and professional links remain available here for quick reference.
-                </p>
-              </div>
+          <div className="space-y-6">
+            <div className="premium-panel p-5 sm:p-6">
+              <div className="grid gap-5 sm:grid-cols-[170px_1fr] sm:items-start">
+                <PortfolioImage
+                  src={profile?.profileImage?.publicUrl}
+                  alt={displayName}
+                  width={profile?.profileImage?.width ?? 520}
+                  height={profile?.profileImage?.height ?? 620}
+                  className="h-[220px] w-full rounded-[1.75rem] object-cover object-top sm:h-[240px]"
+                  sizes="(max-width: 640px) 100vw, 170px"
+                />
 
-              <div className="flex flex-wrap gap-3">
-                <Link href="/resume" className="gradient-button w-full sm:w-auto">
-                  Open Resume
-                  <FileText className="h-4 w-4" />
-                </Link>
-                {resume?.downloadUrl ? (
-                  <a
-                    href={resume.downloadUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="ghost-button w-full sm:w-auto"
-                  >
-                    {getResumeDownloadLabel(resume.media)}
-                    <ArrowUpRight className="h-4 w-4" />
-                  </a>
-                ) : null}
-              </div>
-            </div>
+                <div className="space-y-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent/80">
+                    Professional Contact
+                  </p>
+                  <p className="font-display text-2xl font-semibold text-foreground">
+                    Connect directly for roles, projects, or professional conversations.
+                  </p>
+                  <div className="grid gap-3">
+                    <div className="premium-outline rounded-[1.35rem] px-4 py-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-foreground/50">
+                        Name
+                      </p>
+                      <p className="mt-2 text-base font-semibold text-foreground">{displayName}</p>
+                    </div>
 
-            {socialLinks.length > 0 ? (
-              <div className="mt-5 flex flex-wrap gap-3">
-                {socialLinks.map((link) => (
-                  <a
-                    key={link.id}
-                    href={link.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover-lift premium-pill inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-foreground/78 transition hover:text-accent"
-                  >
-                    <Sparkles className="h-4 w-4 text-accent/82" />
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-            ) : null}
-          </div>
+                    <div className="premium-outline rounded-[1.35rem] px-4 py-4">
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-foreground/50">
+                        Role Focus
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-foreground/72">{title}</p>
+                    </div>
+                  </div>
 
-          <div className="premium-panel p-6">
-            <div className="mb-6">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent/80">
-                  Contact Form
-                </p>
-                <h3 className="mt-3 font-display text-2xl font-semibold text-foreground">
-                  Send a professional enquiry
-                </h3>
+                  <div className="flex flex-wrap gap-3 pt-1">
+                    {location ? (
+                      <span className="premium-pill px-4 py-2 text-sm font-medium text-foreground/72">
+                        {location}
+                      </span>
+                    ) : null}
+                    {overallExperienceLabel ? (
+                      <span className="premium-pill px-4 py-2 text-sm font-medium text-foreground/72">
+                        {overallExperienceLabel}
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
               </div>
             </div>
 
-            <ContactForm />
+            <div className="premium-panel p-6">
+              <div className="mb-6">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent/80">
+                    Contact Form
+                  </p>
+                  <h3 className="mt-3 font-display text-2xl font-semibold text-foreground">
+                    Send a professional enquiry
+                  </h3>
+                </div>
+              </div>
+
+              <ContactForm />
+            </div>
           </div>
         </div>
       </section>
