@@ -238,7 +238,7 @@ textarea::placeholder {
     pointer-events: none;
   }
 
-  .page-shell > * {
+  .page-shell > :not(.absolute) {
     position: relative;
     z-index: 1;
   }
@@ -270,7 +270,7 @@ textarea::placeholder {
     pointer-events: none;
   }
 
-  .premium-panel > * {
+  .premium-panel > :not(.absolute) {
     position: relative;
     z-index: 1;
   }
