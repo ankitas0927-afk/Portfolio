@@ -123,12 +123,32 @@ export default async function ContactPage() {
                   Connect directly for roles, projects, or professional conversations.
                 </p>
                 <div className="grid gap-3">
-                  <div className="premium-outline rounded-[1.35rem] px-4 py-4 text-sm leading-6 text-foreground/72">
-                    Resume links and direct contact options are available here for quick follow-up.
+                  <div className="premium-outline rounded-[1.35rem] px-4 py-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-foreground/50">
+                      Name
+                    </p>
+                    <p className="mt-2 text-base font-semibold text-foreground">{displayName}</p>
                   </div>
-                  <div className="premium-outline rounded-[1.35rem] px-4 py-4 text-sm leading-6 text-foreground/72">
-                    Reach out by email, phone, or the contact form depending on what is most convenient.
+
+                  <div className="premium-outline rounded-[1.35rem] px-4 py-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-foreground/50">
+                      Role Focus
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-foreground/72">{title}</p>
                   </div>
+                </div>
+
+                <div className="flex flex-wrap gap-3 pt-1">
+                  {location ? (
+                    <span className="premium-pill px-4 py-2 text-sm font-medium text-foreground/72">
+                      {location}
+                    </span>
+                  ) : null}
+                  {overallExperienceLabel ? (
+                    <span className="premium-pill px-4 py-2 text-sm font-medium text-foreground/72">
+                      {overallExperienceLabel}
+                    </span>
+                  ) : null}
                 </div>
               </div>
             </div>
