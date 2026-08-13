@@ -18,6 +18,8 @@ import {
 } from '@/services/public';
 import '@/app/globals.css';
 
+export const revalidate = 60;
+
 const fontSans = Manrope({
   subsets: ['latin'],
   variable: '--font-sans',

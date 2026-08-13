@@ -29,7 +29,7 @@ import {
   getPublicSocialLinks,
 } from '@/services/public';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export default async function ContactPage() {
   const [profile, resume, socialLinks, experience] = await Promise.all([

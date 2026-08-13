@@ -1,7 +1,7 @@
 import { SectionHeading } from '@/components/common/section-heading';
 import { getPublicTraining } from '@/services/public';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export default async function TrainingPage() {
   const training = await getPublicTraining();

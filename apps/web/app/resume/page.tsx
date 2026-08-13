@@ -3,7 +3,7 @@ import { getTotalExperienceLabel } from '@/lib/experience';
 import { canPreviewResumeInline, getResumeDownloadLabel } from '@/lib/media';
 import { getPublicExperience, getPublicResume } from '@/services/public';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export default async function ResumePage() {
   const [resume, experience] = await Promise.all([getPublicResume(), getPublicExperience()]);

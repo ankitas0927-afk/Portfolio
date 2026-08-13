@@ -6,7 +6,7 @@ import {
 } from '@/lib/experience';
 import { getPublicExperience } from '@/services/public';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export default async function ExperiencePage() {
   const experience = await getPublicExperience();

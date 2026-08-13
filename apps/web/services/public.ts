@@ -16,7 +16,8 @@ import type {
   SocialLink,
   TrainingRecord,
 } from '@ankita-portfolio/shared-types';
-import { unstable_noStore as noStore } from 'next/cache';
+import { unstable_cache } from 'next/cache';
+import { cache } from 'react';
 
 import { webEnv } from '../lib/env';
 import { resolvePrimaryNavigation } from '../lib/public-navigation';
@@ -25,6 +26,8 @@ type ApiEnvelope<T> = {
   success: boolean;
   data: T;
 };
+
+const PUBLIC_CONTENT_REVALIDATE_SECONDS = 60;
 
 export type PublicSiteContext = {
   siteSettings: {
@@ -82,9 +85,7 @@ function canUseEmbeddedApiRuntime() {
   ].every((key) => Boolean(process.env[key]?.trim()));
 }
 
-async function readFromEmbeddedApi<T>(path: string) {
-  noStore();
-
+const readFromEmbeddedApi = unstable_cache(async (path: string): Promise<unknown | null> => {
   try {
     if (!canUseEmbeddedApiRuntime()) {
       return null;
@@ -125,24 +126,25 @@ async function readFromEmbeddedApi<T>(path: string) {
       return null;
     }
 
-    return (await directLoader()) as T;
+    return await directLoader();
   } catch {
     return null;
   }
-}
+}, ['public-embedded-content'], {
+  revalidate: PUBLIC_CONTENT_REVALIDATE_SECONDS,
+});
 
 async function fetchPublic<T>(path: string): Promise<T | null> {
   if (typeof window === 'undefined') {
-    const embeddedResult = await readFromEmbeddedApi<T>(path);
+    const embeddedResult = await readFromEmbeddedApi(path);
     if (embeddedResult !== null) {
-      return embeddedResult;
+      return embeddedResult as T;
     }
   }
 
   try {
     const response = await fetch(`${webEnv.apiBaseUrl}/public${path}`, {
-      cache: 'no-store',
-      next: { revalidate: 0 },
+      next: { revalidate: PUBLIC_CONTENT_REVALIDATE_SECONDS },
     });
 
     if (!response.ok) {
@@ -156,82 +158,82 @@ async function fetchPublic<T>(path: string): Promise<T | null> {
   }
 }
 
-export async function getSiteContext() {
+export const getSiteContext = cache(async () => {
   return (
     (await fetchPublic<PublicSiteContext>('/site-context')) ?? {
       siteSettings: null,
       seoSettings: null,
     }
   );
-}
+});
 
-export async function getNavigation() {
+export const getNavigation = cache(async () => {
   return resolvePrimaryNavigation((await fetchPublic<NavigationItem[]>('/navigation')) ?? []);
-}
+});
 
-export async function getPublicProfile() {
+export const getPublicProfile = cache(async () => {
   return await fetchPublic<PublicProfile>('/profile');
-}
+});
 
-export async function getPublicHero() {
+export const getPublicHero = cache(async () => {
   return await fetchPublic<HeroSection>('/hero');
-}
+});
 
-export async function getPublicAbout() {
+export const getPublicAbout = cache(async () => {
   return await fetchPublic<AboutSection>('/about');
-}
+});
 
-export async function getPublicExperience() {
+export const getPublicExperience = cache(async () => {
   return (await fetchPublic<ExperienceRecord[]>('/experience')) ?? [];
-}
+});
 
-export async function getPublicEducation() {
+export const getPublicEducation = cache(async () => {
   return (await fetchPublic<EducationRecord[]>('/education')) ?? [];
-}
+});
 
-export async function getPublicTraining() {
+export const getPublicTraining = cache(async () => {
   return (await fetchPublic<TrainingRecord[]>('/training')) ?? [];
-}
+});
 
-export async function getPublicSkills() {
+export const getPublicSkills = cache(async () => {
   return (await fetchPublic<PublicSkillsBundle>('/skills')) ?? emptySkillsBundle;
-}
+});
 
-export async function getPublicProjects(featured = false) {
+export const getPublicProjects = cache(async (featured = false) => {
   const endpoint = featured ? '/projects/featured' : '/projects';
   return (await fetchPublic<ProjectRecord[]>(endpoint)) ?? [];
-}
+});
 
-export async function getPublicProject(slug: string) {
+export const getPublicProject = cache(async (slug: string) => {
   return await fetchPublic<
     ProjectRecord & {
       galleryImages?: Array<{ publicUrl: string }>;
       supportingDocuments?: Array<{ publicUrl: string }>;
     }
   >(`/projects/${slug}`);
-}
+});
 
-export async function getPublicLanguages() {
+export const getPublicLanguages = cache(async () => {
   return (await fetchPublic<LanguageRecord[]>('/languages')) ?? [];
-}
+});
 
-export async function getPublicInterests() {
+export const getPublicInterests = cache(async () => {
   return (await fetchPublic<InterestRecord[]>('/interests')) ?? [];
-}
+});
 
-export async function getPublicCertificates() {
+export const getPublicCertificates = cache(async () => {
   return (await fetchPublic<CertificateRecord[]>('/certificates')) ?? [];
-}
+});
 
-export async function getPublicSocialLinks() {
+export const getPublicSocialLinks = cache(async () => {
   return (await fetchPublic<SocialLink[]>('/social-links')) ?? [];
-}
+});
 
-export async function getPublicResume() {
+export const getPublicResume = cache(async () => {
   return await fetchPublic<PublicResumeBundle>('/resume');
-}
+});
 
-export async function getHomeBundle() {
+export const getHomeBundle = cache(async () => {
   const [
     profile,
     hero,
@@ -274,4 +276,4 @@ export async function getHomeBundle() {
     resume,
     socialLinks,
   };
-}
+});

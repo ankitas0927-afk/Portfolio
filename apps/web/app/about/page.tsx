@@ -4,7 +4,7 @@ import { DEFAULT_SITE_DESCRIPTION, DEFAULT_SITE_NAME } from '@/lib/default-site-
 import { getTotalExperienceLabel } from '@/lib/experience';
 import { getPublicAbout, getPublicExperience, getPublicProfile } from '@/services/public';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export default async function AboutPage() {
   const [about, profile, experience] = await Promise.all([

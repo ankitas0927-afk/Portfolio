@@ -4,7 +4,7 @@ import { SectionHeading } from '@/components/common/section-heading';
 import { getTotalExperienceLabel } from '@/lib/experience';
 import { getPublicExperience, getPublicProjects } from '@/services/public';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 export default async function ProjectsPage() {
   const [projects, experience] = await Promise.all([
